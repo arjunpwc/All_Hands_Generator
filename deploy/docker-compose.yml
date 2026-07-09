@@ -1,0 +1,13 @@
+services:
+  allhands:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../data:/app/data
+    environment:
+      - DATA_DIR=/app/data
+      - CORS_ORIGINS=http://localhost:5173,http://localhost:8000
+      - HOST_KEY=local-dev-key

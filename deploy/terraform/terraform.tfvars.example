@@ -1,0 +1,4 @@
+region             = "us-ashburn-1"
+compartment_id     = "ocid1.compartment.oc1..xxxx"
+availability_domain = "AD-1"
+container_image    = "us-ashburn-1.ocir.io/tenancy-namespace/allhands-web:latest"
