@@ -10,11 +10,10 @@ build/
 node_modules/
 frontend/dist/
 
-# Data
-data/sessions/*
+# Data — ignore uploads/temp files; keep generated sessions in repo
 data/uploads/*
-!data/sessions/.gitkeep
 !data/uploads/.gitkeep
+data/uploads/_extract_*
 
 # Env
 .env
