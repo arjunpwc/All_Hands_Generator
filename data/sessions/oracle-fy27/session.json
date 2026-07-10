@@ -1,0 +1,50 @@
+{
+  "title": "Oracle D&A July 26 All Hands",
+  "author": "",
+  "slide_count": 2,
+  "slides": [
+    {
+      "index": 1,
+      "title": "Oracle D&A All Hands July 2026",
+      "shapes": [
+        {
+          "type": "text",
+          "bullets": [
+            "Oracle D&A All Hands July 2026"
+          ]
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-1-image2.svg",
+          "alt": "image2.svg"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "index": 2,
+      "title": "Agenda",
+      "shapes": [
+        {
+          "type": "text",
+          "bullets": [
+            "Agenda",
+            "Oracle D&A All Hands | July 2026",
+            "2",
+            "FY26 recap",
+            "Team moments (promotions)",
+            "FY27 kickoff",
+            "Operating model and team alignment – Brad's slide",
+            "Revisit sub-cap and prac -op groups and vision",
+            "Pipeline, oppts , projects",
+            "Claude partner basecamp training recap and learnings",
+            "Upcoming trainings",
+            "SF training, firm shutdown pics",
+            "Q&A"
+          ]
+        }
+      ],
+      "notes": ""
+    }
+  ]
+}

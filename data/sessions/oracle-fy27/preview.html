@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Oracle D&amp;A July 26 All Hands | PwC</title>
+  <style>
+:root {
+  --pwc-orange: #FD5108;
+  --pwc-orange-dark: #D04A02;
+  --pwc-orange-tint: #FFF5ED;
+  --pwc-black: #000000;
+  --pwc-white: #FFFFFF;
+  --pwc-grey-700: #474747;
+  --pwc-grey-500: #736F6E;
+  --pwc-grey-200: #E8E8E8;
+  --pwc-grey-100: #F5F5F5;
+  --radius: 4px;
+  --font-serif: Georgia, "Times New Roman", serif;
+  --font-sans: Arial, Helvetica, sans-serif;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--pwc-black);
+  background: var(--pwc-grey-100);
+  line-height: 1.6;
+}
+a { color: var(--pwc-orange); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
+
+.site-header {
+  background: var(--pwc-black);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-accent { height: 4px; background: var(--pwc-orange); }
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  min-height: 60px;
+}
+.brand { display: flex; align-items: center; gap: 1rem; }
+.pwc-logo {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--pwc-white);
+  letter-spacing: -0.02em;
+  font-family: var(--font-sans);
+}
+.practice-name {
+  color: rgba(255,255,255,0.75);
+  font-size: 0.85rem;
+  border-left: 1px solid rgba(255,255,255,0.25);
+  padding-left: 1rem;
+}
+
+.tab-nav {
+  display: flex;
+  gap: 0.15rem;
+  overflow-x: auto;
+  padding: 0.35rem 0;
+}
+.tab-btn {
+  border: none;
+  background: transparent;
+  color: rgba(255,255,255,0.65);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.5rem 0.85rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.tab-btn:hover { background: rgba(255,255,255,0.1); color: var(--pwc-white); }
+.tab-btn.active { background: var(--pwc-orange); color: var(--pwc-white); }
+
+.site-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+.tab-panel { display: none; animation: fadeIn 0.25s ease; }
+.tab-panel.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+.hero {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 2rem;
+  align-items: center;
+  background: var(--pwc-white);
+  border-left: 4px solid var(--pwc-orange);
+  padding: 2.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--pwc-orange);
+  margin: 0 0 0.75rem;
+}
+.hero h1 { font-size: 2.25rem; margin: 0 0 0.35rem; line-height: 1.2; color: var(--pwc-black); }
+.hero-date { font-size: 1.1rem; color: var(--pwc-grey-500); margin: 0 0 1rem; }
+.lead { font-size: 1rem; color: var(--pwc-grey-700); max-width: 52ch; }
+.hero-visual img { width: 100%; max-height: 200px; object-fit: contain; }
+.hero-badge {
+  width: 120px; height: 120px;
+  background: var(--pwc-orange);
+  color: var(--pwc-white);
+  font-size: 2rem;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  margin: 0 auto;
+}
+
+.page-header { margin-bottom: 1.5rem; border-bottom: 2px solid var(--pwc-orange); padding-bottom: 1rem; }
+.page-header h1 { font-size: 1.75rem; margin: 0 0 0.35rem; }
+.subtitle { color: var(--pwc-grey-500); font-size: 1rem; margin: 0; }
+
+.content-section {
+  background: var(--pwc-white);
+  border: 1px solid var(--pwc-grey-200);
+  padding: 1.75rem;
+  margin-bottom: 1.25rem;
+}
+.content-section h2 { margin-top: 0; font-size: 1.15rem; color: var(--pwc-black); }
+.sections-stack { display: flex; flex-direction: column; gap: 1.5rem; }
+.topic-section { border-left: 3px solid var(--pwc-orange); padding-left: 1.25rem; }
+.topic-section h2 { font-size: 1.1rem; margin: 0 0 0.5rem; font-family: var(--font-serif); }
+.topic-section p { margin: 0; color: var(--pwc-grey-700); }
+
+.agenda-link {
+  background: none; border: none; padding: 0; font: inherit;
+  color: var(--pwc-black); cursor: pointer; text-align: left;
+}
+.agenda-link:hover { color: var(--pwc-orange); text-decoration: underline; }
+.agenda-numbered { counter-reset: agenda; }
+.agenda-numbered li {
+  counter-increment: agenda;
+  padding: 0.75rem 0 0.75rem 2.5rem;
+  border-bottom: 1px solid var(--pwc-grey-200);
+  position: relative;
+}
+.agenda-numbered li::before {
+  content: counter(agenda);
+  position: absolute; left: 0;
+  width: 1.75rem; height: 1.75rem;
+  background: var(--pwc-orange);
+  color: var(--pwc-white);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; font-weight: 700;
+}
+.check-list { padding-left: 1.25rem; }
+.check-list li { margin-bottom: 0.5rem; }
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+.gallery-item { margin: 0; overflow: hidden; border: 1px solid var(--pwc-grey-200); }
+.gallery-item img { width: 100%; display: block; }
+
+.people-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+}
+.person-card {
+  text-align: center;
+  padding: 1.25rem;
+  border: 1px solid var(--pwc-grey-200);
+  background: var(--pwc-grey-100);
+}
+.avatar {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--pwc-orange);
+  color: var(--pwc-white);
+  font-size: 1.25rem;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 0.75rem;
+}
+.person-card h3 { margin: 0 0 0.25rem; font-size: 0.9rem; font-family: var(--font-sans); }
+.role { color: var(--pwc-grey-500); font-size: 0.8rem; margin: 0; }
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+.profile-card {
+  border: 1px solid var(--pwc-grey-200);
+  padding: 1.25rem;
+  background: var(--pwc-grey-100);
+}
+.fun-fact { font-size: 0.9rem; color: var(--pwc-orange); }
+.section-intro { color: var(--pwc-grey-500); }
+.muted { color: var(--pwc-grey-500); }
+
+.qa-panel .qa-form { display: grid; gap: 1rem; margin-bottom: 2rem; }
+.qa-panel label { display: grid; gap: 0.35rem; font-weight: 600; font-size: 0.9rem; }
+.qa-panel input, .qa-panel textarea {
+  font: inherit; padding: 0.65rem 0.85rem;
+  border: 1px solid var(--pwc-grey-200); border-radius: var(--radius);
+}
+.btn-primary, .qa-panel button {
+  justify-self: start;
+  background: var(--pwc-orange);
+  color: var(--pwc-white);
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.65rem 1.5rem;
+  font: inherit; font-weight: 600; cursor: pointer;
+}
+.btn-primary:hover, .qa-panel button:hover { background: var(--pwc-orange-dark); }
+.qa-item {
+  border: 1px solid var(--pwc-grey-200);
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  background: var(--pwc-grey-100);
+}
+
+.site-footer {
+  border-top: 3px solid var(--pwc-orange);
+  background: var(--pwc-black);
+  color: rgba(255,255,255,0.6);
+  padding: 1.5rem;
+  text-align: center;
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 800px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 1.5rem; }
+  .header-inner { flex-direction: column; align-items: flex-start; padding: 0.75rem 1rem; }
+  .practice-name { border-left: none; padding-left: 0; }
+}
+</style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-accent"></div>
+    <div class="header-inner">
+      <div class="brand">
+        <span class="pwc-logo">pwc</span>
+        <span class="practice-name">Oracle Data & Analytics</span>
+      </div>
+      <nav class="tab-nav" role="tablist"><button class="tab-btn active" data-tab="home" type="button">Home</button><button class="tab-btn" data-tab="fy26-recap" type="button">FY26 Recap</button><button class="tab-btn" data-tab="people" type="button">People</button><button class="tab-btn" data-tab="fy27-kickoff" type="button">FY27 Kickoff</button><button class="tab-btn" data-tab="operating-model" type="button">Operating Model</button><button class="tab-btn" data-tab="vision" type="button">Vision &amp; Sub-Caps</button><button class="tab-btn" data-tab="pipeline" type="button">Pipeline</button><button class="tab-btn" data-tab="learning" type="button">Learning</button><button class="tab-btn" data-tab="qa" type="button">Q&amp;A</button></nav>
+    </div>
+  </header>
+  <main class="site-main"><div class="tab-panel active" id="panel-home" role="tabpanel">
+    <section class="hero">
+      <div class="hero-text">
+        <p class="eyebrow">PwC · Oracle Data & Analytics</p>
+        <h1>Oracle D&amp;A All Hands</h1>
+        <p class="hero-date">July 2026 · First All Hands of FY27</p>
+        <p class="lead">Welcome to the Oracle Data &amp; Analytics FY27 all-hands. Everything you need for today's session is right here — use the tabs above to follow along live with the team.</p>
+      </div>
+      <div class="hero-visual"><img src="assets/slide-1-image2.svg" alt="Oracle D&amp;A" loading="lazy" /></div>
+    </section>
+    <section class="content-section">
+      <h2>Session overview</h2>
+      <ol class="agenda-list agenda-numbered"><li><button type="button" class="agenda-link" data-goto="fy26-recap">FY26 recap</button></li><li><button type="button" class="agenda-link" data-goto="people">Team moments</button></li><li><button type="button" class="agenda-link" data-goto="fy27-kickoff">FY27 kickoff</button></li><li><button type="button" class="agenda-link" data-goto="operating-model">Operating model and team alignment</button></li><li><button type="button" class="agenda-link" data-goto="vision">Revisit sub-cap and prac -op groups and vision</button></li><li><button type="button" class="agenda-link" data-goto="pipeline">Pipeline, oppts , projects</button></li><li><button type="button" class="agenda-link" data-goto="learning">Claude partner basecamp training recap and learnings</button></li><li><button type="button" class="agenda-link" data-goto="learning">Upcoming trainings</button></li><li><button type="button" class="agenda-link" data-goto="learning">SF training, firm shutdown pics</button></li><li><button type="button" class="agenda-link" data-goto="qa">Q&amp;A</button></li></ol>
+    </section></div><div class="tab-panel" id="panel-fy26-recap" role="tabpanel">
+    <section class="page-header">
+      <h1>FY26 Recap</h1>
+      <p class="lead">We open by looking back at FY26 — celebrating what we delivered as a practice, the momentum we built, and the foundation we carry into FY27.</p>
+    </section>
+    <section class="content-section sections-stack">
+      <article class="topic-section">
+        <h2>FY26 recap</h2>
+        <p>Review FY26 highlights including client impact, practice growth, delivery excellence, and key milestones across Oracle D&amp;A.</p>
+      </article></section>
+    </div><div class="tab-panel" id="panel-people" role="tabpanel">
+    <section class="page-header">
+      <h1>People</h1>
+      <p class="lead">Our people are at the center of everything we do. This section highlights team moments, promotions, and the colleagues who make Oracle D&amp;A strong.</p>
+    </section>
+    <section class="content-section sections-stack">
+      <article class="topic-section">
+        <h2>Team moments</h2>
+        <p>Celebrate promotions and team moments that reflect our culture — recognising colleagues who stepped up and connections that strengthen our global team.</p>
+      </article></section>
+    
+    
+    </div><div class="tab-panel" id="panel-fy27-kickoff" role="tabpanel">
+    <section class="page-header">
+      <h1>FY27 Kickoff</h1>
+      <p class="lead">FY27 is here. This section sets our direction for the year ahead — priorities, expectations, and how we win together as a practice.</p>
+    </section>
+    <section class="content-section sections-stack">
+      <article class="topic-section">
+        <h2>FY27 kickoff</h2>
+        <p>Set the tone for FY27 with our kickoff priorities, strategic focus areas, and what success looks like for the year ahead.</p>
+      </article></section>
+    </div><div class="tab-panel" id="panel-operating-model" role="tabpanel">
+    <section class="page-header">
+      <h1>Operating Model</h1>
+      <p class="lead">How we operate matters as much as what we deliver. Here we align on our operating model, team structure, and how we work across the practice.</p>
+    </section>
+    <section class="content-section sections-stack">
+      <article class="topic-section">
+        <h2>Operating model and team alignment</h2>
+        <p>Align on how the practice is structured, how teams collaborate, and what the operating model means for day-to-day delivery and client engagement.</p>
+      </article></section>
+    </div><div class="tab-panel" id="panel-vision" role="tabpanel">
+    <section class="page-header">
+      <h1>Vision &amp; Sub-Caps</h1>
+      <p class="lead">Our sub-capabilities and practice operating groups define how we go to market. We revisit our vision and how each team contributes to FY27 goals.</p>
+    </section>
+    <section class="content-section sections-stack">
+      <article class="topic-section">
+        <h2>Revisit sub-cap and prac -op groups and vision</h2>
+        <p>Revisit our sub-capability and practice operating group structure, clarifying vision, ownership, and how each group drives FY27 outcomes.</p>
+      </article></section>
+    </div><div class="tab-panel" id="panel-pipeline" role="tabpanel">
+    <section class="page-header">
+      <h1>Pipeline</h1>
+      <p class="lead">A strong pipeline fuels our growth. We review current opportunities, active projects, and where we are focused across the portfolio.</p>
+    </section>
+    <section class="content-section sections-stack">
+      <article class="topic-section">
+        <h2>Pipeline, oppts , projects</h2>
+        <p>Walk through the current pipeline and project landscape — where we see demand, what is in flight, and how we are positioning for growth.</p>
+      </article></section>
+    </div><div class="tab-panel" id="panel-learning" role="tabpanel">
+    <section class="page-header">
+      <h1>Learning</h1>
+      <p class="lead">Continuous learning keeps us ahead. From AI partner training to upcoming programs, here is how we are investing in our team's growth.</p>
+    </section>
+    <section class="content-section sections-stack">
+      <article class="topic-section">
+        <h2>Claude partner basecamp training recap and learnings</h2>
+        <p>Recap key learnings from the Claude partner basecamp training — practical takeaways, partner capabilities, and how we apply them with clients.</p>
+      </article>
+      <article class="topic-section">
+        <h2>Upcoming trainings</h2>
+        <p>Preview upcoming training programs and learning paths available to the team in FY27.</p>
+      </article>
+      <article class="topic-section">
+        <h2>SF training, firm shutdown pics</h2>
+        <p>Share highlights from Salesforce training and firm shutdown activities — team photos, moments, and connections from recent events.</p>
+      </article></section>
+    </div><div class="tab-panel" id="panel-qa" role="tabpanel">
+    <section class="page-header">
+      <h1>Q&amp;A</h1>
+      <p class="subtitle">We're all ears — ask away!</p>
+      <p class="lead">Have a question for leadership? Submit it here during the session. Questions appear live for the team to see and discuss.</p>
+    </section>
+    <section class="content-section qa-panel">
+      <form id="qa-form" class="qa-form" onsubmit="return false;">
+        <label>Your name <input type="text" id="qa-name" placeholder="Optional" /></label>
+        <label>Your question <textarea id="qa-text" rows="4" placeholder="Type your question…"></textarea></label>
+        <button type="button" id="qa-submit" class="btn-primary">Submit question</button>
+      </form>
+      <div id="qa-list" class="qa-list">
+        <p class="muted">Questions submitted during the call will appear here.</p>
+      </div>
+    </section></div></main>
+  <footer class="site-footer">© 2026 PwC. All rights reserved. PwC refers to the PwC network and/or one or more of its member firms, each of which is a separate legal entity. Please see www.pwc.com/structure for further details.</footer>
+  <script>
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.tab;
+        document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('panel-' + id).classList.add('active');
+        history.replaceState(null, '', '#' + id);
+      });
+    });
+    const hash = location.hash.slice(1);
+    if (hash) {
+      const btn = document.querySelector('[data-tab="' + hash + '"]');
+      if (btn) btn.click();
+    }
+    function goToTab(id) {
+      const btn = document.querySelector('[data-tab="' + id + '"]');
+      if (btn) { btn.click(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    }
+    document.querySelectorAll('.agenda-link').forEach(link => {
+      link.addEventListener('click', () => goToTab(link.dataset.goto));
+    });
+    const qaSubmit = document.getElementById('qa-submit');
+    if (qaSubmit) {
+      const list = document.getElementById('qa-list');
+      const questions = [];
+      qaSubmit.addEventListener('click', () => {
+        const name = document.getElementById('qa-name').value.trim() || 'Anonymous';
+        const text = document.getElementById('qa-text').value.trim();
+        if (!text) return;
+        questions.push({ name, text });
+        document.getElementById('qa-text').value = '';
+        list.innerHTML = questions.map(q =>
+          '<article class="qa-item"><strong>' + q.name + '</strong><p>' + q.text + '</p></article>'
+        ).join('');
+      });
+    }
+  </script>
+</body>
+</html>

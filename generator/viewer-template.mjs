@@ -1,4 +1,4 @@
-/** Tabbed website HTML renderer for all-hands sessions. */
+/** Tabbed website HTML renderer — PwC branded, dynamic tabs. */
 
 import fs from "fs";
 import path from "path";
@@ -19,64 +19,64 @@ function imgTag(src, alt, assetPrefix) {
 
 function renderHome(tab, assetPrefix) {
   const agenda = (tab.agenda || [])
-    .map((item) => `<li>${escapeHtml(item)}</li>`)
+    .map((item) => {
+      const label = typeof item === "string" ? item : item.label;
+      const tabId = typeof item === "object" ? item.tabId : null;
+      if (tabId) {
+        return `<li><button type="button" class="agenda-link" data-goto="${escapeHtml(tabId)}">${escapeHtml(label)}</button></li>`;
+      }
+      return `<li>${escapeHtml(label)}</li>`;
+    })
     .join("");
   const heroImg = tab.images?.[0] ? imgTag(tab.images[0].src, "Oracle D&A", assetPrefix) : "";
 
   return `
     <section class="hero">
       <div class="hero-text">
-        <p class="eyebrow">Oracle Data & Analytics</p>
+        <p class="eyebrow">PwC · Oracle Data & Analytics</p>
         <h1>${escapeHtml(tab.headline)}</h1>
         <p class="hero-date">${escapeHtml(tab.subheadline)}</p>
         <p class="lead">${escapeHtml(tab.intro)}</p>
       </div>
-      <div class="hero-visual">${heroImg}</div>
+      <div class="hero-visual">${heroImg || '<div class="hero-badge">FY27</div>'}</div>
     </section>
     <section class="content-section">
-      <h2>Today's agenda</h2>
-      <ul class="agenda-list">${agenda}</ul>
+      <h2>Session overview</h2>
+      <ol class="agenda-list agenda-numbered">${agenda}</ol>
     </section>`;
 }
 
-function renderStrategy(tab, assetPrefix) {
-  const pillars = (tab.pillars || [])
+function renderSections(sections) {
+  if (!sections?.length) return "";
+  return sections
     .map(
-      (p) => `
-      <article class="pillar-card">
-        <span class="pillar-tag">${escapeHtml(p.pillar)}</span>
-        <h3>${escapeHtml(p.theme)}</h3>
-        <p>${escapeHtml(p.detail || "Expanding our impact in FY26.")}</p>
+      (sec) => `
+      <article class="topic-section">
+        <h2>${escapeHtml(sec.title)}</h2>
+        <p>${escapeHtml(sec.body)}</p>
       </article>`
     )
     .join("");
+}
 
-  const highlights = (tab.highlights || [])
-    .map((h) => `<li>${escapeHtml(h)}</li>`)
+function renderContentTab(tab, assetPrefix) {
+  const sectionsHtml = renderSections(tab.sections);
+  const details = (tab.detailPoints || [])
+    .map((b) => `<li>${escapeHtml(b)}</li>`)
     .join("");
+  const detailHtml = details ? `<ul class="check-list">${details}</ul>` : "";
 
-  const imgs = (tab.images || [])
-    .slice(0, 3)
-    .map((i) => `<div class="media-card">${imgTag(i.src, i.alt, assetPrefix)}</div>`)
+  const gallery = (tab.images || [])
+    .map((i) => `<figure class="gallery-item">${imgTag(i.src, i.alt, assetPrefix)}</figure>`)
     .join("");
 
   return `
     <section class="page-header">
       <h1>${escapeHtml(tab.headline)}</h1>
-      <p class="subtitle">${escapeHtml(tab.subheadline)}</p>
       ${tab.intro ? `<p class="lead">${escapeHtml(tab.intro)}</p>` : ""}
     </section>
-    <section class="content-section">
-      <h2>Strategic pillars</h2>
-      <div class="pillar-grid">${pillars}</div>
-    </section>
-    <section class="content-section two-col">
-      <div>
-        <h2>New in FY26</h2>
-        <ul class="check-list">${highlights}</ul>
-      </div>
-      <div class="media-grid">${imgs}</div>
-    </section>`;
+    <section class="content-section sections-stack">${sectionsHtml}${detailHtml}</section>
+    ${gallery ? `<section class="content-section"><div class="gallery">${gallery}</div></section>` : ""}`;
 }
 
 function renderPeople(tab, assetPrefix) {
@@ -87,112 +87,51 @@ function renderPeople(tab, assetPrefix) {
         <div class="avatar">${escapeHtml(p.name.charAt(0))}</div>
         <h3>${escapeHtml(p.name)}</h3>
         <p class="role">${escapeHtml(p.title)}</p>
-        <span class="badge">FY26 Promotion</span>
       </article>`
     )
     .join("");
 
-  const rockstars = (tab.rockstars || [])
+  const profiles = (tab.profiles || [])
     .map(
       (r) => `
       <article class="profile-card">
         <h3>${escapeHtml(r.name)}</h3>
-        <p class="role">${escapeHtml(r.role)}</p>
+        ${r.role ? `<p class="role">${escapeHtml(r.role)}</p>` : ""}
         ${r.funFact ? `<p class="fun-fact"><strong>Fun fact:</strong> ${escapeHtml(r.funFact)}</p>` : ""}
         ${r.bio ? `<p>${escapeHtml(r.bio)}</p>` : ""}
       </article>`
     )
     .join("");
 
-  const retirees = (tab.retirees || []).map((n) => `<span class="chip">${escapeHtml(n)}</span>`).join("");
-
-  return `
-    <section class="page-header">
-      <h1>${escapeHtml(tab.headline)}</h1>
-      <p class="subtitle">${escapeHtml(tab.subheadline)}</p>
-    </section>
-    <section class="content-section">
-      <h2>FY26 Promotions</h2>
-      <p class="section-intro">Congratulations to all our FY26 D&A promotes!</p>
-      <div class="people-grid">${promos}</div>
-      ${
-        retirees
-          ? `<div class="retirees"><h3>Celebrating retirement</h3><div class="chips">${retirees}</div></div>`
-          : ""
-      }
-    </section>
-    <section class="content-section">
-      <h2>New team members</h2>
-      <div class="profile-grid">${rockstars}</div>
-    </section>`;
-}
-
-function renderMoments(tab, assetPrefix) {
   const gallery = (tab.images || [])
-    .map(
-      (i, idx) => `
-      <figure class="gallery-item">
-        ${imgTag(i.src, i.alt, assetPrefix)}
-        ${tab.captions?.[idx] ? `<figcaption>${escapeHtml(tab.captions[idx])}</figcaption>` : ""}
-      </figure>`
-    )
+    .map((i) => `<figure class="gallery-item">${imgTag(i.src, i.alt, assetPrefix)}</figure>`)
     .join("");
 
-  const captions = (tab.captions || [])
-    .map((c) => `<li>${escapeHtml(c)}</li>`)
-    .join("");
+  const sectionsHtml = renderSections(tab.sections);
 
   return `
     <section class="page-header">
       <h1>${escapeHtml(tab.headline)}</h1>
-      <p class="subtitle">${escapeHtml(tab.subheadline)}</p>
+      ${tab.intro ? `<p class="lead">${escapeHtml(tab.intro)}</p>` : ""}
     </section>
-    <section class="content-section">
-      <ul class="moments-list">${captions}</ul>
-      <div class="gallery">${gallery}</div>
-    </section>`;
-}
-
-function renderLearning(tab, assetPrefix) {
-  const initiatives = (tab.initiatives || [])
-    .map((i) => `<li>${escapeHtml(i)}</li>`)
-    .join("");
-  const stats = (tab.stats || [])
-    .map((s) => `<div class="stat-card"><span>${escapeHtml(s)}</span></div>`)
-    .join("");
-  const body = (tab.body || []).map((p) => `<p>${escapeHtml(p)}</p>`).join("");
-
-  return `
-    <section class="page-header">
-      <h1>${escapeHtml(tab.headline)}</h1>
-      <p class="subtitle">${escapeHtml(tab.subheadline)}</p>
-    </section>
-    <section class="content-section two-col">
-      <div>
-        <h2>FY26 initiatives</h2>
-        <ul class="check-list">${initiatives}</ul>
-        ${body}
-      </div>
-      <div>
-        <h2>Certification progress</h2>
-        <div class="stats-grid">${stats}</div>
-        ${tab.images?.[0] ? `<div class="media-card">${imgTag(tab.images[0].src, "", assetPrefix)}</div>` : ""}
-      </div>
-    </section>`;
+    ${sectionsHtml ? `<section class="content-section sections-stack">${sectionsHtml}</section>` : ""}
+    ${promos ? `<section class="content-section"><h2>Promotions</h2><div class="people-grid">${promos}</div></section>` : ""}
+    ${profiles.length ? `<section class="content-section"><h2>Team highlights</h2><div class="profile-grid">${profiles}</div></section>` : ""}
+    ${gallery ? `<section class="content-section"><div class="gallery">${gallery}</div></section>` : ""}`;
 }
 
 function renderQa(tab) {
   return `
     <section class="page-header">
-      <h1>${escapeHtml(tab.headline)}</h1>
-      <p class="subtitle">${escapeHtml(tab.subheadline)}</p>
-      <p class="lead">${escapeHtml(tab.intro)}</p>
+      <h1>${escapeHtml(tab.headline || "Q&A")}</h1>
+      <p class="subtitle">${escapeHtml(tab.subheadline || "We're all ears — ask away!")}</p>
+      <p class="lead">${escapeHtml(tab.intro || "Submit your questions during the live all-hands session.")}</p>
     </section>
     <section class="content-section qa-panel">
       <form id="qa-form" class="qa-form" onsubmit="return false;">
         <label>Your name <input type="text" id="qa-name" placeholder="Optional" /></label>
         <label>Your question <textarea id="qa-text" rows="4" placeholder="Type your question…"></textarea></label>
-        <button type="button" id="qa-submit">Submit question</button>
+        <button type="button" id="qa-submit" class="btn-primary">Submit question</button>
       </form>
       <div id="qa-list" class="qa-list">
         <p class="muted">Questions submitted during the call will appear here.</p>
@@ -200,82 +139,47 @@ function renderQa(tab) {
     </section>`;
 }
 
-function renderResources(tab, assetPrefix) {
-  return (tab.sections || [])
-    .map((sec) => {
-      const bullets = (sec.bullets || [])
-        .slice(0, 16)
-        .map((b) => `<li>${escapeHtml(b)}</li>`)
-        .join("");
-      const imgs = (sec.images || [])
-        .slice(0, 2)
-        .map((i) => imgTag(i.src, i.alt, assetPrefix))
-        .join("");
-      return `
-        <section class="content-section resource-block">
-          <h2>${escapeHtml(sec.title)}</h2>
-          <div class="two-col">
-            <ul class="resource-list">${bullets}</ul>
-            <div>${imgs}</div>
-          </div>
-        </section>`;
-    })
-    .join("");
-}
-
 function renderTabPanel(tab, assetPrefix) {
-  switch (tab.id) {
-    case "home":
-      return renderHome(tab, assetPrefix);
-    case "strategy":
-      return renderStrategy(tab, assetPrefix);
-    case "people":
-      return renderPeople(tab, assetPrefix);
-    case "moments":
-      return renderMoments(tab, assetPrefix);
-    case "learning":
-      return renderLearning(tab, assetPrefix);
-    case "qa":
-      return renderQa(tab);
-    case "resources":
-      return `<section class="page-header"><h1>${escapeHtml(tab.headline)}</h1><p class="subtitle">${escapeHtml(tab.subheadline)}</p></section>${renderResources(tab, assetPrefix)}`;
-    default:
-      return `<section class="content-section"><p>Content coming soon.</p></section>`;
-  }
+  if (tab.id === "home") return renderHome(tab, assetPrefix);
+  if (tab.id === "qa" || tab.interactive) return renderQa(tab);
+  if (tab.id === "people") return renderPeople(tab, assetPrefix);
+  return renderContentTab(tab, assetPrefix);
 }
 
 const SITE_CSS = `
 :root {
-  --orange: #fd5108;
-  --orange-light: #ffaa72;
-  --ink: #1a1a2e;
-  --muted: #5c6578;
-  --bg: #f7f8fa;
-  --surface: #ffffff;
-  --border: #e2e6ed;
-  --shadow: 0 4px 24px rgba(26, 26, 46, 0.08);
-  --radius: 12px;
-  --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+  --pwc-orange: #FD5108;
+  --pwc-orange-dark: #D04A02;
+  --pwc-orange-tint: #FFF5ED;
+  --pwc-black: #000000;
+  --pwc-white: #FFFFFF;
+  --pwc-grey-700: #474747;
+  --pwc-grey-500: #736F6E;
+  --pwc-grey-200: #E8E8E8;
+  --pwc-grey-100: #F5F5F5;
+  --radius: 4px;
+  --font-serif: Georgia, "Times New Roman", serif;
+  --font-sans: Arial, Helvetica, sans-serif;
 }
 * { box-sizing: border-box; }
 body {
   margin: 0;
-  font-family: var(--font);
-  color: var(--ink);
-  background: var(--bg);
+  font-family: var(--font-sans);
+  color: var(--pwc-black);
+  background: var(--pwc-grey-100);
   line-height: 1.6;
 }
-a { color: var(--orange); text-decoration: none; }
+a { color: var(--pwc-orange); text-decoration: none; }
 a:hover { text-decoration: underline; }
+h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 
 .site-header {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
+  background: var(--pwc-black);
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 1px 8px rgba(0,0,0,0.04);
 }
+.header-accent { height: 4px; background: var(--pwc-orange); }
 .header-inner {
   max-width: 1200px;
   margin: 0 auto;
@@ -283,41 +187,45 @@ a:hover { text-decoration: underline; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  min-height: 64px;
+  gap: 1.5rem;
+  min-height: 60px;
 }
-.brand {
+.brand { display: flex; align-items: center; gap: 1rem; }
+.pwc-logo {
+  font-size: 1.75rem;
   font-weight: 700;
-  font-size: 1.1rem;
-  color: var(--ink);
-  white-space: nowrap;
+  color: var(--pwc-white);
+  letter-spacing: -0.02em;
+  font-family: var(--font-sans);
 }
-.brand span { color: var(--orange); }
+.practice-name {
+  color: rgba(255,255,255,0.75);
+  font-size: 0.85rem;
+  border-left: 1px solid rgba(255,255,255,0.25);
+  padding-left: 1rem;
+}
 
 .tab-nav {
   display: flex;
-  gap: 0.25rem;
+  gap: 0.15rem;
   overflow-x: auto;
-  padding: 0.5rem 0;
+  padding: 0.35rem 0;
 }
 .tab-btn {
   border: none;
   background: transparent;
-  color: var(--muted);
+  color: rgba(255,255,255,0.65);
   font: inherit;
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   font-weight: 600;
-  padding: 0.55rem 1rem;
-  border-radius: 999px;
+  padding: 0.5rem 0.85rem;
+  border-radius: var(--radius);
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.15s;
 }
-.tab-btn:hover { background: #fff3ec; color: var(--orange); }
-.tab-btn.active {
-  background: var(--orange);
-  color: #fff;
-}
+.tab-btn:hover { background: rgba(255,255,255,0.1); color: var(--pwc-white); }
+.tab-btn.active { background: var(--pwc-orange); color: var(--pwc-white); }
 
 .site-main {
   max-width: 1200px;
@@ -330,112 +238,110 @@ a:hover { text-decoration: underline; }
 
 .hero {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
+  grid-template-columns: 1.3fr 1fr;
   gap: 2rem;
   align-items: center;
-  background: linear-gradient(135deg, #fff 0%, #fff8f4 100%);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  background: var(--pwc-white);
+  border-left: 4px solid var(--pwc-orange);
   padding: 2.5rem;
-  margin-bottom: 2rem;
-  box-shadow: var(--shadow);
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
 }
 .eyebrow {
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  font-size: 0.7rem;
   font-weight: 700;
-  color: var(--orange);
-  margin: 0 0 0.5rem;
+  color: var(--pwc-orange);
+  margin: 0 0 0.75rem;
 }
-.hero h1 { font-size: 2.5rem; margin: 0 0 0.25rem; line-height: 1.15; }
-.hero-date { font-size: 1.25rem; color: var(--muted); margin: 0 0 1rem; }
-.lead { font-size: 1.05rem; color: var(--muted); max-width: 52ch; }
-.hero-visual img { width: 100%; max-height: 220px; object-fit: contain; }
+.hero h1 { font-size: 2.25rem; margin: 0 0 0.35rem; line-height: 1.2; color: var(--pwc-black); }
+.hero-date { font-size: 1.1rem; color: var(--pwc-grey-500); margin: 0 0 1rem; }
+.lead { font-size: 1rem; color: var(--pwc-grey-700); max-width: 52ch; }
+.hero-visual img { width: 100%; max-height: 200px; object-fit: contain; }
+.hero-badge {
+  width: 120px; height: 120px;
+  background: var(--pwc-orange);
+  color: var(--pwc-white);
+  font-size: 2rem;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  margin: 0 auto;
+}
 
-.page-header { margin-bottom: 2rem; }
-.page-header h1 { font-size: 2rem; margin: 0 0 0.35rem; }
-.subtitle { color: var(--muted); font-size: 1.1rem; margin: 0; }
+.page-header { margin-bottom: 1.5rem; border-bottom: 2px solid var(--pwc-orange); padding-bottom: 1rem; }
+.page-header h1 { font-size: 1.75rem; margin: 0 0 0.35rem; }
+.subtitle { color: var(--pwc-grey-500); font-size: 1rem; margin: 0; }
 
 .content-section {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  background: var(--pwc-white);
+  border: 1px solid var(--pwc-grey-200);
   padding: 1.75rem;
-  margin-bottom: 1.5rem;
-  box-shadow: var(--shadow);
+  margin-bottom: 1.25rem;
 }
-.content-section h2 { margin-top: 0; font-size: 1.25rem; }
+.content-section h2 { margin-top: 0; font-size: 1.15rem; color: var(--pwc-black); }
+.sections-stack { display: flex; flex-direction: column; gap: 1.5rem; }
+.topic-section { border-left: 3px solid var(--pwc-orange); padding-left: 1.25rem; }
+.topic-section h2 { font-size: 1.1rem; margin: 0 0 0.5rem; font-family: var(--font-serif); }
+.topic-section p { margin: 0; color: var(--pwc-grey-700); }
 
-.two-col {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  align-items: start;
+.agenda-link {
+  background: none; border: none; padding: 0; font: inherit;
+  color: var(--pwc-black); cursor: pointer; text-align: left;
 }
-.agenda-list, .check-list, .moments-list, .resource-list {
-  padding-left: 1.25rem;
+.agenda-link:hover { color: var(--pwc-orange); text-decoration: underline; }
+.agenda-numbered { counter-reset: agenda; }
+.agenda-numbered li {
+  counter-increment: agenda;
+  padding: 0.75rem 0 0.75rem 2.5rem;
+  border-bottom: 1px solid var(--pwc-grey-200);
+  position: relative;
 }
-.agenda-list li, .check-list li { margin-bottom: 0.5rem; }
+.agenda-numbered li::before {
+  content: counter(agenda);
+  position: absolute; left: 0;
+  width: 1.75rem; height: 1.75rem;
+  background: var(--pwc-orange);
+  color: var(--pwc-white);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; font-weight: 700;
+}
+.check-list { padding-left: 1.25rem; }
+.check-list li { margin-bottom: 0.5rem; }
 
-.pillar-grid {
+.gallery {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 1rem;
 }
-.pillar-card {
-  background: #fff8f4;
-  border: 1px solid #ffe0cc;
-  border-radius: var(--radius);
-  padding: 1.25rem;
-}
-.pillar-tag {
-  display: inline-block;
-  background: var(--orange);
-  color: #fff;
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 0.2rem 0.6rem;
-  border-radius: 999px;
-  margin-bottom: 0.5rem;
-}
-.pillar-card h3 { margin: 0.35rem 0; font-size: 1rem; }
-.pillar-card p { margin: 0; font-size: 0.9rem; color: var(--muted); }
+.gallery-item { margin: 0; overflow: hidden; border: 1px solid var(--pwc-grey-200); }
+.gallery-item img { width: 100%; display: block; }
 
 .people-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 1rem;
 }
 .person-card {
   text-align: center;
   padding: 1.25rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: #fafbfc;
+  border: 1px solid var(--pwc-grey-200);
+  background: var(--pwc-grey-100);
 }
 .avatar {
-  width: 56px; height: 56px;
+  width: 48px; height: 48px;
   border-radius: 50%;
-  background: var(--orange);
-  color: #fff;
-  font-size: 1.5rem;
+  background: var(--pwc-orange);
+  color: var(--pwc-white);
+  font-size: 1.25rem;
   font-weight: 700;
   display: flex; align-items: center; justify-content: center;
   margin: 0 auto 0.75rem;
 }
-.person-card h3 { margin: 0 0 0.25rem; font-size: 0.95rem; }
-.role { color: var(--muted); font-size: 0.85rem; margin: 0 0 0.5rem; }
-.badge {
-  display: inline-block;
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  background: #e8f5e9;
-  color: #2e7d32;
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
-}
+.person-card h3 { margin: 0 0 0.25rem; font-size: 0.9rem; font-family: var(--font-sans); }
+.role { color: var(--pwc-grey-500); font-size: 0.8rem; margin: 0; }
 
 .profile-grid {
   display: grid;
@@ -443,106 +349,57 @@ a:hover { text-decoration: underline; }
   gap: 1rem;
 }
 .profile-card {
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border: 1px solid var(--pwc-grey-200);
   padding: 1.25rem;
-  background: #fafbfc;
+  background: var(--pwc-grey-100);
 }
-.profile-card h3 { margin: 0 0 0.25rem; }
-.fun-fact { font-size: 0.9rem; color: var(--orange); }
+.fun-fact { font-size: 0.9rem; color: var(--pwc-orange); }
+.section-intro { color: var(--pwc-grey-500); }
+.muted { color: var(--pwc-grey-500); }
 
-.gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 1rem;
-  margin-top: 1rem;
-}
-.gallery-item {
-  margin: 0;
-  border-radius: var(--radius);
-  overflow: hidden;
-  border: 1px solid var(--border);
-}
-.gallery-item img { width: 100%; display: block; aspect-ratio: 4/3; object-fit: cover; }
-.gallery-item figcaption { padding: 0.75rem; font-size: 0.85rem; background: #fafbfc; }
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 0.75rem;
-}
-.stat-card {
-  background: #fff3ec;
-  border-radius: 8px;
-  padding: 0.75rem;
-  text-align: center;
-  font-weight: 600;
-  font-size: 0.85rem;
-}
-
-.media-grid { display: grid; gap: 1rem; }
-.media-card img { width: 100%; border-radius: 8px; }
-
-.chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-.chip {
-  background: #eef2f7;
-  padding: 0.4rem 0.75rem;
-  border-radius: 999px;
-  font-size: 0.9rem;
-}
-.retirees { margin-top: 1.5rem; }
-.section-intro { color: var(--muted); }
-
-.qa-panel .qa-form {
-  display: grid;
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
+.qa-panel .qa-form { display: grid; gap: 1rem; margin-bottom: 2rem; }
 .qa-panel label { display: grid; gap: 0.35rem; font-weight: 600; font-size: 0.9rem; }
 .qa-panel input, .qa-panel textarea {
-  font: inherit;
-  padding: 0.65rem 0.85rem;
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  font: inherit; padding: 0.65rem 0.85rem;
+  border: 1px solid var(--pwc-grey-200); border-radius: var(--radius);
 }
-.qa-panel button {
+.btn-primary, .qa-panel button {
   justify-self: start;
-  background: var(--orange);
-  color: #fff;
+  background: var(--pwc-orange);
+  color: var(--pwc-white);
   border: none;
-  border-radius: 8px;
-  padding: 0.65rem 1.25rem;
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
+  border-radius: var(--radius);
+  padding: 0.65rem 1.5rem;
+  font: inherit; font-weight: 600; cursor: pointer;
 }
+.btn-primary:hover, .qa-panel button:hover { background: var(--pwc-orange-dark); }
 .qa-item {
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  border: 1px solid var(--pwc-grey-200);
   padding: 1rem;
   margin-bottom: 0.75rem;
-  background: #fafbfc;
+  background: var(--pwc-grey-100);
 }
-.muted { color: var(--muted); }
 
 .site-footer {
-  border-top: 1px solid var(--border);
-  background: var(--surface);
+  border-top: 3px solid var(--pwc-orange);
+  background: var(--pwc-black);
+  color: rgba(255,255,255,0.6);
   padding: 1.5rem;
   text-align: center;
-  font-size: 0.8rem;
-  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.5;
 }
 
 @media (max-width: 800px) {
-  .hero, .two-col { grid-template-columns: 1fr; }
-  .hero h1 { font-size: 1.75rem; }
-  .header-inner { flex-direction: column; align-items: stretch; }
+  .hero { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 1.5rem; }
+  .header-inner { flex-direction: column; align-items: flex-start; padding: 0.75rem 1rem; }
+  .practice-name { border-left: none; padding-left: 0; }
 }
 `;
 
 export function buildWebsiteHtml(session, sessionId, options = {}) {
-  const { assetPrefix = "assets/", standalone = true } = options;
+  const { assetPrefix = "assets/" } = options;
   const model = buildWebsiteModel(session, sessionId);
 
   const nav = model.tabs
@@ -564,26 +421,28 @@ export function buildWebsiteHtml(session, sessionId, options = {}) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${escapeHtml(model.title)}</title>
+  <title>${escapeHtml(model.title)} | PwC</title>
   <style>${SITE_CSS}</style>
 </head>
 <body>
   <header class="site-header">
+    <div class="header-accent"></div>
     <div class="header-inner">
-      <div class="brand">Oracle <span>D&A</span></div>
+      <div class="brand">
+        <span class="pwc-logo">pwc</span>
+        <span class="practice-name">Oracle Data & Analytics</span>
+      </div>
       <nav class="tab-nav" role="tablist">${nav}</nav>
     </div>
   </header>
   <main class="site-main">${panels}</main>
   <footer class="site-footer">${escapeHtml(model.footer)}</footer>
   <script>
-    const tabs = document.querySelectorAll('.tab-btn');
-    const panels = document.querySelectorAll('.tab-panel');
-    tabs.forEach(btn => {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const id = btn.dataset.tab;
-        tabs.forEach(t => t.classList.remove('active'));
-        panels.forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
         btn.classList.add('active');
         document.getElementById('panel-' + id).classList.add('active');
         history.replaceState(null, '', '#' + id);
@@ -594,7 +453,13 @@ export function buildWebsiteHtml(session, sessionId, options = {}) {
       const btn = document.querySelector('[data-tab="' + hash + '"]');
       if (btn) btn.click();
     }
-
+    function goToTab(id) {
+      const btn = document.querySelector('[data-tab="' + id + '"]');
+      if (btn) { btn.click(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    }
+    document.querySelectorAll('.agenda-link').forEach(link => {
+      link.addEventListener('click', () => goToTab(link.dataset.goto));
+    });
     const qaSubmit = document.getElementById('qa-submit');
     if (qaSubmit) {
       const list = document.getElementById('qa-list');
@@ -603,9 +468,9 @@ export function buildWebsiteHtml(session, sessionId, options = {}) {
         const name = document.getElementById('qa-name').value.trim() || 'Anonymous';
         const text = document.getElementById('qa-text').value.trim();
         if (!text) return;
-        questions.push({ name, text, votes: 0 });
+        questions.push({ name, text });
         document.getElementById('qa-text').value = '';
-        list.innerHTML = questions.map((q, i) =>
+        list.innerHTML = questions.map(q =>
           '<article class="qa-item"><strong>' + q.name + '</strong><p>' + q.text + '</p></article>'
         ).join('');
       });
@@ -616,7 +481,7 @@ export function buildWebsiteHtml(session, sessionId, options = {}) {
 }
 
 export function writeStandalonePreview(session, outputDir, sessionId) {
-  const html = buildWebsiteHtml(session, sessionId, { assetPrefix: "assets/", standalone: true });
+  const html = buildWebsiteHtml(session, sessionId, { assetPrefix: "assets/" });
   const previewPath = path.join(outputDir, "preview.html");
   const indexPath = path.join(outputDir, "index.html");
   fs.writeFileSync(previewPath, html);
@@ -624,7 +489,6 @@ export function writeStandalonePreview(session, outputDir, sessionId) {
   return previewPath;
 }
 
-// Keep legacy export name for preview-server
 export function buildViewerHtml(session, sessionId, options) {
   return buildWebsiteHtml(session, sessionId, options);
 }
