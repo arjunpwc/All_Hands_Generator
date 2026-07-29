@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 320" width="520" height="320">
+  <rect width="100%" height="100%" fill="#FFFFFF"/>
+  <path d="M 90 20 A 70 70 0 0 1 90 160 L 90 133.4 A 43.4 43.4 0 0 0 90 46.6 Z" fill="#EB8C00" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M 90 160 A 70 70 0 0 1 89.99999999999999 20 L 89.99999999999999 46.6 A 43.4 43.4 0 0 0 90 133.4 Z" fill="#E3E6EC" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round"/>
+  <text x="130" y="22" font-family="Georgia, serif" font-size="14" font-weight="700" fill="#000000">AI Adaptability</text>
+  
+</svg>

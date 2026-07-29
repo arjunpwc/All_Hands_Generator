@@ -1,7 +1,7 @@
 {
-  "title": "Oracle D&A July 26 All Hands",
+  "title": "Oracle D&A July '26 All Hands",
   "author": "",
-  "slide_count": 2,
+  "slide_count": 24,
   "slides": [
     {
       "index": 1,
@@ -35,13 +35,1046 @@
             "Team moments (promotions)",
             "FY27 kickoff",
             "Operating model and team alignment – Brad's slide",
-            "Revisit sub-cap and prac -op groups and vision",
+            "AI for value and management reporting focus (incl. sub cap / prac op visions)",
             "Pipeline, oppts , projects",
             "Claude partner basecamp training recap and learnings",
             "Upcoming trainings",
             "SF training, firm shutdown pics",
             "Q&A"
           ]
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "index": 3,
+      "title": "FY 26 recap",
+      "shapes": [
+        {
+          "type": "text",
+          "bullets": [
+            "FY 26 recap",
+            "1",
+            "Oracle D&A All Hands | July 2026",
+            "3"
+          ]
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "index": 4,
+      "title": "FY26 Financials, Headcount",
+      "shapes": [
+        {
+          "type": "text",
+          "bullets": [
+            "FY26 Financials, Headcount",
+            "Delivery, People & Financial Impact — FY'26",
+            "FY26 FINANCIALS",
+            "$43M",
+            "Revenue (Won Oppts)",
+            "TBD",
+            "Growth %",
+            "49",
+            "Projects Completed",
+            "39",
+            "Unique Clients",
+            "151",
+            "FY26 Headcount",
+            "Delivery $ — pending partner allocation. Partners to review FY25/FY26 contract $",
+            "INDUSTRY SPLIT OF PROJECTS",
+            "OUR CLIENTS",
+            "— 39 unique accounts, US & AC",
+            "Financial Services",
+            "34%",
+            "Technology, Media & Telecom",
+            "21%",
+            "Industrials & Services",
+            "18%",
+            "Health Industries",
+            "11%",
+            "Consumer Markets",
+            "11%",
+            "Energy, Utilities & Resources",
+            "5%",
+            "Munich Reinsurance America",
+            "Principal Financial Services",
+            "TD Bank National Association",
+            "Microsoft Corporation",
+            "Hewlett Packard Enterprise",
+            "Palo Alto Networks, Inc.",
+            "GE Vernova International",
+            "Lennar Homes LLC",
+            "Abbvie Inc",
+            "HealthPartners",
+            "QXO Inc",
+            "United Parcel Service, Inc.",
+            "Fermi Inc.",
+            "Arizona Public Service Co.",
+            "Oracle D&A All Hands | July 2026",
+            "7"
+          ]
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-4-industry-chart.svg",
+          "alt": "Industry Split of Projects",
+          "chart": true,
+          "chartRole": "industry"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "index": 5,
+      "title": "Oracle D&A AC Executive Summary",
+      "shapes": [
+        {
+          "type": "text",
+          "bullets": [
+            "Oracle D&A AC Executive Summary",
+            "Delivery, People & AI Impact — FY'26",
+            "DELIVERY IMPACT",
+            "40",
+            "Projects Delivered",
+            "80",
+            "People Employed",
+            "43",
+            "Assets Built",
+            "8",
+            "Assets Used in Projects",
+            "~1K",
+            "Hours Saved (PY'26)",
+            "TEAM SIZE GROWTH",
+            "+31.1% headcount",
+            "UTILIZATION TREND",
+            "AI CAPABILITY",
+            "24",
+            "AI Headcount",
+            "AI Skills Added",
+            "Prompt Engineering",
+            "GenAI Tooling",
+            "Agentic Workflows",
+            "ML Ops",
+            "LLM Evaluation",
+            "2",
+            "External Trainings",
+            "25",
+            "Internal Trainings",
+            "AI ADAPTABILITY",
+            "100%",
+            "AI Adaptability",
+            "OUR CLIENTS",
+            "PwC",
+            "9.15 /10",
+            "Engagement Satisfaction Survey (ESS)",
+            "Draft AC Highlights"
+          ]
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-5-image4.png",
+          "alt": "image4.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-5-image5.png",
+          "alt": "image5.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-5-image6.png",
+          "alt": "image6.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-5-image7.png",
+          "alt": "image7.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-5-image8.png",
+          "alt": "image8.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-5-image9.png",
+          "alt": "image9.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-5-image10.png",
+          "alt": "image10.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-5-image11.png",
+          "alt": "image11.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-5-image12.png",
+          "alt": "image12.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-5-image13.png",
+          "alt": "image13.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-5-image14.png",
+          "alt": "image14.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-5-image15.png",
+          "alt": "image15.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-5-image16.png",
+          "alt": "image16.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-5-image17.png",
+          "alt": "image17.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-5-image18.png",
+          "alt": "image18.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-5-image19.png",
+          "alt": "image19.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-5-image20.png",
+          "alt": "image20.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-5-image21.png",
+          "alt": "image21.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-5-image22.png",
+          "alt": "image22.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-5-image23.png",
+          "alt": "image23.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-5-image24.png",
+          "alt": "image24.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-5-image25.png",
+          "alt": "image25.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-5-image26.png",
+          "alt": "image26.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-5-team-size-chart.svg",
+          "alt": "Team Size Growth",
+          "chart": true,
+          "chartRole": "team-size"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-5-utilization-chart.svg",
+          "alt": "Utilization Trend",
+          "chart": true,
+          "chartRole": "utilization"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-5-ai-adaptability-chart.svg",
+          "alt": "AI Adaptability",
+          "chart": true,
+          "chartRole": "ai-adaptability"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "index": 6,
+      "title": "New Hires, Internal Transfers & Interns",
+      "shapes": [
+        {
+          "type": "text",
+          "bullets": [
+            "New Hires, Internal Transfers & Interns",
+            "FY26 Talent Movement",
+            "New Hire",
+            "Internal Transfer",
+            "Intern",
+            "Name",
+            "Management Level",
+            "Office City",
+            "Ruchir Patel",
+            "Director",
+            "Charlotte, NC",
+            "Vinodh Mohan",
+            "Senior Manager",
+            "Boston, MA",
+            "Saad Imam",
+            "Senior Manager",
+            "Chicago, IL",
+            "Ronak Pansara",
+            "Manager",
+            "Austin, TX",
+            "Anil Yanamandra",
+            "Manager",
+            "Indianapolis, IN",
+            "Yanal Sakaji",
+            "Manager",
+            "Tampa, FL",
+            "Paul Colucci",
+            "Manager",
+            "Chicago, IL",
+            "Govind Manoharan",
+            "Manager",
+            "Miami, FL",
+            "Jesus Ruvalcaba",
+            "Senior Associate",
+            "Washington, DC",
+            "Yash Jahagirdar",
+            "Senior Associate",
+            "Chicago, IL",
+            "Neel Doshi",
+            "Senior Associate",
+            "Irvine, CA",
+            "Mady Deb",
+            "Associate",
+            "Raleigh, NC",
+            "Shreyas Malhotra",
+            "Associate",
+            "Raleigh, NC",
+            "Anas Masri",
+            "Associate",
+            "Houston, TX",
+            "Samantha Garza",
+            "Intern",
+            "Dallas, TX",
+            "Scarlett Czarnecki",
+            "Intern",
+            "New York, NY",
+            "Oracle DA All Hands | July 2026",
+            "9"
+          ]
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-6-image27.png",
+          "alt": "image27.png"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "index": 7,
+      "title": "Abhishek Chetnani",
+      "shapes": [
+        {
+          "type": "text",
+          "bullets": [
+            "Abhishek Chetnani",
+            "Advisory | Managing Director | Mumbai",
+            "Oracle DA All Hands | July 2026",
+            "9",
+            "Abhishek Chetnani is a Managing Director in Oracle Finance Transformation, with deep expertise spanning solution architecture, AI enablement, and scaled Acceleration Center (AC) delivery.",
+            "He partners with clients to drive CFO-level outcomes through Oracle ERP, EPM, FDI, and reporting solutions, leading major transformation and expansion programs across Consumer Markets, Healthcare, Energy, and Financial Services. He has also scaled the Oracle EPM capability within the AC from 2 to 150+ professionals, building the delivery engine that now underpins the practice.",
+            "Abhishek has led & delivered enterprise-wide reporting solutions, including FDI, at large Healthcare clients such as LifePoint, Mayo Clinic, IU Health, and UW Health. He's known for stabilizing critical engagements and building repeatable, accelerator-led delivery models that others can scale.",
+            "Today, his focus is on advancing AI use cases in Finance & Analytics and integrating capabilities across platforms — elevating the AC's role from execution support to a strategic transformation partner.",
+            "Few Fun Facts - Loves to travel and chase new cuisines — food is basically how he explores a culture - Cherishes quality time with family above all else - A lifelong cricket enthusiast, equally happy playing a match or watching one",
+            "marbar"
+          ]
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-7-image28.jpeg",
+          "alt": "image28.jpeg"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "index": 8,
+      "title": "AC New Hires, Internal Transfers & Interns",
+      "shapes": [
+        {
+          "type": "text",
+          "bullets": [
+            "AC New Hires, Internal Transfers & Interns",
+            "Oracle DA All Hands | July 2026",
+            "9",
+            "Name",
+            "Management Level",
+            "Office City",
+            "Abhishek Chetani",
+            "Managing Director",
+            "Mumbai, IN",
+            "Aritra Roy",
+            "Manager",
+            "Bhawesh Chavan",
+            "Senior Associate",
+            "Ravindra Kannojiya",
+            "Manager",
+            "Richa khatana",
+            "Manager",
+            "Rajdip Paul",
+            "Senior Associate",
+            "Arpit Tiwari",
+            "Associate 2",
+            "Saket Katkar",
+            "Manager",
+            "Silky Khatun",
+            "Manager",
+            "Yogesh Borse",
+            "Senior Associate",
+            "Danieel Praabhu A",
+            "Associate 2",
+            "Abinesh Dhananjayan",
+            "Senior Associate",
+            "Parshv Jain",
+            "Senior Associate",
+            "Ashish Verma",
+            "Senior Associate",
+            "L Manjula",
+            "Senior Associate",
+            "Gunjan P",
+            "Senior Associate",
+            "Ramya Girish",
+            "Senior Associate",
+            "Anik Pathan",
+            "Senior Associate",
+            "Neeraj Paliwal",
+            "Senior Associate",
+            "Shah Jalpa Bharatkumar",
+            "Senior Manager",
+            "PRIYANKA ARORA",
+            "Senior Associate"
+          ]
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "index": 9,
+      "title": "FY27 Promotions",
+      "shapes": [
+        {
+          "type": "text",
+          "bullets": [
+            "FY27 Promotions",
+            "Congratulations to all our FY27 D&A promotes below!",
+            "Name",
+            "Capability",
+            "Office",
+            "Job Level Promoted To",
+            "Development Leader",
+            "Divya Thathu",
+            "D&A",
+            "Chicago – One North Wacker Dr",
+            "Director",
+            "Yeon Lee",
+            "Shierly Mondianti",
+            "D&A",
+            "New York – 300 Madison Ave",
+            "Director",
+            "Tojo Johnson",
+            "Christina Maurer",
+            "D&A",
+            "St. Louis – 6 Cardinal Way",
+            "Senior Manager",
+            "Ajeetha Menezes",
+            "Emily Zolkowski",
+            "D&A",
+            "Washington D.C - 655 New York Ave",
+            "Senior Manager",
+            "Ajeetha Menezes",
+            "Hemant Patil",
+            "D&A",
+            "Silicon Valley – 488 Almaden Blvd",
+            "Senior Manager",
+            "Brad Housour",
+            "Deepak M Chakrasali",
+            "D&A",
+            "Bangalore",
+            "Manager",
+            "Sujit Shaw",
+            "Rajeswari Chandu",
+            "D&A",
+            "Hyderabad",
+            "Manager",
+            "Sujit Shaw",
+            "Sai Keerthi Ramaraju",
+            "D&A",
+            "Hartford – CityPlace1. 185 Asylum street",
+            "Manager",
+            "Fania Georgiades",
+            "Souradeep Pramanik",
+            "D&A",
+            "Chicago – One North Wacker Dr",
+            "Manager",
+            "Rikin Parekh",
+            "Hannah Marcus",
+            "D&A",
+            "Boston - 101 Seaport Boulevard",
+            "Senior Associate",
+            "Rikin Parekh",
+            "Ritvik Rajeev",
+            "D&A",
+            "New York - 300 Madison Avenue",
+            "Senior Associate",
+            "Srikanth Vemula",
+            "Vatsala Singh",
+            "D&A",
+            "Gurugram",
+            "Senior Associate",
+            "Sahithi Kolasani",
+            "Oracle DA All Hands | July 2026",
+            "8"
+          ]
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "index": 10,
+      "title": "FY27 kickoff",
+      "shapes": [
+        {
+          "type": "text",
+          "bullets": [
+            "FY27 kickoff",
+            "2",
+            "Oracle D&A All Hands | July 2026",
+            "10"
+          ]
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "index": 11,
+      "title": "ORG DESIGN",
+      "shapes": [
+        {
+          "type": "text",
+          "bullets": [
+            "ORG DESIGN",
+            "The Structural Change: One Team",
+            "Data & Analytics and Technology merge into a single team. Within it, sub-pillars including the Oracle AI Tower, making data a strategic value enabler for our clients foundational for AI.",
+            "Leadership",
+            "TBD | Prashant Sharma",
+            "Judy Kim | Sujith Kumar | Nikhil Soni",
+            "Sunil Warier | Satyabrata Padhy",
+            "Engineering and Infrastructure",
+            "Data Modeling",
+            "Integrations & Extensions",
+            "Conversions",
+            "Infrastructure (OCI)",
+            "Application Engineering Development (AI Led)",
+            "Oracle Data solutions (e.g., OFSAA)",
+            "AI for Value",
+            "Innovation",
+            "Standards and Tooling",
+            "Complex AI Solution Design & Delivery",
+            "Value Engineering",
+            "Asset Industrialization Support",
+            "( Close collaboration with DCM Project Apollo )",
+            "Data Management & Reporting",
+            "Conversions",
+            "Data & Reporting Strategy",
+            "Reporting / Analytic Delivery (OTBI, OAC, FDI, other)",
+            "Analytics Platform Enablement",
+            "Master Data Management",
+            "Data Governance and Quality",
+            "Cross-Cutting Enablers",
+            "Learning and Development, Cross-Training | Delivery Standards and Methodology | Labor and Demand Management | Go to Market | Alliance Strategy | Delivery Automation and Efficiency"
+          ]
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "index": 12,
+      "title": "Presentation Title | Section Title",
+      "shapes": [
+        {
+          "type": "text",
+          "bullets": [
+            "Presentation Title | Section Title",
+            "12"
+          ]
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "index": 13,
+      "title": "Oracle D&A All Hands | July 2026",
+      "shapes": [
+        {
+          "type": "text",
+          "bullets": [
+            "Oracle D&A All Hands | July 2026",
+            "14",
+            "Apollo",
+            "Placeholder"
+          ]
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "index": 14,
+      "title": "Pipeline / sectors",
+      "shapes": [
+        {
+          "type": "text",
+          "bullets": [
+            "Pipeline / sectors",
+            "3",
+            "Oracle D&A All Hands | July 2026",
+            "15"
+          ]
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "index": 15,
+      "title": "FY27 Financials, Headcount",
+      "shapes": [
+        {
+          "type": "text",
+          "bullets": [
+            "FY27 Financials, Headcount",
+            "Delivery, People & Financial Impact — FY'27",
+            "FY27 FINANCIALS",
+            "$17.8M",
+            "Opportunity Pipeline",
+            "69",
+            "Delivery Projects",
+            "47",
+            "Delivery Unique Accounts",
+            "INDUSTRY SPLIT OF PROJECTS",
+            "OUR CLIENTS",
+            "— 47 unique accounts",
+            "Oracle D&A All Hands | July 2026",
+            "7",
+            "33",
+            "Opportunity Accounts",
+            "% growth",
+            "TBD"
+          ]
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-15-image29.png",
+          "alt": "image29.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-15-image30.png",
+          "alt": "image30.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-15-image31.png",
+          "alt": "image31.png"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "index": 16,
+      "title": "Oracle D&A All Hands | July 2026",
+      "shapes": [
+        {
+          "type": "text",
+          "bullets": [
+            "Oracle D&A All Hands | July 2026",
+            "17",
+            "Sector breakout / assignments",
+            "Fania Georgiades FS Nick Edmonds FS",
+            "Rikin Parekh FS",
+            "Samir Parkar FS",
+            "Shierly Mondianti FS",
+            "Srikanth Vemula TMT",
+            "Jeff Silverman IPS",
+            "Judy Kim TMT+ Ruchir Patel TMT Divya Thathu CM Vish Gaitonde TTL Sujith Kumar (TBD!!) -- not officially moved yet?? To US firm",
+            "Shierly to add sector APP"
+          ]
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "index": 17,
+      "title": "Training + certs",
+      "shapes": [
+        {
+          "type": "text",
+          "bullets": [
+            "Training + certs",
+            "4",
+            "Oracle D&A All Hands | July 2026",
+            "18"
+          ]
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "index": 18,
+      "title": "Oracle D&A All Hands | July 2026",
+      "shapes": [
+        {
+          "type": "text",
+          "bullets": [
+            "Oracle D&A All Hands | July 2026",
+            "19",
+            "Training sessions to be organized by level for the following areas:",
+            "Engagement economics",
+            "AI focus (prompt engineering, GenAI)",
+            "Soft skills (presentation, client communication, time management)",
+            "Training Sessions",
+            "Curated catalog of learning resources geared towards upskilling on internal tools and technologies",
+            "Self Learning (internal)",
+            "Oracle led learning curriculum and certification resources geared towards upskilling on relevant Data and Technology skills",
+            "Self Learning (external)",
+            "The L&D team continues to focus on upskilling our team on key areas of growth identified for FY ’27.",
+            "Links to the updated catalog(s) will be published to the D&A group in the next few weeks",
+            "Recap: Firm L&D Requirements",
+            "At least 1 active Oracle certification if you are SM and below",
+            "Note: Certifications continue to be a strong consideration for Career Roundtables",
+            "Active Certifications - Our Team’s Progress",
+            "US (33% to go!)",
+            "AC (34% to go!)",
+            "40 / 52 (77%)",
+            "9",
+            "FDI",
+            "82",
+            "AI",
+            "7",
+            "OCI",
+            "10 Other",
+            "37 / 49",
+            "(76%)",
+            "31",
+            "OCI",
+            "28",
+            "FDI",
+            "86 AI",
+            "51 Other",
+            "# of resources with an active certification",
+            "Active Certification Distribution",
+            "Active Certification Distribution",
+            "Don't get left behind—join the AI revolution and level up with Oracle AI Certifications!",
+            "Oracle D&A L&D FY’27 Initiatives",
+            "As of Jul ‘26"
+          ]
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-18-image32.svg",
+          "alt": "image32.svg"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "index": 19,
+      "title": "Oracle D&A All Hands | July 2026",
+      "shapes": [
+        {
+          "type": "text",
+          "bullets": [
+            "Oracle D&A All Hands | July 2026",
+            "20",
+            "Partner basecamp recap + photos",
+            "Placeholder",
+            "Link to Anthropic's Basecamp Training - Date Selection form",
+            "A two-day program built around the commercial framework, the technical foundations, and the applied work, split into phases mixing self-paced modules with live sessions"
+          ]
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-19-image33.jpeg",
+          "alt": "image33.jpeg"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-19-image34.jpeg",
+          "alt": "image34.jpeg"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "index": 20,
+      "title": "We’re all ears – ask away!",
+      "shapes": [
+        {
+          "type": "text",
+          "bullets": [
+            "We’re all ears – ask away!",
+            "5",
+            "Oracle D&A All Hands | July 2026",
+            "21"
+          ]
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "index": 21,
+      "title": "Thank Y ou !",
+      "shapes": [
+        {
+          "type": "text",
+          "bullets": [
+            "Thank Y ou !",
+            "© 2026 PwC. All rights reserved . PwC refers to the PwC network and/or one or more of its member firms, each of which is a separate legal entity. Please see www.pwc.com/structure for further details."
+          ]
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "index": 22,
+      "title": "Appendix",
+      "shapes": [
+        {
+          "type": "text",
+          "bullets": [
+            "Appendix"
+          ]
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "index": 23,
+      "title": "Pictogram library",
+      "shapes": [
+        {
+          "type": "text",
+          "bullets": [
+            "Pictogram library",
+            "Presentation Title | Section Title",
+            "24",
+            "AI driven innovation",
+            "Operating model",
+            "Technology / Digital",
+            "People / Audience / Teamwork",
+            "Risk",
+            "Skills / Education",
+            "Auditing",
+            "Cloud",
+            "Platform",
+            "Competition",
+            "Target",
+            "Document sections",
+            "Vision",
+            "Access to management",
+            "Idea",
+            "Balance",
+            "Data analysis & investigation",
+            "Strategy",
+            "Sustainability",
+            "Trust"
+          ]
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-23-image35.svg",
+          "alt": "image35.svg"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-23-image36.svg",
+          "alt": "image36.svg"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-23-image37.svg",
+          "alt": "image37.svg"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-23-image38.svg",
+          "alt": "image38.svg"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-23-image39.svg",
+          "alt": "image39.svg"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-23-image40.svg",
+          "alt": "image40.svg"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-23-image41.svg",
+          "alt": "image41.svg"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-23-image42.svg",
+          "alt": "image42.svg"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-23-image43.svg",
+          "alt": "image43.svg"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-23-image44.svg",
+          "alt": "image44.svg"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-23-image45.svg",
+          "alt": "image45.svg"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-23-image46.svg",
+          "alt": "image46.svg"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-23-image47.svg",
+          "alt": "image47.svg"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-23-image48.svg",
+          "alt": "image48.svg"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-23-image49.svg",
+          "alt": "image49.svg"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-23-image50.svg",
+          "alt": "image50.svg"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-23-image51.svg",
+          "alt": "image51.svg"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-23-image52.svg",
+          "alt": "image52.svg"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-23-image53.svg",
+          "alt": "image53.svg"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-23-image54.svg",
+          "alt": "image54.svg"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "index": 24,
+      "title": "Colour palette",
+      "shapes": [
+        {
+          "type": "text",
+          "bullets": [
+            "Colour palette",
+            "Text and Background colours",
+            "Accent colours for charts and tables",
+            "Custom colours – tints",
+            "Navigation which can be copy/pasted on slides",
+            "Cover",
+            "Table of contents",
+            "Section 1",
+            "Section 2",
+            "Section 3",
+            "White Background",
+            "255-255-255",
+            "Blac k Text",
+            "0-0-0",
+            "Background",
+            "235-235-235",
+            "Black Text",
+            "0-0-0",
+            "Orange",
+            "253-81-8",
+            "Medium Orange",
+            "254-124-57",
+            "Light Orange",
+            "255-170-114",
+            "Grey",
+            "161-168-179",
+            "Medium Grey",
+            "181-188-196",
+            "Light Grey",
+            "203-209-214",
+            "Orange",
+            "253-81-8",
+            "Medium Orange",
+            "254-124-57",
+            "Light Orange",
+            "255-170-114",
+            "Orange Tint 1",
+            "Orange Tint 2",
+            "Orange Tint 3",
+            "Grey",
+            "161-168-179",
+            "Medium Grey",
+            "181-188-196",
+            "Light Grey",
+            "203-209-214",
+            "Grey Tint 1",
+            "Grey Tint 2",
+            "Grey Tint 3",
+            "Default text box",
+            "Presentation Title | Section Title",
+            "25",
+            "Status colours",
+            "5-150-105",
+            "233-176-31",
+            "220-38-38"
+          ]
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-24-image55.jpeg",
+          "alt": "image55.jpeg"
         }
       ],
       "notes": ""

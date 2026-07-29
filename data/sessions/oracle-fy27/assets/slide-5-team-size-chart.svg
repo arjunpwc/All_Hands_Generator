@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 220" width="360" height="220">
+  <rect width="100%" height="100%" fill="#FFFFFF"/>
+  <line x1="16" y1="184" x2="344" y2="184" stroke="#D9DCE3" stroke-width="2"/>
+  
+    <rect x="52.9" y="81.0464135021097" width="90.2" height="102.9535864978903" fill="#EB8C00" rx="4"/>
+    <text x="98" y="75.0464135021097" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#2D2D2D">61</text>
+    <text x="98" y="206" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#6B7280">Start</text>
+    <rect x="216.9" y="50.66666666666666" width="90.2" height="133.33333333333334" fill="#EB8C00" rx="4"/>
+    <text x="262" y="44.66666666666666" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#2D2D2D">79</text>
+    <text x="262" y="206" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#6B7280">End</text>
+</svg>

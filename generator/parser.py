@@ -66,12 +66,20 @@ def _guess_title(shapes_content: list[dict[str, Any]]) -> str:
     return "Untitled Slide"
 
 
+def _is_hidden_slide(slide) -> bool:
+    show = slide._element.get("show")
+    return show in ("0", "false")
+
+
 def parse_pptx(pptx_path: Path) -> dict[str, Any]:
     """Extract slides, notes, and assets from a PowerPoint file."""
     presentation = Presentation(str(pptx_path))
     slides: list[dict[str, Any]] = []
 
-    for index, slide in enumerate(presentation.slides, start=1):
+    for slide in presentation.slides:
+        if _is_hidden_slide(slide):
+            continue
+
         shapes_content: list[dict[str, Any]] = []
         for shape in slide.shapes:
             content = _extract_shape_content(shape)
@@ -84,7 +92,7 @@ def parse_pptx(pptx_path: Path) -> dict[str, Any]:
 
         slides.append(
             {
-                "index": index,
+                "index": len(slides) + 1,
                 "title": _guess_title(shapes_content),
                 "shapes": shapes_content,
                 "notes": notes,

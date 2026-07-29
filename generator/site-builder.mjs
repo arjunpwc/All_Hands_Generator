@@ -1,69 +1,107 @@
 /**
- * Build self-contained website content from session data.
- * All presentation content lives on the site — no references to external decks.
+ * Build website content with explicit tab → slide mapping for Oracle D&A All Hands.
  */
 
-const NOISE_PATTERNS = [
+const NOISE = [
   /^oracle d&a all hands/i,
+  /^oracle da all hands/i,
   /^presentation title/i,
   /^\d+$/,
   /^© /,
   /^agenda$/i,
   /^appendix$/i,
   /^thank you/i,
+  /^placeholder$/i,
+  /^name$/i,
+  /^capability$/i,
+  /^office$/i,
+  /^management level$/i,
+  /^office city$/i,
+  /^job level promoted to$/i,
+  /^development leader$/i,
+  /^new hire$/i,
+  /^internal transfer$/i,
+  /^intern$/i,
+  /^marbar$/i,
 ];
 
-const TAB_DEFINITIONS = [
-  { id: "learning", label: "Learning", keywords: [/claude/i, /basecamp/i, /upcoming training/i, /sf training/i, /shutdown/i, /l&d/i] },
-  { id: "fy26-recap", label: "FY26 Recap", keywords: [/fy26 recap/i, /fy25 recap/i] },
-  { id: "people", label: "People", keywords: [/team moments/i, /promotion/i, /promotees/i, /rockstar/i, /new team/i] },
-  { id: "fy27-kickoff", label: "FY27 Kickoff", keywords: [/fy27 kick/i, /kickoff/i, /kick-off/i] },
-  { id: "operating-model", label: "Operating Model", keywords: [/operating model/i, /team alignment/i] },
-  { id: "vision", label: "Vision & Sub-Caps", keywords: [/sub-cap/i, /prac-op/i, /vision/i, /sub capability/i] },
-  { id: "pipeline", label: "Pipeline", keywords: [/pipeline/i, /oppt/i, /project/i, /opportunity/i] },
-  { id: "qa", label: "Q&A", keywords: [/q&a/i, /ask away/i, /questions/i] },
-];
-
-const TAB_INTROS = {
-  "fy26-recap":
-    "We open by looking back at FY26 — celebrating what we delivered as a practice, the momentum we built, and the foundation we carry into FY27.",
-  people:
-    "Our people are at the center of everything we do. This section highlights team moments, promotions, and the colleagues who make Oracle D&A strong.",
-  "fy27-kickoff":
-    "FY27 is here. This section sets our direction for the year ahead — priorities, expectations, and how we win together as a practice.",
-  "operating-model":
-    "How we operate matters as much as what we deliver. Here we align on our operating model, team structure, and how we work across the practice.",
-  vision:
-    "Our sub-capabilities and practice operating groups define how we go to market. We revisit our vision and how each team contributes to FY27 goals.",
-  pipeline:
-    "A strong pipeline fuels our growth. We review current opportunities, active projects, and where we are focused across the portfolio.",
-  learning:
-    "Continuous learning keeps us ahead. From AI partner training to upcoming programs, here is how we are investing in our team's growth.",
-  qa: "Have a question for leadership? Submit it here during the session. Questions appear live for the team to see and discuss.",
+/** Session slide indices (after hidden-slide exclusion) per tab */
+const TAB_SLIDES = {
+  "fy26-recap": [4, 5, 6, 7, 8, 9],
+  "fy27-kickoff": [11, 13],
+  pipeline: [15, 16],
+  training: [18, 19],
+  qa: [20],
 };
 
-const TOPIC_BODIES = [
-  { match: /fy26 recap/i, body: "Review FY26 highlights including client impact, practice growth, delivery excellence, and key milestones across Oracle D&A." },
-  { match: /team moments|promotion/i, body: "Celebrate promotions and team moments that reflect our culture — recognising colleagues who stepped up and connections that strengthen our global team." },
-  { match: /fy27 kick/i, body: "Set the tone for FY27 with our kickoff priorities, strategic focus areas, and what success looks like for the year ahead." },
-  { match: /operating model|team alignment/i, body: "Align on how the practice is structured, how teams collaborate, and what the operating model means for day-to-day delivery and client engagement." },
-  { match: /sub-cap|prac-op|vision/i, body: "Revisit our sub-capability and practice operating group structure, clarifying vision, ownership, and how each group drives FY27 outcomes." },
-  { match: /pipeline|oppt|project/i, body: "Walk through the current pipeline and project landscape — where we see demand, what is in flight, and how we are positioning for growth." },
-  { match: /claude|basecamp/i, body: "Recap key learnings from the Claude partner basecamp training — practical takeaways, partner capabilities, and how we apply them with clients." },
-  { match: /upcoming training/i, body: "Preview upcoming training programs and learning paths available to the team in FY27." },
-  { match: /sf training|shutdown/i, body: "Share highlights from Salesforce training and firm shutdown activities — team photos, moments, and connections from recent events." },
-  { match: /q&a/i, body: "Open floor for questions. Use the form below to submit questions during the live session." },
+const HOME_AGENDA = [
+  { label: "FY26 Recap", tabId: "fy26-recap" },
+  { label: "FY27 Kickoff", tabId: "fy27-kickoff" },
+  { label: "Pipeline and Sectors", tabId: "pipeline" },
+  { label: "Training and Certs", tabId: "training" },
+  { label: "Q&A", tabId: "qa" },
 ];
+
+const TAB_META = {
+  home: {
+    label: "Home",
+    headline: "Oracle D&A All Hands July 2026",
+    subheadline: "July 2026 · First All Hands of FY27",
+    intro: "Welcome to the Oracle Data & Analytics all-hands. Use the agenda below to navigate each section of today's session.",
+  },
+  "fy26-recap": {
+    label: "FY26 Recap",
+    headline: "FY26 Recap",
+    intro: "A look back at FY26 — financial performance, AC delivery impact, talent movement, and promotions across Oracle D&A.",
+  },
+  "fy27-kickoff": {
+    label: "FY27 Kickoff",
+    headline: "FY27 Kickoff",
+    intro: "Our direction for FY27 — structural changes to how we operate and key initiatives ahead.",
+  },
+  pipeline: {
+    label: "Pipeline and Sectors",
+    headline: "Pipeline and Sectors",
+    intro: "FY27 pipeline, financial outlook, and sector leadership assignments.",
+  },
+  training: {
+    label: "Training and Certs",
+    headline: "Training and Certs",
+    intro: "L&D initiatives for FY27 and partner basecamp highlights.",
+  },
+  qa: {
+    label: "Q&A",
+    headline: "Q&A",
+    subheadline: "We're all ears — ask away!",
+    intro: "Submit your questions during the live session. They appear here for everyone to see.",
+  },
+};
 
 function isNoise(text) {
   const t = text.trim();
   if (!t || t.length < 2) return true;
-  return NOISE_PATTERNS.some((p) => p.test(t));
+  return NOISE.some((p) => p.test(t));
 }
 
-function uniqueImages(shapes) {
+function rawBullets(slide) {
+  const out = [];
+  for (const shape of slide?.shapes || []) {
+    if (shape.type === "text" && shape.bullets) {
+      for (const b of shape.bullets) {
+        if (b?.trim()) out.push(b.trim());
+      }
+    }
+  }
+  return out;
+}
+
+function bullets(slide) {
+  return rawBullets(slide).filter((b) => !isNoise(b));
+}
+
+function images(slide) {
   const seen = new Set();
-  return (shapes || [])
+  return (slide?.shapes || [])
     .filter((s) => s.type === "image" && s.src)
     .filter((s) => {
       if (seen.has(s.src)) return false;
@@ -72,233 +110,549 @@ function uniqueImages(shapes) {
     });
 }
 
-function meaningfulBullets(shapes) {
-  const bullets = [];
-  for (const shape of shapes || []) {
-    if (shape.type === "text" && shape.bullets) {
-      for (const b of shape.bullets) {
-        if (!isNoise(b)) bullets.push(b);
-      }
-    }
-  }
-  return bullets;
+function findSlide(slides, index) {
+  return slides.find((s) => s.index === index) || null;
 }
 
-function parseAgenda(slides) {
-  const agendaSlide = slides.find(
-    (s) => /^agenda$/i.test(s.title) || meaningfulBullets(s.shapes).some((b) => /^agenda$/i.test(b))
-  );
-  if (!agendaSlide) return [];
+function parseKeyMetrics(bulletsList, sectionHeaders = []) {
+  const metrics = [];
+  const valueRe = /^(\$[\d.]+[MKB]?|TBD|[\d.]+%|\~[\d,]+|[\d,]+\+?|\d+\s*\/\s*\d+.*|\d{1,4})$/i;
+  const skip = /^(fy\d(?!.*(?:headcount|financials|recap))|oracle|our clients|industry split|draft|# of)/i;
 
-  return meaningfulBullets(agendaSlide.shapes).filter((item) => {
-    if (/^agenda$/i.test(item)) return false;
-    if (/^oracle d&a all hands/i.test(item)) return false;
-    if (/^\d+$/.test(item)) return false;
-    return item.length >= 2;
-  });
-}
-
-function matchTabForText(text) {
-  const lower = text.toLowerCase();
-  for (const tab of TAB_DEFINITIONS) {
-    if (tab.keywords.some((re) => re.test(lower))) return tab.id;
-  }
-  return null;
-}
-
-function matchTabForSlide(slide) {
-  const haystack = [slide.title, ...meaningfulBullets(slide.shapes)].join(" ");
-  return matchTabForText(haystack);
-}
-
-function cleanSectionTitle(item) {
-  return item
-    .replace(/\s*[–—-]\s*Brad'?s slide\s*$/i, "")
-    .replace(/\s*\([^)]*\)\s*/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function bodyForTopic(item) {
-  for (const { match, body } of TOPIC_BODIES) {
-    if (match.test(item)) return body;
-  }
-  return `Discussion and updates on: ${cleanSectionTitle(item)}.`;
-}
-
-function agendaItemToSection(item) {
-  const title = cleanSectionTitle(item);
-  return { title, body: bodyForTopic(item) };
-}
-
-function parsePromotions(bullets) {
-  const people = [];
-  for (let i = 0; i < bullets.length; i++) {
-    const next = bullets[i + 1];
-    const isRank = /^(managing director|senior manager|senior associate|manager|director|partner)$/i.test(next || "");
-    if (isRank && bullets[i].length < 50) {
-      people.push({ name: bullets[i], title: next });
+  for (let i = 0; i < bulletsList.length - 1; i++) {
+    const a = bulletsList[i];
+    const b = bulletsList[i + 1];
+    if (sectionHeaders.some((h) => h.test(a) || h.test(b))) continue;
+    if (valueRe.test(a) && !skip.test(b) && b.length <= 70) {
+      metrics.push({ value: a, label: b });
       i++;
     }
   }
-  return people;
+  return metrics;
 }
 
-function parseProfiles(bullets) {
-  const profiles = [];
-  let current = null;
-  for (const b of bullets) {
-    if (/fun fact:/i.test(b)) {
-      if (current) current.funFact = b.replace(/^fun fact:\s*/i, "");
-      continue;
+const INDUSTRY_COLORS = [
+  "#1B2A4A",
+  "#0F6E56",
+  "#C56A00",
+  "#993556",
+  "#534AB7",
+  "#A32D2D",
+];
+
+function parsePrimaryMetrics(bulletsList) {
+  const end = bulletsList.findIndex((b) => /industry split|our clients/i.test(b));
+  const section = end >= 0 ? bulletsList.slice(0, end) : bulletsList;
+  const sectionHeaders = [/^fy\d+ financials$/i];
+  const metrics = parseKeyMetrics(section, sectionHeaders);
+  const seen = new Set();
+  return metrics.filter((m) => {
+    const key = `${m.value}|${m.label}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return !INDUSTRY_SECTOR_NAMES.some((n) => n.toLowerCase() === m.label.toLowerCase());
+  });
+}
+
+const INDUSTRY_SECTOR_NAMES = [
+  "Financial Services",
+  "Technology, Media & Telecom",
+  "Industrials & Services",
+  "Health Industries",
+  "Consumer Markets",
+  "Energy, Utilities & Resources",
+];
+
+function parseIndustrySplit(bulletsList) {
+  const items = [];
+  for (let i = 0; i < bulletsList.length - 1; i++) {
+    const label = bulletsList[i];
+    const pct = bulletsList[i + 1];
+    if (INDUSTRY_SECTOR_NAMES.some((n) => n.toLowerCase() === label.toLowerCase()) && /^[\d.]+%$/.test(pct)) {
+      items.push({
+        label,
+        value: pct,
+        color: INDUSTRY_COLORS[items.length % INDUSTRY_COLORS.length],
+      });
+      i++;
     }
-    if (/^(senior associate|manager|intern|director|senior manager|associate)$/i.test(b)) {
-      if (current) current.role = b;
-      if (current?.name) profiles.push(current);
-      current = null;
-      continue;
-    }
-    if (b.length < 45 && !b.includes(".") && !/^(i |my |we )/i.test(b)) {
-      if (current?.name) profiles.push(current);
-      current = { name: b, role: "", funFact: "", bio: "" };
-      continue;
-    }
-    if (current) current.bio = (current.bio ? current.bio + " " : "") + b;
   }
-  if (current?.name) profiles.push(current);
-  return profiles;
+  return items;
 }
 
-function extractFiscalYear(text) {
-  if (/FY\s*27|fy27|2026|July 2026/i.test(text)) return { fiscal: "FY27", date: "July 2026" };
-  if (/FY\s*26|fy26|2025/i.test(text)) return { fiscal: "FY26", date: "July 2025" };
-  return { fiscal: "FY27", date: "July 2026" };
-}
+function parseClientList(bulletsList, options = {}) {
+  const start = bulletsList.findIndex((b) => /our clients/i.test(b));
+  if (start < 0) return { summary: "", clients: [], layout: "grid" };
+  const summary = bulletsList[start + 1] || "";
+  const industrySet = new Set(INDUSTRY_SECTOR_NAMES.map((n) => n.toLowerCase()));
 
-function buildTabsFromAgenda(agendaItems) {
-  const tabMap = new Map();
-
-  for (const item of agendaItems) {
-    const tabId = matchTabForText(item);
-    if (!tabId) continue;
-
-    if (tabMap.has(tabId)) {
-      tabMap.get(tabId).agendaItems.push(item);
-      continue;
-    }
-
-    const def = TAB_DEFINITIONS.find((t) => t.id === tabId);
-    tabMap.set(tabId, {
-      id: tabId,
-      label: def?.label || cleanSectionTitle(item),
-      headline: def?.label || cleanSectionTitle(item),
-      subheadline: "",
-      intro: TAB_INTROS[tabId] || "",
-      agendaItems: [item],
-      sections: [],
-      bullets: [],
-      images: [],
-      promotions: [],
-      profiles: [],
-      interactive: tabId === "qa",
+  const clients = bulletsList
+    .slice(start + 2)
+    .filter((b) => {
+      if (b.length < 4 || b.length > 80) return false;
+      if (/^[\d—\-–]/.test(b)) return false;
+      if (/^[\d.]+%$/.test(b)) return false;
+      if (industrySet.has(b.toLowerCase())) return false;
+      if (/oracle|all hands|industry split|our clients|fy\d/i.test(b)) return false;
+      return true;
     });
+
+  if (options.layout === "table" && clients.length >= 2) {
+    const mid = Math.ceil(clients.length / 2);
+    const col1 = clients.slice(0, mid);
+    const col2 = clients.slice(mid);
+    const rows = col1.map((left, i) => [left, col2[i] || ""]);
+    return { summary, clients, rows, layout: "table" };
   }
 
-  return Array.from(tabMap.values());
+  return { summary, clients, layout: "grid" };
 }
 
-function assignSlidesToTabs(slides, tabs) {
-  const tabMap = Object.fromEntries(tabs.map((t) => [t.id, t]));
+function parseFinancialSlide(slide) {
+  const b = rawBullets(slide).filter((x) => {
+    if (/^oracle d&a all hands|^presentation title|^© |^agenda$|^appendix$|^thank you|^placeholder$/i.test(x)) return false;
+    if (/^\d{1,2}$/.test(x) && parseInt(x, 10) <= 21) return false;
+    return x.trim().length >= 1;
+  });
+  const title = slide.title;
+  const subtitle = b.find((x) => /delivery, people/i.test(x)) || "";
+  const keyMetrics = parsePrimaryMetrics(b);
+  const industrySplit = parseIndustrySplit(b);
+  const clients = parseClientList(b, { layout: slide.index === 4 ? "table" : "grid" });
+  const notes = b.filter((x) => /pending partner|delivery \$/i.test(x));
+  const slideImages = images(slide);
+  const industryChart =
+    slideImages.find((img) => img.chart && img.chartRole === "industry") ||
+    slideImages.find((img) => img.chart) ||
+    null;
 
-  for (const slide of slides) {
-    if (/^agenda$/i.test(slide.title)) continue;
-    if (slide.index === 1) continue;
-
-    const tabId = matchTabForSlide(slide);
-    if (!tabId || !tabMap[tabId]) continue;
-
-    const tab = tabMap[tabId];
-    const bullets = meaningfulBullets(slide.shapes);
-    tab.bullets.push(...bullets);
-    tab.images.push(...uniqueImages(slide.shapes));
-
-    if (tabId === "people") {
-      tab.promotions = parsePromotions(bullets);
-      tab.profiles = parseProfiles(bullets);
-    }
-  }
-
-  return tabs;
+  return {
+    type: "financial",
+    title,
+    subtitle,
+    keyMetrics,
+    industrySplit,
+    industryChart,
+    clients,
+    notes,
+    images: slideImages.filter((img) => !img.chart),
+  };
 }
 
-function enrichTabContent(tabs) {
-  for (const tab of tabs) {
-    // Build sections from agenda topics — this IS the website content
-    const fromAgenda = (tab.agendaItems || []).map(agendaItemToSection);
-    const fromBullets = (tab.bullets || [])
-      .filter((b) => !(tab.agendaItems || []).includes(b))
-      .map((b) => ({ title: cleanSectionTitle(b), body: b }));
+function imageNum(src) {
+  const m = (src || "").match(/image(\d+)/);
+  return m ? parseInt(m[1], 10) : 0;
+}
 
-    tab.sections = [...fromAgenda, ...fromBullets];
+function imagesByRange(slide, min, max) {
+  return images(slide)
+    .filter((img) => !img.chart)
+    .filter((img) => {
+      const n = imageNum(img.src);
+      return n >= min && n <= max;
+    })
+    .sort((a, b) => imageNum(a.src) - imageNum(b.src));
+}
 
-    // Slide bullets become additional detail under sections when unique
-    if (tab.bullets.length > 0 && tab.sections.length === fromAgenda.length) {
-      tab.detailPoints = tab.bullets.filter(
-        (b) => !tab.agendaItems?.some((a) => a.includes(b) || b.includes(a))
-      );
-    } else {
-      tab.detailPoints = [];
-    }
+function chartByRole(slide, role) {
+  return images(slide).find((img) => img.chart && img.chartRole === role) || null;
+}
 
-    if (tab.id === "qa") {
-      tab.intro = TAB_INTROS.qa;
+function splitBySectionHeaders(bulletsList, headers) {
+  const sections = [];
+  let current = null;
+
+  for (const line of bulletsList) {
+    const upper = line.toUpperCase();
+    const header = headers.find((h) => upper === h || upper.startsWith(h));
+    if (header) {
+      if (current) sections.push(current);
+      current = { heading: header, items: [] };
+    } else if (current) {
+      current.items.push(line);
     }
   }
-  return tabs;
+  if (current) sections.push(current);
+  return sections;
+}
+
+function parseSectionMetrics(items) {
+  const metrics = [];
+  const valueRe = /^(\~?[\d,.]+[KMB]?|\d+\s*\/\s*10|\+[\d.]+%[\w\s]*|\d+%)$/i;
+
+  for (let i = 0; i < items.length - 1; i++) {
+    const value = items[i];
+    const label = items[i + 1];
+    if (!valueRe.test(value)) continue;
+    if (!label || label.length > 70) continue;
+    if (/^(prompt engineering|genai|agentic|ml ops|llm evaluation|ai skills added)$/i.test(label)) continue;
+    metrics.push({ value, label });
+    i++;
+  }
+  return metrics;
+}
+
+function parseDashboardSlide(slide) {
+  const b = rawBullets(slide).filter((x) => {
+    if (/^oracle d&a all hands|^presentation title|^© |^agenda$|^appendix$|^thank you|^placeholder$/i.test(x)) return false;
+    if (/^draft ac highlights$/i.test(x)) return false;
+    if (/^pwc$/i.test(x)) return false;
+    return x.trim().length >= 1;
+  });
+
+  const headers = [
+    "DELIVERY IMPACT",
+    "TEAM SIZE GROWTH",
+    "UTILIZATION TREND",
+    "AI CAPABILITY",
+    "AI ADAPTABILITY",
+    "OUR CLIENTS",
+  ];
+  const sections = splitBySectionHeaders(b, headers);
+  const byHeading = Object.fromEntries(sections.map((s) => [s.heading, s.items]));
+
+  const deliveryItems = byHeading["DELIVERY IMPACT"] || [];
+  const aiItems = byHeading["AI CAPABILITY"] || [];
+  const aiAdaptItems = byHeading["AI ADAPTABILITY"] || [];
+  const teamItems = byHeading["TEAM SIZE GROWTH"] || [];
+
+  const deliveryMetrics = parseSectionMetrics(deliveryItems);
+  const aiMetrics = parseSectionMetrics(aiItems);
+  const aiSkills = aiItems.filter((x) =>
+    /^(prompt engineering|genai tooling|agentic workflows|ml ops|llm evaluation)$/i.test(x)
+  );
+  const ess = b.find((x) => /\/10/.test(x)) || "";
+  const essIdx = b.findIndex((x) => /\/10/.test(x));
+  const essLabel =
+    essIdx >= 0 ? b[essIdx + 1] || "Engagement Satisfaction Survey (ESS)" : "Engagement Satisfaction Survey (ESS)";
+
+  return {
+    type: "dashboard",
+    title: slide.title,
+    subtitle: b.find((x) => /delivery, people/i.test(x)) || "",
+    deliveryImpact: {
+      metrics: deliveryMetrics,
+      images: imagesByRange(slide, 4, 8),
+    },
+    teamSizeGrowth: {
+      stat: teamItems.find((x) => /headcount/i.test(x)) || teamItems[0] || "",
+      chart: chartByRole(slide, "team-size"),
+    },
+    utilizationTrend: {
+      chart: chartByRole(slide, "utilization"),
+    },
+    aiCapability: {
+      metrics: aiMetrics.filter((m) => !/\/10/.test(m.value)),
+      skills: aiSkills,
+      ess,
+      essLabel,
+      images: imagesByRange(slide, 9, 12),
+    },
+    aiAdaptability: {
+      metric: parseSectionMetrics(aiAdaptItems)[0] || { value: "100%", label: "AI Adaptability" },
+      chart: chartByRole(slide, "ai-adaptability"),
+    },
+    ourClients: {
+      images: imagesByRange(slide, 13, 30),
+    },
+  };
+}
+
+function parsePeopleTable(slide, columns = 3) {
+  const b = rawBullets(slide);
+  const title = slide.title;
+  const subtitle =
+    b.find((x) => /talent movement|congratulations/i.test(x)) || "";
+  const rows = [];
+  const headerIdx = b.findIndex((x) => /^name$/i.test(x));
+
+  if (columns === 3) {
+    const data = headerIdx >= 0 ? b.slice(headerIdx + 3) : b.slice(2);
+    for (let i = 0; i + 2 < data.length; i += 3) {
+      const name = data[i];
+      const level = data[i + 1];
+      const office = data[i + 2];
+      if (name && level && office && !isNoise(name) && name.length < 50) {
+        rows.push({ name, level, office });
+      }
+    }
+  } else if (columns === 5) {
+    const data = headerIdx >= 0 ? b.slice(headerIdx + 5) : b;
+    for (let i = 0; i + 4 < data.length; i += 5) {
+      const name = data[i];
+      const capability = data[i + 1];
+      const office = data[i + 2];
+      const promotedTo = data[i + 3];
+      const leader = data[i + 4];
+      if (name && capability && office && promotedTo && !/oracle|all hands/i.test(name)) {
+        rows.push({ name, capability, office, promotedTo, leader });
+      }
+    }
+  }
+
+  return {
+    type: columns === 5 ? "promotions-table" : "people-table",
+    title,
+    subtitle,
+    rows,
+    images: images(slide),
+  };
+}
+
+function parseProfileSlide(slide) {
+  const b = bullets(slide);
+  const name = slide.title;
+  const roleLine = b.find((x) => /\|/.test(x) && x.length < 80) || "";
+  const bio = b.filter(
+    (x) =>
+      x.length > 80 ||
+      (/^(he |she |today|abhishek)/i.test(x) && x.length > 40)
+  );
+  const funFact = b.find((x) => /fun fact/i.test(x))?.replace(/^few fun facts\s*-?\s*/i, "") || "";
+
+  return {
+    type: "profile",
+    title: name,
+    roleLine,
+    bio,
+    funFact,
+    images: images(slide),
+  };
+}
+
+function parseOrgDesignSlide(slide) {
+  const b = bullets(slide);
+  const headline = b.find((x) => /structural change/i.test(x)) || "The Structural Change: One Team";
+  const description = b.find((x) => x.length > 80 && /merge|single team/i.test(x)) || "";
+  const leadership = [];
+  const pillars = [];
+  let mode = "intro";
+
+  const pillarHeaders = [
+    /^engineering and infrastructure$/i,
+    /^data management & reporting$/i,
+    /^cross-cutting enablers$/i,
+  ];
+
+  for (const line of b) {
+    if (/^leadership$/i.test(line)) {
+      mode = "leadership";
+      continue;
+    }
+    if (pillarHeaders.some((re) => re.test(line))) {
+      mode = "pillar";
+      pillars.push({ name: line, items: [] });
+      continue;
+    }
+    if (mode === "leadership" && line.includes("|")) {
+      leadership.push(line);
+    } else if (mode === "pillar" && pillars.length) {
+      pillars[pillars.length - 1].items.push(line);
+    }
+  }
+
+  return { type: "org-design", title: headline, description, leadership, pillars };
+}
+
+function parseApolloSlide(slide) {
+  const b = bullets(slide);
+  return {
+    type: "placeholder",
+    title: "Apollo",
+    description: "Project Apollo — close collaboration with DCM. Content coming soon.",
+    isPlaceholder: b.some((x) => /^placeholder$/i.test(x)),
+  };
+}
+
+function parseSectorSlide(slide) {
+  const b = bullets(slide);
+  const title = "Sector Breakout / Assignments";
+  const assignments = [];
+
+  for (const line of b) {
+    if (/sector breakout|shierly to add/i.test(line)) continue;
+    const match = line.match(/^(.+?)\s+(FS|TMT\+?|IPS|CM|TTL|TMT)(?:\s|$)/);
+    if (match) {
+      assignments.push({ name: match[1].trim(), sector: match[2] });
+      continue;
+    }
+    if (line.length > 8 && line.length < 100) {
+      assignments.push({ name: line, sector: "" });
+    }
+  }
+
+  return { type: "sector-list", title, assignments };
+}
+
+function parseCertDistribution(bullets, progressPattern, endPattern) {
+  const start = bullets.findIndex((x) => progressPattern.test(x));
+  if (start < 0) return [];
+  const end = bullets.findIndex((x, i) => i > start && endPattern.test(x));
+  const slice = bullets.slice(start + 1, end >= 0 ? end : undefined);
+  const items = [];
+
+  for (let i = 0; i < slice.length; i++) {
+    const line = slice[i];
+    const combined = line.match(/^(\d+)\s*(FDI|AI|OCI|Other)$/i);
+    if (combined) {
+      items.push({
+        value: parseInt(combined[1], 10),
+        label: /^other$/i.test(combined[2]) ? "Other" : combined[2].toUpperCase(),
+      });
+      continue;
+    }
+    if (/^\d+$/.test(line) && i + 1 < slice.length) {
+      const label = slice[i + 1];
+      if (/^(FDI|AI|OCI|Other)$/i.test(label)) {
+        items.push({
+          value: parseInt(line, 10),
+          label: /^other$/i.test(label) ? "Other" : label.toUpperCase(),
+        });
+        i++;
+      }
+    }
+  }
+  return items;
+}
+
+function parseTrainingSlide(slide) {
+  const b = rawBullets(slide).filter((x) => {
+    if (/^oracle d&a all hands|^presentation title|^© |^agenda$|^appendix$|^thank you|^placeholder$/i.test(x)) return false;
+    return x.trim().length >= 1;
+  });
+
+  const usProgress = b.find((x) => /40\s*\/\s*52/.test(x)) || "40 / 52 (77%)";
+  const acProgress = b.find((x) => /37\s*\/\s*49/.test(x)) || "37 / 49 (76%)";
+
+  return {
+    type: "training",
+    title: "Oracle D&A L&D FY'27 Initiatives",
+    subtitle: b.find((x) => /as of jul/i.test(x)) || "",
+    intro:
+      b.find((x) => /l&d team continues to focus/i.test(x)) ||
+      "The L&D team continues to focus on upskilling our team on key areas of growth identified for FY '27.",
+    catalogNote:
+      b.find((x) => /links to the updated catalog/i.test(x)) ||
+      "Links to the updated catalog(s) will be published to the D&A group in the next few weeks",
+    callout:
+      b.find((x) => /don't get left behind/i.test(x)) ||
+      "Don't get left behind—join the AI revolution and level up with Oracle AI Certifications!",
+    trainingSessions: {
+      heading: "Training Sessions",
+      subheading: "Training sessions to be organized by level for the following areas:",
+      items: [
+        "Engagement economics",
+        "AI focus (prompt engineering, GenAI)",
+        "Soft skills (presentation, client communication, time management)",
+      ],
+    },
+    selfLearningInternal: {
+      heading: "Self Learning (internal)",
+      description:
+        b.find((x) => /curated catalog of learning resources/i.test(x)) ||
+        "Curated catalog of learning resources geared towards upskilling on internal tools and technologies",
+    },
+    selfLearningExternal: {
+      heading: "Self Learning (external)",
+      description:
+        b.find((x) => /oracle led learning curriculum/i.test(x)) ||
+        "Oracle led learning curriculum and certification resources geared towards upskilling on relevant Data and Technology skills",
+    },
+    firmRequirements: {
+      heading: "Recap: Firm L&D Requirements",
+      items: [
+        "At least 1 active Oracle certification if you are SM and below",
+        "Note: Certifications continue to be a strong consideration for Career Roundtables",
+      ],
+    },
+    certProgress: {
+      heading: "Active Certifications — Our Team's Progress",
+      footnote: b.find((x) => /# of resources with an active certification/i.test(x)) || "",
+      us: {
+        label: b.find((x) => /^US \(/i.test(x)) || "US (33% to go!)",
+        progress: usProgress,
+        pct: 77,
+        distribution: parseCertDistribution(b, /40\s*\/\s*52/, /37\s*\/\s*49/),
+      },
+      ac: {
+        label: b.find((x) => /^AC \(/i.test(x)) || "AC (34% to go!)",
+        progress: acProgress.includes("76") ? acProgress : `${acProgress.replace(/\s*\([^)]*\)/, "")} (76%)`,
+        pct: 76,
+        distribution: parseCertDistribution(b, /37\s*\/\s*49/, /# of resources|don't get left/i),
+      },
+    },
+    icon: images(slide).find((img) => /image32/.test(img.src)) || images(slide)[0] || null,
+  };
+}
+
+function parseBasecampSlide(slide) {
+  const b = bullets(slide);
+  return {
+    type: "photo-gallery",
+    title: "Partner Basecamp Recap + Photos",
+    description:
+      b.find((x) => x.length > 60 && /two-day program/i.test(x)) ||
+      "A two-day program built around the commercial framework, the technical foundations, and the applied work.",
+    link: b.find((x) => /link to anthropic/i.test(x)) || "",
+    images: images(slide),
+  };
+}
+
+function parseSlideContent(slide) {
+  const idx = slide.index;
+  const title = slide.title || "";
+
+  if (idx === 4 || idx === 15) return parseFinancialSlide(slide);
+  if (idx === 5) return parseDashboardSlide(slide);
+  if (idx === 6 || idx === 8) return parsePeopleTable(slide, 3);
+  if (idx === 7) return parseProfileSlide(slide);
+  if (idx === 9) return parsePeopleTable(slide, 5);
+  if (idx === 11) return parseOrgDesignSlide(slide);
+  if (idx === 13) return parseApolloSlide(slide);
+  if (idx === 16) return parseSectorSlide(slide);
+  if (idx === 18) return parseTrainingSlide(slide);
+  if (idx === 19) return parseBasecampSlide(slide);
+
+  return {
+    type: "generic",
+    title,
+    bullets: bullets(slide),
+    images: images(slide),
+  };
+}
+
+function buildTab(id, slides, slideIndices) {
+  const meta = TAB_META[id];
+  const blocks = slideIndices
+    .map((idx) => findSlide(slides, idx))
+    .filter(Boolean)
+    .map(parseSlideContent);
+
+  return {
+    id,
+    label: meta.label,
+    headline: meta.headline,
+    subheadline: meta.subheadline || "",
+    intro: meta.intro,
+    blocks,
+    interactive: id === "qa",
+  };
 }
 
 function buildTabs(session) {
-  const { slides } = session;
-  const agendaItems = parseAgenda(slides);
-  const homeSlide = slides[0];
-  const meta = extractFiscalYear(session.title + " " + (homeSlide?.title || ""));
-
-  let contentTabs = buildTabsFromAgenda(agendaItems);
-
-  if (contentTabs.length === 0) {
-    contentTabs = TAB_DEFINITIONS.map((def) => ({
-      id: def.id,
-      label: def.label,
-      headline: def.label,
-      subheadline: "",
-      intro: TAB_INTROS[def.id] || "",
-      agendaItems: [],
-      sections: [{ title: def.label, body: TAB_INTROS[def.id] || "" }],
-      bullets: [],
-      images: [],
-      promotions: [],
-      profiles: [],
-      interactive: def.id === "qa",
-      detailPoints: [],
-    }));
-  }
-
-  contentTabs = assignSlidesToTabs(slides, contentTabs);
-  contentTabs = enrichTabContent(contentTabs);
+  const slides = session.slides.filter((s) => s.index <= 20);
+  const homeSlide = findSlide(slides, 1);
 
   const home = {
     id: "home",
-    label: "Home",
-    headline: "Oracle D&A All Hands",
-    subheadline: `${meta.date} · First All Hands of ${meta.fiscal}`,
-    intro: `Welcome to the Oracle Data & Analytics ${meta.fiscal} all-hands. Everything you need for today's session is right here — use the tabs above to follow along live with the team.`,
-    agenda: agendaItems.map((item) => ({
-      label: cleanSectionTitle(item),
-      tabId: matchTabForText(item),
-    })),
-    images: uniqueImages(homeSlide?.shapes),
-    fiscalYear: meta.fiscal,
+    ...TAB_META.home,
+    agenda: HOME_AGENDA,
+    images: images(homeSlide),
   };
+
+  const contentTabs = ["fy26-recap", "fy27-kickoff", "pipeline", "training", "qa"].map((id) =>
+    buildTab(id, slides, TAB_SLIDES[id])
+  );
 
   return [home, ...contentTabs];
 }

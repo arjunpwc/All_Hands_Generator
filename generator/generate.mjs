@@ -9,6 +9,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { writeStandalonePreview } from "./viewer-template.mjs";
+import { extractChartsFromSlide } from "./chart-renderer.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, "..");
@@ -79,27 +80,70 @@ function extractImages(xml, rels, mediaRoot) {
   return images;
 }
 
+function isHiddenFlag(value) {
+  return value === "0" || value === "false";
+}
+
+function getPresentationSlideOrder(extractDir) {
+  const presPath = path.join(extractDir, "ppt", "presentation.xml");
+  const presRelsPath = path.join(extractDir, "ppt", "_rels", "presentation.xml.rels");
+  if (!fs.existsSync(presPath) || !fs.existsSync(presRelsPath)) return null;
+
+  const presXml = fs.readFileSync(presPath, "utf8");
+  const presRels = parseRels(presRelsPath);
+  const sldIdRegex = /<p:sldId\b([^>]*)\/>/g;
+  const order = [];
+  let match;
+
+  while ((match = sldIdRegex.exec(presXml)) !== null) {
+    const attrs = match[1];
+    const ridMatch = attrs.match(/\br:id="([^"]+)"/);
+    if (!ridMatch) continue;
+
+    const target = presRels[ridMatch[1]];
+    if (!target?.startsWith("slides/")) continue;
+
+    const showMatch = attrs.match(/\bshow="([^"]+)"/);
+    order.push({
+      file: path.basename(target),
+      hiddenInPres: showMatch ? isHiddenFlag(showMatch[1]) : false,
+    });
+  }
+
+  return order.length ? order : null;
+}
+
+function isSlideHidden(slideXml, hiddenInPres) {
+  if (hiddenInPres) return true;
+  const showMatch = slideXml.match(/<p:sld\b[^>]*\bshow="([^"]+)"/);
+  return showMatch ? isHiddenFlag(showMatch[1]) : false;
+}
+
 function parseSlides(extractDir) {
   const slidesDir = path.join(extractDir, "ppt", "slides");
   const relsDir = path.join(extractDir, "ppt", "slides", "_rels");
   const mediaDir = path.join(extractDir, "ppt", "media");
 
-  const slideFiles = fs
+  const presentationOrder = getPresentationSlideOrder(extractDir);
+  const slideEntries = presentationOrder || fs
     .readdirSync(slidesDir)
     .filter((f) => /^slide\d+\.xml$/i.test(f))
-    .sort((a, b) => {
-      const na = parseInt(a.match(/\d+/)[0], 10);
-      const nb = parseInt(b.match(/\d+/)[0], 10);
-      return na - nb;
-    });
+    .sort((a, b) => parseInt(a.match(/\d+/)[0], 10) - parseInt(b.match(/\d+/)[0], 10))
+    .map((file) => ({ file, hiddenInPres: false }));
 
-  return slideFiles.map((file, idx) => {
-    const slidePath = path.join(slidesDir, file);
-    const relsPath = path.join(relsDir, `${file}.rels`);
+  const slides = [];
+  for (const entry of slideEntries) {
+    const slidePath = path.join(slidesDir, entry.file);
+    if (!fs.existsSync(slidePath)) continue;
+
     const xml = fs.readFileSync(slidePath, "utf8");
+    if (isSlideHidden(xml, entry.hiddenInPres)) continue;
+
+    const relsPath = path.join(relsDir, `${entry.file}.rels`);
     const rels = parseRels(relsPath);
     const textBlocks = extractTextBlocks(xml);
     const images = extractImages(xml, rels, mediaDir);
+    const charts = extractChartsFromSlide(xml, rels, extractDir, slides.length + 1);
 
     const shapes = [];
     if (textBlocks.length) {
@@ -108,14 +152,25 @@ function parseSlides(extractDir) {
     for (const img of images) {
       shapes.push({ type: "image", _file: img.src, filename: img.filename });
     }
+    for (const chart of charts) {
+      shapes.push({
+        type: "chart",
+        filename: chart.filename,
+        svg: chart.svg,
+        alt: chart.alt,
+        chartRole: chart.role,
+      });
+    }
 
-    return {
-      index: idx + 1,
-      title: textBlocks[0] || `Slide ${idx + 1}`,
+    slides.push({
+      index: slides.length + 1,
+      title: textBlocks[0] || `Slide ${slides.length + 1}`,
       shapes,
       notes: "",
-    };
-  });
+    });
+  }
+
+  return slides;
 }
 
 function readCoreTitle(extractDir, fallback) {
@@ -129,10 +184,23 @@ function readCoreTitle(extractDir, fallback) {
 function buildSession(parsed, outputDir) {
   fs.mkdirSync(outputDir, { recursive: true });
   const assetsDir = path.join(outputDir, "assets");
+  if (fs.existsSync(assetsDir)) {
+    fs.rmSync(assetsDir, { recursive: true, force: true });
+  }
   fs.mkdirSync(assetsDir, { recursive: true });
 
   const slides = parsed.slides.map((slide) => {
     const shapes = slide.shapes.map((shape) => {
+      if (shape.type === "chart") {
+        fs.writeFileSync(path.join(assetsDir, shape.filename), shape.svg, "utf8");
+        return {
+          type: "image",
+          src: `assets/${shape.filename}`,
+          alt: shape.alt || "Chart",
+          chart: true,
+          chartRole: shape.chartRole,
+        };
+      }
       if (shape.type !== "image") return shape;
       const destName = `slide-${slide.index}-${shape.filename}`;
       fs.copyFileSync(shape._file, path.join(assetsDir, destName));
