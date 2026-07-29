@@ -3,6 +3,7 @@
 import fs from "fs";
 import path from "path";
 import { buildWebsiteModel } from "./site-builder.mjs";
+import { renderUsTalentMap, MOVEMENT_TYPES } from "./people-map.mjs";
 
 function escapeHtml(s) {
   return String(s)
@@ -266,29 +267,46 @@ function renderDashboard(block, assetPrefix) {
 }
 
 function renderPeopleTable(block, assetPrefix) {
+  const levelHeader = block.columns === 2 ? "Management Level" : "Level";
   const cols =
     block.type === "promotions-table"
       ? ["Name", "Capability", "Office", "Promoted To", "Development Leader"]
-      : ["Name", "Level", "Office City"];
+      : block.showMap
+        ? ["", "Name", levelHeader, "Office City", "Type"]
+        : block.columns === 2
+          ? ["Name", levelHeader]
+          : ["Name", levelHeader, "Office City"];
 
   const rows = block.rows
     .map((r) => {
       if (block.type === "promotions-table") {
         return `<tr><td>${escapeHtml(r.name)}</td><td>${escapeHtml(r.capability)}</td><td>${escapeHtml(r.office)}</td><td><span class="badge">${escapeHtml(r.promotedTo)}</span></td><td>${escapeHtml(r.leader)}</td></tr>`;
       }
-      return `<tr><td><strong>${escapeHtml(r.name)}</strong></td><td>${escapeHtml(r.level)}</td><td>${escapeHtml(r.office)}</td></tr>`;
+      const type = MOVEMENT_TYPES[r.movementType] || MOVEMENT_TYPES["new-hire"];
+      const personId = r.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      const swatch = block.showMap
+        ? `<td><span class="movement-swatch" style="background:${type.color}" title="${escapeHtml(type.label)}"></span></td>`
+        : "";
+      const typeCell = block.showMap
+        ? `<td><span class="movement-type-label" style="color:${type.color}">${escapeHtml(type.label)}</span></td>`
+        : "";
+      const officeCell =
+        block.columns === 2 ? "" : `<td>${escapeHtml(r.office || "")}</td>`;
+      return `<tr class="people-row" data-person="${escapeHtml(personId)}">${swatch}<td><strong>${escapeHtml(r.name)}</strong></td><td>${escapeHtml(r.level)}</td>${officeCell}${typeCell}</tr>`;
     })
     .join("");
 
+  const mapSection = block.showMap ? `<div class="people-map-layout">${renderUsTalentMap(block.rows)}</div>` : renderImages(block.images, assetPrefix, "stack");
+
   return `
-  <article class="content-block table-block">
+  <article class="content-block table-block${block.showMap ? " people-map-block" : ""}">
     <header class="block-header">
       <h2>${escapeHtml(block.title)}</h2>
       ${block.subtitle ? `<p class="block-subtitle">${escapeHtml(block.subtitle)}</p>` : ""}
     </header>
-    ${renderImages(block.images, assetPrefix, "stack")}
+    ${mapSection}
     <div class="table-wrap">
-      <table class="data-table">
+      <table class="data-table${block.showMap ? " people-map-table" : ""}">
         <thead><tr>${cols.map((c) => `<th>${escapeHtml(c)}</th>`).join("")}</tr></thead>
         <tbody>${rows}</tbody>
       </table>
@@ -672,6 +690,21 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 .data-table tbody tr:hover { background: var(--pwc-orange-tint); }
 .badge { background: var(--pwc-orange); color: var(--pwc-white); padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
 
+.people-map-block .table-wrap { margin-top: 1.5rem; }
+.people-map-layout { margin-top: 1rem; }
+.people-map-panel { background: var(--pwc-grey-100); border: 1px solid var(--pwc-grey-200); border-radius: var(--radius); padding: 1.25rem; }
+.map-legend { display: flex; flex-wrap: wrap; gap: 1.25rem; margin-bottom: 1rem; padding-bottom: 0.85rem; border-bottom: 1px solid var(--pwc-grey-200); }
+.map-legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.88rem; font-weight: 600; color: var(--pwc-grey-700); }
+.map-legend-swatch { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; border: 2px solid var(--pwc-white); box-shadow: 0 0 0 1px var(--pwc-grey-200); }
+.us-talent-map { display: block; width: 100%; height: auto; max-height: 420px; border-radius: var(--radius); }
+.map-marker { cursor: pointer; transition: r 0.15s, filter 0.15s; }
+.map-marker.highlight, .map-marker:hover { r: 12; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25)); }
+.map-city-label { pointer-events: none; user-select: none; }
+.people-map-table .movement-swatch { display: inline-block; width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--pwc-white); box-shadow: 0 0 0 1px var(--pwc-grey-200); vertical-align: middle; }
+.people-map-table td:first-child { width: 2rem; text-align: center; padding-left: 0.5rem; padding-right: 0.5rem; }
+.people-map-table .movement-type-label { font-size: 0.82rem; font-weight: 600; white-space: nowrap; }
+.people-map-table tbody tr.highlight { background: var(--pwc-orange-tint); outline: 2px solid var(--pwc-orange); outline-offset: -2px; }
+
 .profile-layout { display: grid; grid-template-columns: 200px 1fr; gap: 2rem; align-items: start; }
 .profile-photo img { width: 100%; border-radius: var(--radius); border: 1px solid var(--pwc-grey-200); }
 .profile-role { color: var(--pwc-orange); font-weight: 600; margin: 0 0 1rem; font-size: 0.95rem; }
@@ -792,6 +825,7 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
   .clients-section-table .clients-table tr { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; border-bottom: 1px solid var(--pwc-grey-200); padding: 0.25rem 0; }
   .clients-section-table .clients-table tr:last-child { border-bottom: none; }
   .client-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  .map-legend { flex-direction: column; gap: 0.65rem; }
   .header-inner { flex-direction: column; align-items: flex-start; padding: 0.75rem 1rem; }
   .practice-name { border-left: none; padding-left: 0; }
 }
@@ -858,6 +892,22 @@ export function buildWebsiteHtml(session, sessionId, options = {}) {
     }
     document.querySelectorAll('.agenda-link').forEach(link => {
       link.addEventListener('click', () => goToTab(link.dataset.goto));
+    });
+    document.querySelectorAll('.people-map-block').forEach(block => {
+      const rows = block.querySelectorAll('.people-row[data-person]');
+      const markers = block.querySelectorAll('.map-marker[data-person]');
+      function highlight(personId) {
+        rows.forEach(r => r.classList.toggle('highlight', r.dataset.person === personId));
+        markers.forEach(m => m.classList.toggle('highlight', m.dataset.person === personId));
+      }
+      rows.forEach(row => {
+        row.addEventListener('mouseenter', () => highlight(row.dataset.person));
+        row.addEventListener('mouseleave', () => highlight(null));
+      });
+      markers.forEach(marker => {
+        marker.addEventListener('mouseenter', () => highlight(marker.dataset.person));
+        marker.addEventListener('mouseleave', () => highlight(null));
+      });
     });
     const qaSubmit = document.getElementById('qa-submit');
     if (qaSubmit) {

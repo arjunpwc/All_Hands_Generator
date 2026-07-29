@@ -1,6 +1,4 @@
-/**
- * Build website content with explicit tab → slide mapping for Oracle D&A All Hands.
- */
+import { classifyMovement, MOVEMENT_TYPES } from "./people-map.mjs";
 
 const NOISE = [
   /^oracle d&a all hands/i,
@@ -366,14 +364,33 @@ function parsePeopleTable(slide, columns = 3) {
   const rows = [];
   const headerIdx = b.findIndex((x) => /^name$/i.test(x));
 
-  if (columns === 3) {
+  if (columns === 2) {
+    const data = headerIdx >= 0 ? b.slice(headerIdx + 3) : b.slice(2);
+    const levelRe =
+      /^(Managing Director|Senior Manager|Manager|Senior Associate|Associate \d+|Director|Intern)$/i;
+    const officeRe = /,\s*[A-Z]{2}$|,\s*IN$|^Mumbai|^Bangalore|^Hyderabad|^Gurugram/i;
+    let i = 0;
+    while (i + 1 < data.length) {
+      const name = data[i];
+      const level = data[i + 1];
+      if (!name || !level || isNoise(name) || name.length >= 50 || !levelRe.test(level)) {
+        i++;
+        continue;
+      }
+      rows.push({ name, level });
+      i += 2;
+      if (data[i] && officeRe.test(data[i])) i++;
+    }
+  } else if (columns === 3) {
     const data = headerIdx >= 0 ? b.slice(headerIdx + 3) : b.slice(2);
     for (let i = 0; i + 2 < data.length; i += 3) {
       const name = data[i];
       const level = data[i + 1];
       const office = data[i + 2];
       if (name && level && office && !isNoise(name) && name.length < 50) {
-        rows.push({ name, level, office });
+        const row = { name, level, office };
+        row.movementType = classifyMovement(row);
+        rows.push(row);
       }
     }
   } else if (columns === 5) {
@@ -395,6 +412,9 @@ function parsePeopleTable(slide, columns = 3) {
     title,
     subtitle,
     rows,
+    columns,
+    showMap: slide.index === 6,
+    legend: Object.entries(MOVEMENT_TYPES).map(([id, t]) => ({ id, ...t })),
     images: images(slide),
   };
 }
@@ -604,7 +624,8 @@ function parseSlideContent(slide) {
 
   if (idx === 4 || idx === 15) return parseFinancialSlide(slide);
   if (idx === 5) return parseDashboardSlide(slide);
-  if (idx === 6 || idx === 8) return parsePeopleTable(slide, 3);
+  if (idx === 6) return parsePeopleTable(slide, 3);
+  if (idx === 8) return parsePeopleTable(slide, 2);
   if (idx === 7) return parseProfileSlide(slide);
   if (idx === 9) return parsePeopleTable(slide, 5);
   if (idx === 11) return parseOrgDesignSlide(slide);

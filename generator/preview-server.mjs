@@ -40,17 +40,16 @@ const mime = {
   ".webp": "image/webp",
 };
 
-const viewerHtml = buildViewerHtml(session, sessionId, {
-  assetPrefix: "/assets/",
-  standalone: false,
-});
-
 const server = http.createServer((req, res) => {
   const url = new URL(req.url || "/", `http://${host}:${port}`);
 
   if (url.pathname === "/" || url.pathname === "/index.html") {
+    const html = buildViewerHtml(session, sessionId, {
+      assetPrefix: "/assets/",
+      standalone: false,
+    });
     res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
-    res.end(viewerHtml);
+    res.end(html);
     return;
   }
 
