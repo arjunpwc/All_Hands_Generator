@@ -227,6 +227,17 @@ function parseClientList(bulletsList, options = {}) {
   return { summary, clients, layout: "grid" };
 }
 
+function applyMetricOverrides(metrics, overrides) {
+  for (const metric of metrics) {
+    for (const [labelPattern, value] of overrides) {
+      if (labelPattern.test(metric.label)) {
+        metric.value = value;
+      }
+    }
+  }
+  return metrics;
+}
+
 function parseFinancialSlide(slide) {
   const b = rawBullets(slide).filter((x) => {
     if (/^oracle d&a all hands|^presentation title|^© |^agenda$|^appendix$|^thank you|^placeholder$/i.test(x)) return false;
@@ -236,6 +247,9 @@ function parseFinancialSlide(slide) {
   const title = slide.title;
   const subtitle = b.find((x) => /delivery, people/i.test(x)) || "";
   const keyMetrics = parsePrimaryMetrics(b);
+  if (slide.index === 4) {
+    applyMetricOverrides(keyMetrics, [[/^Growth\s*%$/i, "53.6%"]]);
+  }
   const industrySplit = parseIndustrySplit(b);
   const clients = parseClientList(b, { layout: slide.index === 4 ? "table" : "grid" });
   const notes = b.filter((x) => /pending partner|delivery \$/i.test(x));
@@ -248,7 +262,7 @@ function parseFinancialSlide(slide) {
   if (slide.index === 15) {
     return {
       type: "financial",
-      title,
+      title: "FY27 Financials",
       subtitle,
       keyMetrics,
       industrySplit: FY27_PIPELINE_INDUSTRY_SPLIT,
