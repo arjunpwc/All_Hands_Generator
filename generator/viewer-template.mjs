@@ -862,7 +862,7 @@ const FY27_SECTOR_PENDING_NOTE =
   "Sujith Kumar — sector TBD, not yet officially moved (pending transfer to US firm).";
 
 function renderGtmConnectorV() {
-  return `<div class="gtm-connector-v" aria-hidden="true"></div>`;
+  return "";
 }
 
 function renderGtmTeamNode(name, accent) {
@@ -1808,14 +1808,12 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 .sector-org-scroll { margin-top: 1rem; padding-bottom: 0.75rem; width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
 .gtm-vertical-chart { display: flex; flex-direction: row; align-items: flex-start; justify-content: center; gap: clamp(0.65rem, 1.2vw, 1rem); width: 100%; min-width: min-content; padding: 0.5rem 0 0.25rem; }
-.gtm-sector-block { display: flex; flex-direction: column; align-items: center; flex: 1 1 130px; min-width: 128px; max-width: 168px; width: auto; }
+.gtm-sector-block { display: flex; flex-direction: column; align-items: center; gap: 0.45rem; flex: 1 1 130px; min-width: 128px; max-width: 168px; width: auto; }
 #gtm-sector-hls { min-width: 148px; max-width: 188px; }
 .gtm-sector-node { width: 100%; text-align: center; background: var(--gtm-accent); color: var(--pwc-white); border: 2px solid color-mix(in srgb, var(--gtm-accent) 80%, var(--pwc-black)); border-radius: var(--radius); padding: 0.6rem 0.55rem; font-family: var(--font-sans); font-size: 0.82rem; font-weight: 700; letter-spacing: 0.03em; line-height: 1.25; box-shadow: var(--shadow); }
 .gtm-sector-block--muted .gtm-sector-node { background: var(--pwc-grey-100); color: var(--pwc-grey-700); border-color: var(--pwc-grey-200); box-shadow: none; }
 .gtm-app-node { width: 100%; text-align: center; background: var(--pwc-grey-100); border: 1px solid var(--pwc-grey-200); border-radius: var(--radius); padding: 0.5rem 0.45rem; font-size: 0.72rem; font-weight: 600; color: var(--pwc-grey-700); line-height: 1.3; }
-.gtm-connector-v { --gtm-line: #9CA3AF; width: 2px; height: 1.125rem; background: var(--gtm-line); position: relative; flex-shrink: 0; }
-.gtm-connector-v::after { content: ""; position: absolute; left: 50%; bottom: -5px; transform: translateX(-50%); width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid var(--gtm-line); }
-.gtm-team-tier { display: flex; flex-direction: column; align-items: center; width: 100%; }
+.gtm-team-tier { display: flex; flex-direction: column; align-items: center; gap: 0.45rem; width: 100%; }
 .gtm-team-node { width: 100%; text-align: center; background: color-mix(in srgb, var(--gtm-accent) 14%, var(--pwc-white)); border: 1px solid color-mix(in srgb, var(--gtm-accent) 40%, var(--pwc-grey-200)); border-left: 3px solid var(--gtm-accent); border-radius: var(--radius); padding: 0.42rem 0.45rem; font-size: 0.68rem; font-weight: 600; color: var(--pwc-grey-700); line-height: 1.25; }
 .gtm-subgroup { display: flex; flex-direction: column; align-items: center; width: 100%; }
 .gtm-subgroup-label { width: 100%; text-align: center; background: var(--pwc-grey-100); border: 1px solid var(--pwc-grey-200); border-radius: var(--radius); padding: 0.42rem 0.45rem; font-size: 0.68rem; font-weight: 700; color: var(--pwc-grey-700); line-height: 1.25; }
