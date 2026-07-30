@@ -39,6 +39,17 @@ function renderImages(imgs, assetPrefix, layout = "stack") {
     .join("")}</div>`;
 }
 
+function renderGalleryImages(imgs, assetPrefix) {
+  if (!imgs?.length) return "";
+  return `<div class="image-grid gallery-grid">${imgs
+    .map((i) => {
+      const featured = i.large || /basecamp-collage/i.test(i.src || "");
+      const figClass = featured ? "slide-figure featured" : "slide-figure";
+      return `<figure class="${figClass}">${imgTag(i.src, i.alt, assetPrefix)}</figure>`;
+    })
+    .join("")}</div>`;
+}
+
 function renderDonutChart(items) {
   if (!items?.length) return "";
   const total = items.reduce((sum, i) => sum + parseFloat(i.value), 0) || 100;
@@ -1039,15 +1050,23 @@ function renderTraining(block, assetPrefix) {
   </article>`;
 }
 
+function renderBlockLink(link) {
+  if (!link) return "";
+  if (typeof link === "string") {
+    return `<p class="block-link">${escapeHtml(link)}</p>`;
+  }
+  return `<p class="block-link"><a href="${escapeHtml(link.href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(link.text)}</a></p>`;
+}
+
 function renderPhotoGallery(block, assetPrefix) {
   return `
   <article class="content-block gallery-block">
     <header class="block-header">
       <h2>${escapeHtml(block.title)}</h2>
       <p class="lead-text">${escapeHtml(block.description)}</p>
-      ${block.link ? `<p class="block-link">${escapeHtml(block.link)}</p>` : ""}
+      ${renderBlockLink(block.link)}
     </header>
-    ${renderImages(block.images, assetPrefix, "grid")}
+    ${renderGalleryImages(block.images, assetPrefix)}
   </article>`;
 }
 
@@ -1343,6 +1362,9 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 .block-subtitle { color: var(--pwc-grey-500); font-size: 0.95rem; margin: 0 auto 1rem; max-width: 72ch; }
 .block-note { font-size: 0.85rem; color: var(--pwc-grey-500); font-style: italic; margin: 0.5rem auto 1rem; max-width: 72ch; }
 .lead-text { color: var(--pwc-grey-700); font-size: 1rem; margin: 0 auto 1rem; max-width: 72ch; }
+.block-link { margin: 0 auto 1.25rem; max-width: 72ch; font-weight: 600; }
+.block-link a { color: var(--pwc-orange-dark); text-decoration: underline; text-underline-offset: 0.15em; }
+.block-link a:hover { color: var(--pwc-orange); }
 
 .content-block .table-wrap,
 .content-block .data-table,
@@ -1404,6 +1426,9 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 
 .image-stack { display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem; }
 .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.85rem; margin-top: 1rem; }
+.gallery-block .gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; margin-top: 1.25rem; }
+.gallery-block .slide-figure.featured { grid-column: 1 / -1; }
+.gallery-block .slide-figure.featured img { width: 100%; max-width: 100%; }
 .slide-figure { margin: 0; }
 .slide-figure img { width: 100%; display: block; border: none; border-radius: var(--radius); background: transparent; }
 

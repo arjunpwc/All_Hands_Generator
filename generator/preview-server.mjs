@@ -313,15 +313,12 @@ server.listen(port, host, () => {
 
 
   if (openBrowser) {
-
     const openUrl = `${url}?v=${Date.now()}`;
-
-    const cmd = process.platform === "win32" ? "cmd" : "xdg-open";
-
-    const cmdArgs = process.platform === "win32" ? ["/c", "start", "", openUrl] : [openUrl];
-
-    spawn(cmd, cmdArgs, { detached: true, stdio: "ignore" }).unref();
-
+    if (process.platform === "win32") {
+      spawn("cmd.exe", ["/c", "start", openUrl], { detached: true, stdio: "ignore" }).unref();
+    } else {
+      spawn("xdg-open", [openUrl], { detached: true, stdio: "ignore" }).unref();
+    }
   }
 
 });

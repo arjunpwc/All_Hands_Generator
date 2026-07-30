@@ -43,7 +43,11 @@ try {
   Write-Host "Server starting - open $url manually if browser did not open." -ForegroundColor Yellow
 }
 
-Start-Process "cmd.exe" -ArgumentList @("/c", "start", "", "$url?v=$(Get-Date -Format 'yyyyMMddHHmmss')")
+try {
+  Start-Process cmd.exe -ArgumentList "/c", "start", "$url?v=$(Get-Date -Format 'yyyyMMddHHmmss')"
+} catch {
+  Write-Host "Could not open browser - go to $url manually." -ForegroundColor Yellow
+}
 
 Write-Host ""
 Write-Host "PREVIEW URL: $url" -ForegroundColor Green

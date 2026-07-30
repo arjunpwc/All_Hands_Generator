@@ -825,6 +825,12 @@
           "type": "image",
           "src": "assets/slide-19-image34.jpeg",
           "alt": "image34.jpeg"
+        },
+        {
+          "type": "image",
+          "src": "assets/slide-19-basecamp-collage.png",
+          "alt": "Partner Basecamp training recap photos",
+          "large": true
         }
       ],
       "notes": ""

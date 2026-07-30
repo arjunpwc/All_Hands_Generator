@@ -818,15 +818,19 @@ function parseTrainingSlide(slide) {
   };
 }
 
+const ANTHROPIC_BASECAMP_FORM_URL =
+  "https://forms.cloud.microsoft/pages/responsepage.aspx?id=oJQyUSA-skGpcG0wvxVG-ky5bqwx9pFDp7lIMfGmPTNUNkpER0JPS0JLUzhESEZIRDVUQlNQWkoyMC4u&route=shorturl";
+
 function parseBasecampSlide(slide) {
   const b = bullets(slide);
+  const linkText = b.find((x) => /link to anthropic/i.test(x)) || "";
   return {
     type: "photo-gallery",
     title: "Partner Basecamp Recap + Photos",
     description:
       b.find((x) => x.length > 60 && /two-day program/i.test(x)) ||
       "A two-day program built around the commercial framework, the technical foundations, and the applied work.",
-    link: b.find((x) => /link to anthropic/i.test(x)) || "",
+    link: linkText ? { text: linkText, href: ANTHROPIC_BASECAMP_FORM_URL } : null,
     images: images(slide),
   };
 }
