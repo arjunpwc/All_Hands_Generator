@@ -229,6 +229,140 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 .profile-layout { display: grid; grid-template-columns: minmax(180px, 240px) 1fr; gap: clamp(1.5rem, 3vw, 2.5rem); align-items: start; width: 100%; }
 .profile-photo img { width: 100%; border-radius: var(--radius); border: 1px solid var(--pwc-grey-200); }
 .profile-role { color: var(--pwc-orange); font-weight: 600; margin: 0 0 1rem; font-size: 0.95rem; }
+
+.consultant-profile-block { text-align: left; align-items: stretch; padding-top: 1.5rem; padding-bottom: 1.5rem; }
+.consultant-profile-full-image {
+  display: block;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  height: auto;
+  border: 1px solid var(--pwc-grey-200);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.consultant-profile-card {
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) 1fr;
+  max-width: 960px;
+  margin: 0 auto;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--pwc-grey-200);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.consultant-profile-sidebar {
+  background: #000000;
+  color: #FFFFFF;
+  padding: 2rem 1.5rem 1.75rem;
+}
+.consultant-profile-photo {
+  width: 132px;
+  height: 132px;
+  margin: 0 auto 1.25rem;
+  border-radius: 50%;
+  border: 3px solid #FD5108;
+  overflow: hidden;
+  background: #2D2D2D;
+}
+.consultant-profile-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
+  display: block;
+}
+.consultant-profile-name {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1.2;
+}
+.consultant-profile-role {
+  margin: 0 0 0.65rem;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: #FFFFFF;
+}
+.consultant-profile-subtitle {
+  margin: 0 0 1rem;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-style: italic;
+  color: #9CA3AF;
+}
+.consultant-profile-divider {
+  border: none;
+  border-top: 1px solid #4B5563;
+  margin: 0 0 1rem;
+}
+.consultant-profile-meta-item { margin-bottom: 0.85rem; }
+.consultant-profile-meta-item:last-child { margin-bottom: 0; }
+.consultant-profile-meta-label {
+  font-family: var(--font-sans);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #FD5108;
+  margin-bottom: 0.2rem;
+}
+.consultant-profile-meta-value {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1.35;
+}
+.consultant-profile-main {
+  background: #FFFFFF;
+  padding: 2rem 2rem 1.75rem;
+  text-align: left;
+}
+.consultant-profile-section { margin-bottom: 1.75rem; }
+.consultant-profile-section:last-child { margin-bottom: 0; }
+.consultant-profile-section-head {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.75rem;
+}
+.consultant-profile-section-num {
+  flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: #FD5108;
+  color: #FFFFFF;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.consultant-profile-section-head h3 {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #2D2D2D;
+  line-height: 1.3;
+}
+.consultant-profile-section ul {
+  margin: 0;
+  padding-left: 1.15rem;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: #2D2D2D;
+}
+.consultant-profile-section li { margin-bottom: 0.45rem; }
+.consultant-profile-section li:last-child { margin-bottom: 0; }
 .fun-fact { background: var(--pwc-orange-tint); padding: 1rem; border-radius: var(--radius); font-size: 0.9rem; margin-top: 1rem; }
 
 .pillar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin-top: 1rem; }
@@ -238,6 +372,136 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 .pillar-card li { margin-bottom: 0.35rem; }
 .leadership-list { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
 .leadership-list li { background: var(--pwc-grey-100); padding: 0.5rem 0.85rem; border-radius: var(--radius); font-size: 0.88rem; }
+
+.org-slide-layout { text-align: left; align-items: stretch; }
+.org-slide-frame { max-width: 960px; margin: 0 auto; width: 100%; }
+.org-slide-eyebrow {
+  margin: 0 0 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #D04A02;
+  font-family: var(--font-sans);
+}
+.org-slide-title {
+  margin: 0 0 0.65rem;
+  font-size: clamp(1.35rem, 2.4vw, 1.65rem);
+  font-weight: 700;
+  color: #2D2D2D;
+  font-family: var(--font-sans);
+  line-height: 1.2;
+}
+.org-slide-rule {
+  width: 2.5rem;
+  height: 3px;
+  background: #D04A02;
+  margin: 0 0 0.85rem;
+}
+.org-slide-desc {
+  margin: 0 0 1.35rem;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: #464646;
+  max-width: none;
+}
+.org-slide-leadership-head {
+  background: #2D2D2D;
+  color: #FFFFFF;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.55rem 0.85rem;
+  text-align: left;
+}
+.org-slide-leadership-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin-bottom: 1.35rem;
+}
+.org-slide-lead-box {
+  background: #FFF1E3;
+  border: 1px solid #D04A02;
+  color: #D04A02;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 0.7rem 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  line-height: 1.35;
+}
+.org-slide-lead-box + .org-slide-lead-box { border-left: none; }
+.org-slide-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin-bottom: 0;
+  align-items: stretch;
+}
+.org-slide-col { display: flex; flex-direction: column; min-width: 0; }
+.org-slide-col-head {
+  color: #FFFFFF;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 0.65rem 0.45rem;
+  line-height: 1.3;
+  min-height: 2.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.org-slide-col-body {
+  background: #FFFFFF;
+  border: 1px solid #DEDEDE;
+  border-top: none;
+  border-left: none;
+  padding: 0.85rem 0.75rem 1rem;
+  flex: 1;
+}
+.org-slide-col:first-child .org-slide-col-body { border-left: 1px solid #DEDEDE; }
+.org-slide-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: #2D2D2D;
+  font-family: var(--font-sans);
+}
+.org-slide-list li { margin-bottom: 0.35rem; }
+.org-slide-list li:last-child { margin-bottom: 0; }
+.org-slide-note { font-style: italic; list-style: none; margin-left: -1.1rem; padding-left: 0; }
+.org-slide-enablers {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem 1rem;
+  background: #464646;
+  padding: 0.55rem 0.85rem;
+  margin-top: 0;
+}
+.org-slide-enablers-label {
+  color: #EB8C00;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.org-slide-enablers-text {
+  color: #FFFFFF;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  line-height: 1.45;
+  flex: 1;
+  min-width: 200px;
+}
 
 .placeholder-card { text-align: center; padding: 3rem 2rem; background: var(--pwc-grey-100); border-radius: var(--radius); border: 2px dashed var(--pwc-grey-200); }
 .placeholder-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
@@ -503,6 +767,8 @@ body { padding-bottom: 2rem; }
   .hero { grid-template-columns: 1fr; }
   .hero h1 { font-size: 1.5rem; }
   .profile-layout { grid-template-columns: 1fr; }
+  .consultant-profile-card { grid-template-columns: 1fr; }
+  .consultant-profile-main { padding: 1.25rem 1rem; }
   .donut-chart-wrap { grid-template-columns: 1fr; justify-items: center; }
   .financial-visual-row { grid-template-columns: 1fr; }
   .dashboard-mosaic { grid-template-columns: 1fr; }
@@ -531,6 +797,9 @@ body { padding-bottom: 2rem; }
   .map-legend { flex-direction: column; gap: 0.65rem; }
   .header-inner { flex-direction: column; align-items: flex-start; padding: 0.75rem var(--page-padding); }
   .practice-name { border-left: none; padding-left: 0; }
+  .org-slide-columns,
+  .org-slide-leadership-row { grid-template-columns: 1fr; }
+  .org-slide-enablers { flex-direction: column; align-items: flex-start; }
 }
 @media (max-width: 520px) {
   .tab-body-with-nav { --section-nav-width: 140px; }
@@ -550,8 +819,8 @@ body { padding-bottom: 2rem; }
 }
 </style>
 </head>
-<body data-built-at="2026-07-30T16:43:12.003Z">
-  <!-- preview build: 2026-07-30T16:43:12.003Z -->
+<body data-built-at="2026-07-30T17:52:50.849Z">
+  <!-- preview build: 2026-07-30T17:52:50.849Z -->
   <header class="site-header">
     <div class="header-accent"></div>
     <div class="header-inner">
@@ -613,7 +882,7 @@ body { padding-bottom: 2rem; }
       <div class="metric-value">151</div>
       <div class="metric-label">FY26 Headcount</div>
     </div></div>
-    <p class="block-note">Delivery $ — pending partner allocation. Partners to review FY25/FY26 contract $</p>
+    
     <div class="financial-visual-row"><div class="industry-section">
       <h3>Industry Split of Projects</h3>
       
@@ -874,6 +1143,7 @@ body { padding-bottom: 2rem; }
         <tbody><tr class="people-row" data-person="ruchir-patel"><td><span class="movement-swatch" style="background:#E8830E" title="New Hire"></span></td><td><strong>Ruchir Patel</strong></td><td>Director</td><td>Charlotte, NC</td><td><span class="movement-type-label" style="color:#E8830E">New Hire</span></td></tr><tr class="people-row" data-person="vinodh-mohan"><td><span class="movement-swatch" style="background:#E8830E" title="New Hire"></span></td><td><strong>Vinodh Mohan</strong></td><td>Senior Manager</td><td>Boston, MA</td><td><span class="movement-type-label" style="color:#E8830E">New Hire</span></td></tr><tr class="people-row" data-person="saad-imam"><td><span class="movement-swatch" style="background:#E8830E" title="New Hire"></span></td><td><strong>Saad Imam</strong></td><td>Senior Manager</td><td>Chicago, IL</td><td><span class="movement-type-label" style="color:#E8830E">New Hire</span></td></tr><tr class="people-row" data-person="ronak-pansara"><td><span class="movement-swatch" style="background:#E8830E" title="New Hire"></span></td><td><strong>Ronak Pansara</strong></td><td>Manager</td><td>Austin, TX</td><td><span class="movement-type-label" style="color:#E8830E">New Hire</span></td></tr><tr class="people-row" data-person="anil-yanamandra"><td><span class="movement-swatch" style="background:#E8830E" title="New Hire"></span></td><td><strong>Anil Yanamandra</strong></td><td>Manager</td><td>Indianapolis, IN</td><td><span class="movement-type-label" style="color:#E8830E">New Hire</span></td></tr><tr class="people-row" data-person="yanal-sakaji"><td><span class="movement-swatch" style="background:#E8830E" title="New Hire"></span></td><td><strong>Yanal Sakaji</strong></td><td>Manager</td><td>Tampa, FL</td><td><span class="movement-type-label" style="color:#E8830E">New Hire</span></td></tr><tr class="people-row" data-person="paul-colucci"><td><span class="movement-swatch" style="background:#E8830E" title="New Hire"></span></td><td><strong>Paul Colucci</strong></td><td>Manager</td><td>Chicago, IL</td><td><span class="movement-type-label" style="color:#E8830E">New Hire</span></td></tr><tr class="people-row" data-person="govind-manoharan"><td><span class="movement-swatch" style="background:#E8830E" title="New Hire"></span></td><td><strong>Govind Manoharan</strong></td><td>Manager</td><td>Miami, FL</td><td><span class="movement-type-label" style="color:#E8830E">New Hire</span></td></tr><tr class="people-row" data-person="jesus-ruvalcaba"><td><span class="movement-swatch" style="background:#E8830E" title="New Hire"></span></td><td><strong>Jesus Ruvalcaba</strong></td><td>Senior Associate</td><td>Washington, DC</td><td><span class="movement-type-label" style="color:#E8830E">New Hire</span></td></tr><tr class="people-row" data-person="yash-jahagirdar"><td><span class="movement-swatch" style="background:#E8830E" title="New Hire"></span></td><td><strong>Yash Jahagirdar</strong></td><td>Senior Associate</td><td>Chicago, IL</td><td><span class="movement-type-label" style="color:#E8830E">New Hire</span></td></tr><tr class="people-row" data-person="neel-doshi"><td><span class="movement-swatch" style="background:#E8830E" title="New Hire"></span></td><td><strong>Neel Doshi</strong></td><td>Senior Associate</td><td>Irvine, CA</td><td><span class="movement-type-label" style="color:#E8830E">New Hire</span></td></tr><tr class="people-row" data-person="mady-deb"><td><span class="movement-swatch" style="background:#E8830E" title="New Hire"></span></td><td><strong>Mady Deb</strong></td><td>Associate</td><td>Raleigh, NC</td><td><span class="movement-type-label" style="color:#E8830E">New Hire</span></td></tr><tr class="people-row" data-person="shreyas-malhotra"><td><span class="movement-swatch" style="background:#E8830E" title="New Hire"></span></td><td><strong>Shreyas Malhotra</strong></td><td>Associate</td><td>Raleigh, NC</td><td><span class="movement-type-label" style="color:#E8830E">New Hire</span></td></tr><tr class="people-row" data-person="anas-masri"><td><span class="movement-swatch" style="background:#0F6E56" title="Internal Transfer"></span></td><td><strong>Anas Masri</strong></td><td>Associate</td><td>Houston, TX</td><td><span class="movement-type-label" style="color:#0F6E56">Internal Transfer</span></td></tr><tr class="people-row" data-person="samantha-garza"><td><span class="movement-swatch" style="background:#534AB7" title="Intern"></span></td><td><strong>Samantha Garza</strong></td><td>Intern</td><td>Dallas, TX</td><td><span class="movement-type-label" style="color:#534AB7">Intern</span></td></tr><tr class="people-row" data-person="scarlett-czarnecki"><td><span class="movement-swatch" style="background:#534AB7" title="Intern"></span></td><td><strong>Scarlett Czarnecki</strong></td><td>Intern</td><td>New York, NY</td><td><span class="movement-type-label" style="color:#534AB7">Intern</span></td></tr></tbody>
       </table>
     </div>
+    
   </article>
   <article id="fy26-recap-abhishek-chetnani" class="content-block profile-block">
     <div class="profile-layout">
@@ -900,6 +1170,7 @@ body { padding-bottom: 2rem; }
         <tbody><tr class="people-row" data-person="abhishek-chetani"><td><strong>Abhishek Chetani</strong></td><td>Managing Director</td></tr><tr class="people-row" data-person="aritra-roy"><td><strong>Aritra Roy</strong></td><td>Manager</td></tr><tr class="people-row" data-person="bhawesh-chavan"><td><strong>Bhawesh Chavan</strong></td><td>Senior Associate</td></tr><tr class="people-row" data-person="ravindra-kannojiya"><td><strong>Ravindra Kannojiya</strong></td><td>Manager</td></tr><tr class="people-row" data-person="richa-khatana"><td><strong>Richa khatana</strong></td><td>Manager</td></tr><tr class="people-row" data-person="rajdip-paul"><td><strong>Rajdip Paul</strong></td><td>Senior Associate</td></tr><tr class="people-row" data-person="arpit-tiwari"><td><strong>Arpit Tiwari</strong></td><td>Associate 2</td></tr><tr class="people-row" data-person="saket-katkar"><td><strong>Saket Katkar</strong></td><td>Manager</td></tr><tr class="people-row" data-person="silky-khatun"><td><strong>Silky Khatun</strong></td><td>Manager</td></tr><tr class="people-row" data-person="yogesh-borse"><td><strong>Yogesh Borse</strong></td><td>Senior Associate</td></tr><tr class="people-row" data-person="danieel-praabhu-a"><td><strong>Danieel Praabhu A</strong></td><td>Associate 2</td></tr><tr class="people-row" data-person="abinesh-dhananjayan"><td><strong>Abinesh Dhananjayan</strong></td><td>Senior Associate</td></tr><tr class="people-row" data-person="parshv-jain"><td><strong>Parshv Jain</strong></td><td>Senior Associate</td></tr><tr class="people-row" data-person="ashish-verma"><td><strong>Ashish Verma</strong></td><td>Senior Associate</td></tr><tr class="people-row" data-person="l-manjula"><td><strong>L Manjula</strong></td><td>Senior Associate</td></tr><tr class="people-row" data-person="gunjan-p"><td><strong>Gunjan P</strong></td><td>Senior Associate</td></tr><tr class="people-row" data-person="ramya-girish"><td><strong>Ramya Girish</strong></td><td>Senior Associate</td></tr><tr class="people-row" data-person="anik-pathan"><td><strong>Anik Pathan</strong></td><td>Senior Associate</td></tr><tr class="people-row" data-person="neeraj-paliwal"><td><strong>Neeraj Paliwal</strong></td><td>Senior Associate</td></tr><tr class="people-row" data-person="shah-jalpa-bharatkumar"><td><strong>Shah Jalpa Bharatkumar</strong></td><td>Senior Manager</td></tr><tr class="people-row" data-person="priyanka-arora"><td><strong>PRIYANKA ARORA</strong></td><td>Senior Associate</td></tr></tbody>
       </table>
     </div>
+    
   </article>
   <article id="fy26-recap-fy27-promotions" class="content-block table-block">
     <header class="block-header">
@@ -913,6 +1184,7 @@ body { padding-bottom: 2rem; }
         <tbody><tr><td>Divya Thathu</td><td>D&amp;A</td><td>Chicago – One North Wacker Dr</td><td><span class="badge">Director</span></td><td>Yeon Lee</td></tr><tr><td>Shierly Mondianti</td><td>D&amp;A</td><td>New York – 300 Madison Ave</td><td><span class="badge">Director</span></td><td>Tojo Johnson</td></tr><tr><td>Christina Maurer</td><td>D&amp;A</td><td>St. Louis – 6 Cardinal Way</td><td><span class="badge">Senior Manager</span></td><td>Ajeetha Menezes</td></tr><tr><td>Emily Zolkowski</td><td>D&amp;A</td><td>Washington D.C - 655 New York Ave</td><td><span class="badge">Senior Manager</span></td><td>Ajeetha Menezes</td></tr><tr><td>Hemant Patil</td><td>D&amp;A</td><td>Silicon Valley – 488 Almaden Blvd</td><td><span class="badge">Senior Manager</span></td><td>Brad Housour</td></tr><tr><td>Deepak M Chakrasali</td><td>D&amp;A</td><td>Bangalore</td><td><span class="badge">Manager</span></td><td>Sujit Shaw</td></tr><tr><td>Rajeswari Chandu</td><td>D&amp;A</td><td>Hyderabad</td><td><span class="badge">Manager</span></td><td>Sujit Shaw</td></tr><tr><td>Sai Keerthi Ramaraju</td><td>D&amp;A</td><td>Hartford – CityPlace1. 185 Asylum street</td><td><span class="badge">Manager</span></td><td>Fania Georgiades</td></tr><tr><td>Souradeep Pramanik</td><td>D&amp;A</td><td>Chicago – One North Wacker Dr</td><td><span class="badge">Manager</span></td><td>Rikin Parekh</td></tr><tr><td>Hannah Marcus</td><td>D&amp;A</td><td>Boston - 101 Seaport Boulevard</td><td><span class="badge">Senior Associate</span></td><td>Rikin Parekh</td></tr><tr><td>Ritvik Rajeev</td><td>D&amp;A</td><td>New York - 300 Madison Avenue</td><td><span class="badge">Senior Associate</span></td><td>Srikanth Vemula</td></tr><tr><td>Vatsala Singh</td><td>D&amp;A</td><td>Gurugram</td><td><span class="badge">Senior Associate</span></td><td>Sahithi Kolasani</td></tr></tbody>
       </table>
     </div>
+    <p class="block-note">*New partner leads for FY27*</p>
   </article></div>
       </div>
     </div></div><div class="tab-panel" id="panel-fy27-kickoff" role="tabpanel">
@@ -923,33 +1195,85 @@ body { padding-bottom: 2rem; }
     <div class="tab-body tab-body-with-nav">
       <aside class="section-nav-sidebar">
     <p class="section-nav-heading">On this page</p>
-    <nav class="section-nav" aria-label="Jump to section"><a class="section-nav-link" href="#fy27-kickoff-the-structural-change-one-team" data-section="fy27-kickoff-the-structural-change-one-team">The Structural Change: One Team</a><a class="section-nav-link" href="#fy27-kickoff-apollo-and-ate" data-section="fy27-kickoff-apollo-and-ate">Apollo and ATE</a></nav>
+    <nav class="section-nav" aria-label="Jump to section"><a class="section-nav-link" href="#fy27-kickoff-the-structural-change-one-team" data-section="fy27-kickoff-the-structural-change-one-team">The Structural Change: One Team</a><a class="section-nav-link" href="#fy27-kickoff-sample-profile" data-section="fy27-kickoff-sample-profile">Sample Profile</a><a class="section-nav-link" href="#fy27-kickoff-apollo-and-ate" data-section="fy27-kickoff-apollo-and-ate">Apollo and ATE</a></nav>
   </aside>
       <div class="tab-body-main">
         <div class="blocks-stack">
-  <article id="fy27-kickoff-the-structural-change-one-team" class="content-block org-block">
-    <header class="block-header">
-      <h2>The Structural Change: One Team</h2>
-      <p class="lead-text">Data &amp; Analytics and Technology merge into a single team. Within it, sub-pillars including the Oracle AI Tower, making data a strategic value enabler for our clients foundational for AI.</p>
-    </header>
-    <div class="org-section">
-        <h3>Leadership</h3>
-        <ul class="leadership-list"><li>TBD | Prashant Sharma</li><li>Judy Kim | Sujith Kumar | Nikhil Soni</li><li>Sunil Warier | Satyabrata Padhy</li></ul>
+  <article id="fy27-kickoff-the-structural-change-one-team" class="content-block org-block org-slide-layout">
+    <div class="org-slide-frame">
+      <p class="org-slide-eyebrow">ORG DESIGN</p>
+      <h2 class="org-slide-title">The Structural Change: One Team</h2>
+      <div class="org-slide-rule" aria-hidden="true"></div>
+      <p class="org-slide-desc">Data &amp; Analytics and Technology merge into a single team. Within it, sub-pillars including the Oracle AI Tower, making data a strategic value enabler for our clients foundational for AI.</p>
+
+      <div class="org-slide-leadership-head">Leadership</div>
+      <div class="org-slide-leadership-row">
+        <div class="org-slide-lead-box">TBD | Prashant Sharma</div><div class="org-slide-lead-box">Judy Kim | Sujith Kumar | Nikhil Soni</div><div class="org-slide-lead-box">Sunil Warier | Satyabrata Padhy</div>
       </div>
-    <div class="pillar-grid">
-      
-        <div class="pillar-card">
-          <h3>Engineering and Infrastructure</h3>
-          <ul><li>Data Modeling</li><li>Integrations &amp; Extensions</li><li>Conversions</li><li>Infrastructure (OCI)</li><li>Application Engineering Development (AI Led)</li><li>Oracle Data solutions (e.g., OFSAA)</li><li>AI for Value</li><li>Innovation</li><li>Standards and Tooling</li><li>Complex AI Solution Design &amp; Delivery</li><li>Value Engineering</li><li>Asset Industrialization Support</li><li>( Close collaboration with DCM Project Apollo )</li></ul>
+
+      <div class="org-slide-columns">
+        
+          <div class="org-slide-col">
+            <div class="org-slide-col-head" style="background:#EB8C00">Engineering and Infrastructure</div>
+            <div class="org-slide-col-body"><ul class="org-slide-list"><li>Data Modeling</li><li>Integrations &amp; Extensions</li><li>Conversions</li><li>Infrastructure (OCI)</li><li>Application Engineering Development (AI Led)</li><li>Oracle Data solutions (e.g., OFSAA)</li></ul></div>
+          </div>
+          <div class="org-slide-col">
+            <div class="org-slide-col-head" style="background:#D04A02">AI for Value</div>
+            <div class="org-slide-col-body"><ul class="org-slide-list"><li>Innovation</li><li>Standards and Tooling</li><li>Complex AI Solution Design &amp; Delivery</li><li>Value Engineering</li><li>Asset Industrialization Support</li><li class="org-slide-note">( Close collaboration with DCM Project Apollo )</li></ul></div>
+          </div>
+          <div class="org-slide-col">
+            <div class="org-slide-col-head" style="background:#A32020">Data Management &amp; Reporting</div>
+            <div class="org-slide-col-body"><ul class="org-slide-list"><li>Conversions</li><li>Data &amp; Reporting Strategy</li><li>Reporting / Analytic Delivery (OTBI, OAC, FDI, other)</li><li>Analytics Platform Enablement</li><li>Master Data Management</li><li>Data Governance and Quality</li></ul></div>
+          </div>
+      </div>
+
+      <div class="org-slide-enablers">
+        <span class="org-slide-enablers-label">Cross-Cutting Enablers</span>
+        <span class="org-slide-enablers-text">Learning and Development, Cross-Training | Delivery Standards and Methodology | Labor and Demand Management | Go to Market | Alliance Strategy | Delivery Automation and Efficiency</span>
+      </div>
+    </div>
+  </article>
+  <article id="fy27-kickoff-sample-profile" class="content-block consultant-profile-block">
+    <div class="consultant-profile-card">
+      <aside class="consultant-profile-sidebar">
+        <div class="consultant-profile-photo"><img src="assets/sample-profile-headshot.png" alt="Kaitlyn Price" loading="lazy" /></div>
+        <h2 class="consultant-profile-name">Kaitlyn Price</h2>
+        <p class="consultant-profile-role">Senior Associate, Digital Core Modernization, Oracle Core ERP, Data &amp; Analytics</p>
+        <p class="consultant-profile-subtitle">Consultant Profile — FY27</p>
+        <hr class="consultant-profile-divider" />
+        
+      <div class="consultant-profile-meta-item">
+        <div class="consultant-profile-meta-label">Development Leader</div>
+        <div class="consultant-profile-meta-value">Divya Thathu, Director</div>
+      </div>
+      <div class="consultant-profile-meta-item">
+        <div class="consultant-profile-meta-label">Coach</div>
+        <div class="consultant-profile-meta-value">Ajeetha Menezes, Managing Director</div>
+      </div>
+      <div class="consultant-profile-meta-item">
+        <div class="consultant-profile-meta-label">Industry Alignment</div>
+        <div class="consultant-profile-meta-value">Consumer Markets</div>
+      </div>
+      <div class="consultant-profile-meta-item">
+        <div class="consultant-profile-meta-label">Sector Alignment</div>
+        <div class="consultant-profile-meta-value">Technology, Transportation, and Leisure</div>
+      </div>
+      </aside>
+      <div class="consultant-profile-main">
+      <section class="consultant-profile-section">
+        <div class="consultant-profile-section-head">
+          <span class="consultant-profile-section-num">1</span>
+          <h3>Goals &amp; Objectives for the Year</h3>
         </div>
-        <div class="pillar-card">
-          <h3>Data Management &amp; Reporting</h3>
-          <ul><li>Conversions</li><li>Data &amp; Reporting Strategy</li><li>Reporting / Analytic Delivery (OTBI, OAC, FDI, other)</li><li>Analytics Platform Enablement</li><li>Master Data Management</li><li>Data Governance and Quality</li></ul>
+        <ul><li>Strengthen technical reporting skills through clear, structured client deliverables.</li><li>Build a stronger point of view to guide clients on Oracle ERP and data strategy.</li><li>Manage internal and external workstreams to balance delivery priorities effectively.</li><li>Support proposal development and sales cycle activities.</li><li>Progress toward promotion by closing key development skill gaps.</li></ul>
+      </section>
+      <section class="consultant-profile-section">
+        <div class="consultant-profile-section-head">
+          <span class="consultant-profile-section-num">2</span>
+          <h3>Reinvest Activities</h3>
         </div>
-        <div class="pillar-card">
-          <h3>Cross-Cutting Enablers</h3>
-          <ul><li>Learning and Development, Cross-Training | Delivery Standards and Methodology | Labor and Demand Management | Go to Market | Alliance Strategy | Delivery Automation and Efficiency</li></ul>
-        </div>
+        <ul><li>FDI &amp; AIDP Go-To-Market: Drive campaign strategy, account analysis, and planning for FY27 goal.</li><li>D&amp;A Communications: Coordinate all-hands materials, quarterly newsletter, and miscellaneous.</li><li>Recruiting &amp; Campus Engagement: Support new graduate hiring evaluations and participate in panels.</li><li>Practice Development: Support proposal development and internal initiatives.</li></ul>
+      </section></div>
     </div>
   </article>
   <article id="fy27-kickoff-apollo-and-ate" class="content-block apollo-block">
@@ -1277,7 +1601,7 @@ body { padding-bottom: 2rem; }
       </div>
     </section></div></main>
   <footer class="site-footer">© 2026 PwC. All rights reserved. PwC refers to the PwC network and/or one or more of its member firms, each of which is a separate legal entity. Please see www.pwc.com/structure for further details.</footer>
-  <div class="preview-build-banner" aria-hidden="true">Preview · built 2026-07-30T16:43:12.003Z</div>
+  <div class="preview-build-banner" aria-hidden="true">Preview · built 2026-07-30T17:52:50.849Z</div>
   <script>
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {

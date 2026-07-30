@@ -449,6 +449,60 @@ function renderPeopleTable(block, assetPrefix) {
         <tbody>${rows}</tbody>
       </table>
     </div>
+    ${block.notes?.length ? `<p class="block-note">${escapeHtml(block.notes[0])}</p>` : ""}
+  </article>`;
+}
+
+function renderConsultantProfileSample(block, assetPrefix) {
+  if (block.image?.src) {
+    const src = block.image.src;
+    const url = src.startsWith("assets/") ? assetPrefix + src.slice(7) : assetPrefix + src;
+    return `
+  <article class="content-block consultant-profile-block">
+    <img class="consultant-profile-full-image" src="${escapeHtml(url)}" alt="${escapeHtml(block.image.alt || "Sample Consultant Profile")}" loading="lazy" />
+  </article>`;
+  }
+
+  const photo = block.photo?.src
+    ? `<div class="consultant-profile-photo">${imgTag(block.photo.src, block.name, assetPrefix)}</div>`
+    : "";
+
+  const meta = (block.meta || [])
+    .map(
+      (m) => `
+      <div class="consultant-profile-meta-item">
+        <div class="consultant-profile-meta-label">${escapeHtml(m.label)}</div>
+        <div class="consultant-profile-meta-value">${escapeHtml(m.value)}</div>
+      </div>`
+    )
+    .join("");
+
+  const sections = (block.sections || [])
+    .map(
+      (s) => `
+      <section class="consultant-profile-section">
+        <div class="consultant-profile-section-head">
+          <span class="consultant-profile-section-num">${s.num}</span>
+          <h3>${escapeHtml(s.title)}</h3>
+        </div>
+        <ul>${s.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+      </section>`
+    )
+    .join("");
+
+  return `
+  <article class="content-block consultant-profile-block">
+    <div class="consultant-profile-card">
+      <aside class="consultant-profile-sidebar">
+        ${photo}
+        <h2 class="consultant-profile-name">${escapeHtml(block.name)}</h2>
+        <p class="consultant-profile-role">${escapeHtml(block.role)}</p>
+        <p class="consultant-profile-subtitle">${escapeHtml(block.subtitle)}</p>
+        <hr class="consultant-profile-divider" />
+        ${meta}
+      </aside>
+      <div class="consultant-profile-main">${sections}</div>
+    </div>
   </article>`;
 }
 
@@ -473,31 +527,77 @@ function renderProfile(block, assetPrefix) {
   </article>`;
 }
 
+function renderOrgColumnList(items) {
+  return `<ul class="org-slide-list">${items
+    .map((item) => {
+      const text = escapeHtml(item);
+      const italic = /^\(.+\)$/.test(String(item).trim());
+      return `<li${italic ? ' class="org-slide-note"' : ""}>${text}</li>`;
+    })
+    .join("")}</ul>`;
+}
+
 function renderOrgDesign(block) {
+  const leadership = (block.leadership || []).map((row) =>
+    Array.isArray(row) ? row.join(" | ") : String(row || "").trim()
+  );
+  const columns = block.columns?.length ? block.columns : block.pillars || [];
+  const enablers =
+    block.enablers ||
+    columns.find((c) => /cross-cutting/i.test(c.name))?.items?.join(" | ") ||
+    "";
+
   return `
-  <article class="content-block org-block">
-    <header class="block-header">
-      <h2>${escapeHtml(block.title)}</h2>
-      ${block.description ? `<p class="lead-text">${escapeHtml(block.description)}</p>` : ""}
-    </header>
-    ${
-      block.leadership?.length
-        ? `<div class="org-section">
-        <h3>Leadership</h3>
-        <ul class="leadership-list">${block.leadership.map((l) => `<li>${escapeHtml(l)}</li>`).join("")}</ul>
+  <article class="content-block org-block org-slide-layout">
+    <div class="org-slide-frame">
+      <p class="org-slide-eyebrow">${escapeHtml(block.eyebrow || "ORG DESIGN")}</p>
+      <h2 class="org-slide-title">${escapeHtml(block.title)}</h2>
+      <div class="org-slide-rule" aria-hidden="true"></div>
+      ${block.description ? `<p class="org-slide-desc">${escapeHtml(block.description)}</p>` : ""}
+
+      ${
+        leadership.length
+          ? `<div class="org-slide-leadership-head">Leadership</div>
+      <div class="org-slide-leadership-row">
+        ${leadership.map((line) => `<div class="org-slide-lead-box">${escapeHtml(line)}</div>`).join("")}
       </div>`
-        : ""
-    }
-    <div class="pillar-grid">
-      ${(block.pillars || [])
-        .map(
-          (p) => `
-        <div class="pillar-card">
-          <h3>${escapeHtml(p.name)}</h3>
-          <ul>${p.items.map((i) => `<li>${escapeHtml(i)}</li>`).join("")}</ul>
-        </div>`
-        )
-        .join("")}
+          : ""
+      }
+
+      ${
+        columns.filter((c) => !/cross-cutting/i.test(c.name)).length
+          ? `<div class="org-slide-columns">
+        ${columns
+          .filter((c) => !/cross-cutting/i.test(c.name))
+          .map((col) => {
+            const color =
+              col.headerColor ||
+              (/engineering/i.test(col.name)
+                ? "#EB8C00"
+                : /ai for value/i.test(col.name)
+                  ? "#D04A02"
+                  : /data management/i.test(col.name)
+                    ? "#A32020"
+                    : "#D04A02");
+            return `
+          <div class="org-slide-col">
+            <div class="org-slide-col-head" style="background:${color}">${escapeHtml(col.name)}</div>
+            <div class="org-slide-col-body">${renderOrgColumnList(col.items || [])}</div>
+          </div>`;
+          })
+          .join("")}
+      </div>`
+          : ""
+      }
+
+      ${
+        enablers
+          ? `<div class="org-slide-enablers">
+        <span class="org-slide-enablers-label">Cross-Cutting Enablers</span>
+        <span class="org-slide-enablers-text">${escapeHtml(enablers)}</span>
+      </div>`
+          : ""
+      }
     </div>
   </article>`;
 }
@@ -914,6 +1014,9 @@ function renderBlock(block, assetPrefix, tabId, index = 0) {
     case "profile":
       html = renderProfile(block, assetPrefix);
       break;
+    case "consultant-profile-sample":
+      html = renderConsultantProfileSample(block, assetPrefix);
+      break;
     case "org-design":
       html = renderOrgDesign(block);
       break;
@@ -1233,6 +1336,140 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 .profile-layout { display: grid; grid-template-columns: minmax(180px, 240px) 1fr; gap: clamp(1.5rem, 3vw, 2.5rem); align-items: start; width: 100%; }
 .profile-photo img { width: 100%; border-radius: var(--radius); border: 1px solid var(--pwc-grey-200); }
 .profile-role { color: var(--pwc-orange); font-weight: 600; margin: 0 0 1rem; font-size: 0.95rem; }
+
+.consultant-profile-block { text-align: left; align-items: stretch; padding-top: 1.5rem; padding-bottom: 1.5rem; }
+.consultant-profile-full-image {
+  display: block;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  height: auto;
+  border: 1px solid var(--pwc-grey-200);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.consultant-profile-card {
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) 1fr;
+  max-width: 960px;
+  margin: 0 auto;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--pwc-grey-200);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.consultant-profile-sidebar {
+  background: #000000;
+  color: #FFFFFF;
+  padding: 2rem 1.5rem 1.75rem;
+}
+.consultant-profile-photo {
+  width: 132px;
+  height: 132px;
+  margin: 0 auto 1.25rem;
+  border-radius: 50%;
+  border: 3px solid #FD5108;
+  overflow: hidden;
+  background: #2D2D2D;
+}
+.consultant-profile-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
+  display: block;
+}
+.consultant-profile-name {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1.2;
+}
+.consultant-profile-role {
+  margin: 0 0 0.65rem;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: #FFFFFF;
+}
+.consultant-profile-subtitle {
+  margin: 0 0 1rem;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-style: italic;
+  color: #9CA3AF;
+}
+.consultant-profile-divider {
+  border: none;
+  border-top: 1px solid #4B5563;
+  margin: 0 0 1rem;
+}
+.consultant-profile-meta-item { margin-bottom: 0.85rem; }
+.consultant-profile-meta-item:last-child { margin-bottom: 0; }
+.consultant-profile-meta-label {
+  font-family: var(--font-sans);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #FD5108;
+  margin-bottom: 0.2rem;
+}
+.consultant-profile-meta-value {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1.35;
+}
+.consultant-profile-main {
+  background: #FFFFFF;
+  padding: 2rem 2rem 1.75rem;
+  text-align: left;
+}
+.consultant-profile-section { margin-bottom: 1.75rem; }
+.consultant-profile-section:last-child { margin-bottom: 0; }
+.consultant-profile-section-head {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.75rem;
+}
+.consultant-profile-section-num {
+  flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: #FD5108;
+  color: #FFFFFF;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.consultant-profile-section-head h3 {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #2D2D2D;
+  line-height: 1.3;
+}
+.consultant-profile-section ul {
+  margin: 0;
+  padding-left: 1.15rem;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: #2D2D2D;
+}
+.consultant-profile-section li { margin-bottom: 0.45rem; }
+.consultant-profile-section li:last-child { margin-bottom: 0; }
 .fun-fact { background: var(--pwc-orange-tint); padding: 1rem; border-radius: var(--radius); font-size: 0.9rem; margin-top: 1rem; }
 
 .pillar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin-top: 1rem; }
@@ -1242,6 +1479,136 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 .pillar-card li { margin-bottom: 0.35rem; }
 .leadership-list { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
 .leadership-list li { background: var(--pwc-grey-100); padding: 0.5rem 0.85rem; border-radius: var(--radius); font-size: 0.88rem; }
+
+.org-slide-layout { text-align: left; align-items: stretch; }
+.org-slide-frame { max-width: 960px; margin: 0 auto; width: 100%; }
+.org-slide-eyebrow {
+  margin: 0 0 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #D04A02;
+  font-family: var(--font-sans);
+}
+.org-slide-title {
+  margin: 0 0 0.65rem;
+  font-size: clamp(1.35rem, 2.4vw, 1.65rem);
+  font-weight: 700;
+  color: #2D2D2D;
+  font-family: var(--font-sans);
+  line-height: 1.2;
+}
+.org-slide-rule {
+  width: 2.5rem;
+  height: 3px;
+  background: #D04A02;
+  margin: 0 0 0.85rem;
+}
+.org-slide-desc {
+  margin: 0 0 1.35rem;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: #464646;
+  max-width: none;
+}
+.org-slide-leadership-head {
+  background: #2D2D2D;
+  color: #FFFFFF;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.55rem 0.85rem;
+  text-align: left;
+}
+.org-slide-leadership-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin-bottom: 1.35rem;
+}
+.org-slide-lead-box {
+  background: #FFF1E3;
+  border: 1px solid #D04A02;
+  color: #D04A02;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 0.7rem 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  line-height: 1.35;
+}
+.org-slide-lead-box + .org-slide-lead-box { border-left: none; }
+.org-slide-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin-bottom: 0;
+  align-items: stretch;
+}
+.org-slide-col { display: flex; flex-direction: column; min-width: 0; }
+.org-slide-col-head {
+  color: #FFFFFF;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 0.65rem 0.45rem;
+  line-height: 1.3;
+  min-height: 2.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.org-slide-col-body {
+  background: #FFFFFF;
+  border: 1px solid #DEDEDE;
+  border-top: none;
+  border-left: none;
+  padding: 0.85rem 0.75rem 1rem;
+  flex: 1;
+}
+.org-slide-col:first-child .org-slide-col-body { border-left: 1px solid #DEDEDE; }
+.org-slide-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: #2D2D2D;
+  font-family: var(--font-sans);
+}
+.org-slide-list li { margin-bottom: 0.35rem; }
+.org-slide-list li:last-child { margin-bottom: 0; }
+.org-slide-note { font-style: italic; list-style: none; margin-left: -1.1rem; padding-left: 0; }
+.org-slide-enablers {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem 1rem;
+  background: #464646;
+  padding: 0.55rem 0.85rem;
+  margin-top: 0;
+}
+.org-slide-enablers-label {
+  color: #EB8C00;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.org-slide-enablers-text {
+  color: #FFFFFF;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  line-height: 1.45;
+  flex: 1;
+  min-width: 200px;
+}
 
 .placeholder-card { text-align: center; padding: 3rem 2rem; background: var(--pwc-grey-100); border-radius: var(--radius); border: 2px dashed var(--pwc-grey-200); }
 .placeholder-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
@@ -1507,6 +1874,8 @@ body { padding-bottom: 2rem; }
   .hero { grid-template-columns: 1fr; }
   .hero h1 { font-size: 1.5rem; }
   .profile-layout { grid-template-columns: 1fr; }
+  .consultant-profile-card { grid-template-columns: 1fr; }
+  .consultant-profile-main { padding: 1.25rem 1rem; }
   .donut-chart-wrap { grid-template-columns: 1fr; justify-items: center; }
   .financial-visual-row { grid-template-columns: 1fr; }
   .dashboard-mosaic { grid-template-columns: 1fr; }
@@ -1535,6 +1904,9 @@ body { padding-bottom: 2rem; }
   .map-legend { flex-direction: column; gap: 0.65rem; }
   .header-inner { flex-direction: column; align-items: flex-start; padding: 0.75rem var(--page-padding); }
   .practice-name { border-left: none; padding-left: 0; }
+  .org-slide-columns,
+  .org-slide-leadership-row { grid-template-columns: 1fr; }
+  .org-slide-enablers { flex-direction: column; align-items: flex-start; }
 }
 @media (max-width: 520px) {
   .tab-body-with-nav { --section-nav-width: 140px; }

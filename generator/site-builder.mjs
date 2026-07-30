@@ -201,6 +201,8 @@ const FY26_FINANCIAL_CLIENT_ROWS = [
   ],
 ];
 
+const FY27_PROMOTIONS_NOTE = "*New partner leads for FY27*";
+
 const FY27_PIPELINE_INDUSTRY_SPLIT = [
   { label: "Financial Services", value: "34%", color: "#1B2A4A" },
   { label: "Technology, Media & Telecom", value: "17%", color: "#0F6E56" },
@@ -339,7 +341,7 @@ function parseFinancialSlide(slide) {
         rows: FY26_FINANCIAL_CLIENT_ROWS,
         clients: [],
       },
-      notes,
+      notes: [],
       images: slideImages.filter((img) => !img.chart),
     };
   }
@@ -575,6 +577,7 @@ function parsePeopleTable(slide, columns = 3) {
     showMap: slide.index === 6,
     legend: Object.entries(MOVEMENT_TYPES).map(([id, t]) => ({ id, ...t })),
     images: images(slide),
+    notes: columns === 5 ? [FY27_PROMOTIONS_NOTE] : [],
   };
 }
 
@@ -601,16 +604,18 @@ function parseProfileSlide(slide) {
 
 function parseOrgDesignSlide(slide) {
   const b = bullets(slide);
+  const eyebrow = b.find((x) => /^org design$/i.test(x)) || "ORG DESIGN";
   const headline = b.find((x) => /structural change/i.test(x)) || "The Structural Change: One Team";
   const description = b.find((x) => x.length > 80 && /merge|single team/i.test(x)) || "";
   const leadership = [];
-  const pillars = [];
+  const columns = [];
+  let enablers = "";
   let mode = "intro";
 
-  const pillarHeaders = [
-    /^engineering and infrastructure$/i,
-    /^data management & reporting$/i,
-    /^cross-cutting enablers$/i,
+  const columnHeaders = [
+    { re: /^engineering and infrastructure$/i, headerColor: "#EB8C00" },
+    { re: /^ai for value$/i, headerColor: "#D04A02" },
+    { re: /^data management & reporting$/i, headerColor: "#A32020" },
   ];
 
   for (const line of b) {
@@ -618,19 +623,26 @@ function parseOrgDesignSlide(slide) {
       mode = "leadership";
       continue;
     }
-    if (pillarHeaders.some((re) => re.test(line))) {
-      mode = "pillar";
-      pillars.push({ name: line, items: [] });
+    if (/^cross-cutting enablers$/i.test(line)) {
+      mode = "enablers";
+      continue;
+    }
+    const colMatch = columnHeaders.find((c) => c.re.test(line));
+    if (colMatch) {
+      mode = "column";
+      columns.push({ name: line, headerColor: colMatch.headerColor, items: [] });
       continue;
     }
     if (mode === "leadership" && line.includes("|")) {
       leadership.push(line);
-    } else if (mode === "pillar" && pillars.length) {
-      pillars[pillars.length - 1].items.push(line);
+    } else if (mode === "column" && columns.length) {
+      columns[columns.length - 1].items.push(line);
+    } else if (mode === "enablers") {
+      enablers = line;
     }
   }
 
-  return { type: "org-design", title: headline, description, leadership, pillars };
+  return { type: "org-design", eyebrow, title: headline, description, leadership, columns, enablers };
 }
 
 function parseApolloSlide(slide) {
@@ -843,12 +855,63 @@ function parseSlideContent(slide) {
   };
 }
 
+const SAMPLE_CONSULTANT_PROFILE = {
+  type: "consultant-profile-sample",
+  title: "Sample Profile",
+  name: "Kaitlyn Price",
+  role: "Senior Associate, Digital Core Modernization, Oracle Core ERP, Data & Analytics",
+  subtitle: "Consultant Profile — FY27",
+  meta: [
+    { label: "Development Leader", value: "Divya Thathu, Director" },
+    { label: "Coach", value: "Ajeetha Menezes, Managing Director" },
+    { label: "Industry Alignment", value: "Consumer Markets" },
+    { label: "Sector Alignment", value: "Technology, Transportation, and Leisure" },
+  ],
+  sections: [
+    {
+      num: 1,
+      title: "Goals & Objectives for the Year",
+      items: [
+        "Strengthen technical reporting skills through clear, structured client deliverables.",
+        "Build a stronger point of view to guide clients on Oracle ERP and data strategy.",
+        "Manage internal and external workstreams to balance delivery priorities effectively.",
+        "Support proposal development and sales cycle activities.",
+        "Progress toward promotion by closing key development skill gaps.",
+      ],
+    },
+    {
+      num: 2,
+      title: "Reinvest Activities",
+      items: [
+        "FDI & AIDP Go-To-Market: Drive campaign strategy, account analysis, and planning for FY27 goal.",
+        "D&A Communications: Coordinate all-hands materials, quarterly newsletter, and miscellaneous.",
+        "Recruiting & Campus Engagement: Support new graduate hiring evaluations and participate in panels.",
+        "Practice Development: Support proposal development and internal initiatives.",
+      ],
+    },
+  ],
+  photo: { src: "assets/sample-profile-headshot.png" },
+};
+
+function insertFy27SampleProfile(blocks) {
+  const sample = SAMPLE_CONSULTANT_PROFILE;
+  const apolloIdx = blocks.findIndex((b) => b.type === "apollo-program");
+  if (apolloIdx >= 0) {
+    return [...blocks.slice(0, apolloIdx), sample, ...blocks.slice(apolloIdx)];
+  }
+  return [...blocks, sample];
+}
+
 function buildTab(id, slides, slideIndices) {
   const meta = TAB_META[id];
-  const blocks = slideIndices
+  let blocks = slideIndices
     .map((idx) => findSlide(slides, idx))
     .filter(Boolean)
     .map(parseSlideContent);
+
+  if (id === "fy27-kickoff") {
+    blocks = insertFy27SampleProfile(blocks);
+  }
 
   return {
     id,
