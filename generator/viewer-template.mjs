@@ -141,8 +141,9 @@ function renderIndustryChart(block, assetPrefix) {
 function renderFinancial(block, assetPrefix) {
   const chartHtml = renderIndustryChart(block, assetPrefix);
   const clientsHtml = renderClientsSection(block.clients);
-  const useTableRow = block.clients?.layout === "table" && (chartHtml || clientsHtml);
-  const visualSection = useTableRow
+  const useSideBySide =
+    block.clients?.layout === "table" && (chartHtml || block.industrySplit?.length);
+  const visualSection = useSideBySide
     ? `<div class="financial-visual-row">${chartHtml}${clientsHtml}</div>`
     : `${chartHtml}${clientsHtml}`;
 
@@ -155,7 +156,7 @@ function renderFinancial(block, assetPrefix) {
     ${renderMetricsGrid(block.keyMetrics, "metrics-grid metrics-primary")}
     ${block.notes?.length ? `<p class="block-note">${escapeHtml(block.notes[0])}</p>` : ""}
     ${visualSection}
-    ${renderImages(block.images, assetPrefix, "stack")}
+    ${block.images?.length ? renderImages(block.images, assetPrefix, "stack") : ""}
   </article>`;
 }
 
@@ -746,8 +747,8 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 
 .industry-section, .clients-section, .cert-section, .org-section { margin-top: 1.75rem; }
 .industry-section h3, .clients-section h3, .cert-section h3, .org-section h3 { font-size: 1rem; margin: 0 0 1rem; color: var(--pwc-grey-700); text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--font-sans); font-weight: 700; }
-.industry-chart-svg { display: block; max-width: 100%; height: auto; margin-top: 0.5rem; border-radius: var(--radius); box-shadow: var(--shadow); }
-.financial-visual-row { display: grid; grid-template-columns: minmax(280px, 1.1fr) minmax(280px, 1fr); gap: 2rem; align-items: start; margin-top: 1.75rem; }
+.industry-chart-svg { display: block; max-width: min(100%, 320px); height: auto; margin-top: 0.5rem; border-radius: var(--radius); box-shadow: var(--shadow); }
+.financial-visual-row { display: grid; grid-template-columns: minmax(260px, 0.95fr) minmax(280px, 1.05fr); gap: 2rem; align-items: start; margin-top: 1.75rem; }
 .financial-visual-row .industry-section { margin-top: 0; }
 .financial-visual-row .clients-section { margin-top: 0; }
 .clients-section-table .clients-table { width: 100%; border-collapse: collapse; margin-top: 0.25rem; }
@@ -755,8 +756,8 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 .clients-section-table .clients-table tr:last-child td { border-bottom: none; }
 .clients-section-table .clients-table td:first-child { padding-right: 1.25rem; }
 
-.donut-chart-wrap { display: grid; grid-template-columns: 220px 1fr; gap: 2rem; align-items: center; margin-top: 0.5rem; }
-.donut-chart { width: 220px; height: 220px; border-radius: 50%; position: relative; box-shadow: var(--shadow); }
+.donut-chart-wrap { display: grid; grid-template-columns: 200px 1fr; gap: 1.25rem; align-items: center; margin-top: 0.5rem; max-width: 520px; }
+.donut-chart { width: 200px; height: 200px; border-radius: 50%; position: relative; box-shadow: var(--shadow); flex-shrink: 0; }
 .donut-hole { position: absolute; inset: 28%; background: var(--pwc-white); border-radius: 50%; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 0.75rem; font-weight: 700; color: var(--pwc-grey-700); line-height: 1.3; text-transform: uppercase; letter-spacing: 0.04em; }
 .donut-legend { display: flex; flex-direction: column; gap: 0.55rem; }
 .donut-legend-item { display: grid; grid-template-columns: 14px 1fr auto; gap: 0.65rem; align-items: center; font-size: 0.88rem; }

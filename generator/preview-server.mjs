@@ -6,13 +6,16 @@
 import fs from "fs";
 import http from "http";
 import path from "path";
+import { spawn } from "child_process";
 import { fileURLToPath } from "url";
 import { buildViewerHtml } from "./viewer-template.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, "..");
-const sessionId = process.argv[2] || "oracle-fy27";
-const port = Number(process.argv[3] || 8765);
+const args = process.argv.slice(2).filter((a) => !a.startsWith("--"));
+const openBrowser = process.argv.includes("--open");
+const sessionId = args[0] || "oracle-fy27";
+const port = Number(args[1] || 8765);
 const host = "127.0.0.1";
 
 const sessionDir = path.join(REPO_ROOT, "data", "sessions", sessionId);
@@ -94,7 +97,14 @@ server.on("error", (err) => {
 });
 
 server.listen(port, host, () => {
+  const url = `http://${host}:${port}`;
   console.log(`Session: ${session.title} (${session.slide_count} slides)`);
-  console.log(`Open in browser: http://${host}:${port}`);
+  console.log(`Open in browser: ${url}`);
   console.log(`Offline file:     ${path.join(sessionDir, "preview.html")}`);
+  if (openBrowser) {
+    const cmd = process.platform === "win32" ? "cmd" : "xdg-open";
+    const cmdArgs =
+      process.platform === "win32" ? ["/c", "start", "", url] : [url];
+    spawn(cmd, cmdArgs, { detached: true, stdio: "ignore" }).unref();
+  }
 });

@@ -161,6 +161,27 @@ const INDUSTRY_SECTOR_NAMES = [
   "Energy, Utilities & Resources",
 ];
 
+const FY27_PIPELINE_INDUSTRY_SPLIT = [
+  { label: "Financial Services", value: "34%", color: "#1B2A4A" },
+  { label: "Technology, Media & Telecom", value: "17%", color: "#0F6E56" },
+  { label: "Consumer Markets", value: "17%", color: "#534AB7" },
+  { label: "Health Industries", value: "13%", color: "#993556" },
+  { label: "Industrials & Services", value: "11%", color: "#C56A00" },
+  { label: "Energy, Utilities & Resources", value: "8%", color: "#A32D2D" },
+];
+
+const FY27_PIPELINE_CLIENT_ROWS = [
+  ["Citigroup Inc.", "Pfizer Inc."],
+  ["Visa Inc.", "Boston Scientific Corporation"],
+  ["The Charles Schwab Corporation", "Community Health Systems Inc."],
+  ["Comcast Corporation", "Honeywell"],
+  ["OpenAI Foundation", "DENSO International America, Inc."],
+  ["Palo Alto Networks, Inc.", "Acuity Brands INC."],
+  ["Chipotle Mexican Grill", "Arizona Public Service Company"],
+  ["United Parcel Service, Inc.", "Vulcan Materials Company"],
+  ["Dollar General Corporation", "Weatherford International Public Li Company"],
+];
+
 function parseIndustrySplit(bulletsList) {
   const items = [];
   for (let i = 0; i < bulletsList.length - 1; i++) {
@@ -223,6 +244,25 @@ function parseFinancialSlide(slide) {
     slideImages.find((img) => img.chart && img.chartRole === "industry") ||
     slideImages.find((img) => img.chart) ||
     null;
+
+  if (slide.index === 15) {
+    return {
+      type: "financial",
+      title,
+      subtitle,
+      keyMetrics,
+      industrySplit: FY27_PIPELINE_INDUSTRY_SPLIT,
+      industryChart: null,
+      clients: {
+        summary: b.find((x) => /—\s*\d+\s*unique accounts/i.test(x)) || "— 47 unique accounts",
+        layout: "table",
+        rows: FY27_PIPELINE_CLIENT_ROWS,
+        clients: [],
+      },
+      notes,
+      images: [],
+    };
+  }
 
   return {
     type: "financial",
