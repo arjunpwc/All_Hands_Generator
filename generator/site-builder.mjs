@@ -475,12 +475,67 @@ function parseOrgDesignSlide(slide) {
 }
 
 function parseApolloSlide(slide) {
-  const b = bullets(slide);
   return {
-    type: "placeholder",
-    title: "Apollo",
-    description: "Project Apollo — close collaboration with DCM. Content coming soon.",
-    isPlaceholder: b.some((x) => /^placeholder$/i.test(x)),
+    type: "apollo-program",
+    eyebrow: "The Program",
+    title: "Apollo and ATE",
+    subtitle: "One transformation agenda, delivered at DCM scale",
+    intro:
+      "Apollo is DCM's AI acceleration program, delivered under the Advisory Transformation Engine (ATE).",
+    programs: [
+      {
+        name: "ATE Advisory Transformation Engine",
+        description:
+          "Drives offering transformation across Advisory, through Rapid Transformation and Offering Growth Plans.",
+      },
+      {
+        name: "Apollo",
+        description:
+          "DCM's program driving AI transformation across selected offerings, on a quarterly basis, in harmony with ATE.",
+        highlight: true,
+      },
+    ],
+    valueModesHeading: "Two value modes — every build is one or the other",
+    valueModes: [
+      {
+        name: "AI for Value",
+        accent: "value",
+        description:
+          "Client-facing solutions that change how the client operates.",
+        metrics: "Measured on client KPI impact and new revenue.",
+      },
+      {
+        name: "AI for Delivery",
+        accent: "delivery",
+        description: "Internal solutions that speed how PwC delivers.",
+        metrics: "Measured on margin, velocity, and quality.",
+      },
+    ],
+    steps: [
+      {
+        num: 1,
+        title: "Upskilling",
+        detail: "PwC Agent AMs + Powered PMs. Onsite wk of Jul 20.",
+        accent: "orange",
+      },
+      { num: 2, title: "Sprint 1", detail: "Scope + design.", accent: "grey" },
+      { num: 3, title: "Sprint 2", detail: "Build.", accent: "grey" },
+      { num: 4, title: "Sprint 3", detail: "Build + harden.", accent: "grey" },
+      {
+        num: 5,
+        title: "Package v1",
+        detail: "Package and prepare v1 (ARR review).",
+        accent: "green",
+      },
+      {
+        num: 6,
+        title: "Giveback + GTM",
+        detail: "Reuse, tell the story.",
+        accent: "purple",
+      },
+    ],
+    roadmapNote:
+      "Every team runs this schedule on two lanes: AI for Value and AI for Delivery. CT&I builds alongside every pod, contributing PMs and AI engineers so we build together.",
   };
 }
 

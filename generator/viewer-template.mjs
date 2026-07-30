@@ -364,6 +364,89 @@ function renderOrgDesign(block) {
   </article>`;
 }
 
+const APOLLO_VALUE_COLOR = "#0F6E56";
+const APOLLO_DELIVERY_COLOR = "#D04A02";
+
+function apolloColorText(text) {
+  return escapeHtml(text)
+    .replace(
+      /AI for Value/g,
+      `<strong class="apollo-text-value" style="color:${APOLLO_VALUE_COLOR} !important;font-weight:700">AI for Value</strong>`
+    )
+    .replace(
+      /AI for Delivery/g,
+      `<strong class="apollo-text-delivery" style="color:${APOLLO_DELIVERY_COLOR} !important;font-weight:700">AI for Delivery</strong>`
+    );
+}
+
+function renderApolloRoadmapNote() {
+  return `
+  <div class="apollo-roadmap-callout">
+    <p class="apollo-roadmap-lead">${apolloColorText(
+      "Every team runs this schedule on two lanes: AI for Value and AI for Delivery. CT&I builds alongside every pod, contributing PMs and AI engineers so we build together."
+    )}</p>
+  </div>`;
+}
+
+function renderApolloProgram(block) {
+  const programs = (block.programs || [])
+    .map(
+      (p, i) => `
+    <div class="apollo-program-card${p.highlight ? " apollo-program-highlight" : ""}">
+      <h3>${escapeHtml(p.name)}</h3>
+      <p>${escapeHtml(p.description)}</p>
+    </div>
+    ${i === 0 ? '<div class="apollo-program-connector"><span>DCM</span></div>' : ""}`
+    )
+    .join("");
+
+  const valueModes = (block.valueModes || [])
+    .map(
+      (m) => `
+    <div class="apollo-value-card apollo-value-${escapeHtml(m.accent)}">
+      <h3>${apolloColorText(m.name)}</h3>
+      <p>${apolloColorText(m.description)}</p>
+      <p class="apollo-value-metrics">${apolloColorText(m.metrics)}</p>
+    </div>`
+    )
+    .join("");
+
+  const steps = (block.steps || [])
+    .map(
+      (s) => `
+    <div class="apollo-step apollo-step-${escapeHtml(s.accent)}">
+      <div class="apollo-step-num">${s.num}</div>
+      <div class="apollo-step-body">
+        <strong>${escapeHtml(s.title)}</strong>
+        <span>${escapeHtml(s.detail)}</span>
+      </div>
+    </div>`
+    )
+    .join("");
+
+  return `
+  <article class="content-block apollo-block">
+    <header class="block-header">
+      <p class="eyebrow">${escapeHtml(block.eyebrow || "The Program")}</p>
+      <h2>${escapeHtml(block.title)}</h2>
+      ${block.subtitle ? `<p class="block-subtitle">${apolloColorText(block.subtitle)}</p>` : ""}
+      ${block.intro ? `<p class="lead-text">${apolloColorText(block.intro)}</p>` : ""}
+    </header>
+
+    <div class="apollo-program-stack">${programs}</div>
+
+    <section class="apollo-value-section">
+      <h3>${apolloColorText(block.valueModesHeading || "Two value modes")}</h3>
+      <div class="apollo-value-grid">${valueModes}</div>
+    </section>
+
+    <section class="apollo-roadmap-section">
+      <div class="apollo-roadmap">${steps}</div>
+      ${renderApolloRoadmapNote()}
+    </section>
+  </article>`;
+}
+
 function renderPlaceholder(block) {
   return `
   <article class="content-block placeholder-block">
@@ -514,6 +597,8 @@ function renderBlock(block, assetPrefix) {
       return renderProfile(block, assetPrefix);
     case "org-design":
       return renderOrgDesign(block);
+    case "apollo-program":
+      return renderApolloProgram(block);
     case "placeholder":
       return renderPlaceholder(block);
     case "sector-list":
@@ -722,6 +807,62 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 .placeholder-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
 .placeholder-badge { display: inline-block; margin-top: 1rem; background: var(--pwc-grey-200); color: var(--pwc-grey-700); padding: 0.35rem 0.85rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600; }
 
+.apollo-block { --apollo-value-color: #0F6E56; --apollo-delivery-color: #D04A02; }
+.apollo-block .eyebrow { margin-bottom: 0.35rem; }
+.apollo-program-stack { display: flex; flex-direction: column; gap: 0; margin: 1.5rem 0 2rem; max-width: 720px; }
+.apollo-program-card { background: var(--pwc-grey-100); border: 1px solid var(--pwc-grey-200); border-radius: var(--radius); padding: 1.15rem 1.25rem; }
+.apollo-program-card h3 { font-size: 0.95rem; margin: 0 0 0.45rem; font-family: var(--font-sans); font-weight: 700; }
+.apollo-program-card p { margin: 0; font-size: 0.88rem; color: var(--pwc-grey-700); line-height: 1.45; }
+.apollo-program-highlight { background: linear-gradient(135deg, var(--pwc-orange-tint), var(--pwc-white)); border-color: var(--pwc-orange); border-left: 4px solid var(--pwc-orange); }
+.apollo-program-highlight h3 { color: var(--pwc-orange-dark); }
+.apollo-program-connector { display: flex; justify-content: center; padding: 0.5rem 0; color: var(--pwc-orange); font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+.apollo-program-connector span { background: var(--pwc-white); border: 1px solid var(--pwc-orange); color: var(--pwc-orange); border-radius: 999px; padding: 0.2rem 0.75rem; }
+.apollo-value-section { margin-top: 1.75rem; }
+.apollo-value-section > h3 { font-size: 0.95rem; margin: 0 0 1rem; color: var(--pwc-grey-700); font-family: var(--font-sans); font-weight: 700; }
+.apollo-value-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.apollo-value-card { background: var(--pwc-white); border: 1px solid var(--pwc-grey-200); border-radius: var(--radius); padding: 1.15rem 1.25rem; border-top: 4px solid var(--pwc-grey-500); }
+.apollo-value-value { border-top-color: var(--apollo-value-color); }
+.apollo-value-value h3,
+.apollo-value-value p,
+.apollo-value-value .apollo-value-metrics { color: var(--apollo-value-color); }
+.apollo-value-value .apollo-value-metrics { opacity: 0.85; }
+.apollo-value-delivery { border-top-color: var(--pwc-orange); }
+.apollo-value-delivery h3,
+.apollo-value-delivery p,
+.apollo-value-delivery .apollo-value-metrics { color: var(--apollo-delivery-color); }
+.apollo-value-delivery .apollo-value-metrics { opacity: 0.85; }
+.apollo-text-value { color: var(--apollo-value-color); }
+.apollo-text-delivery { color: var(--apollo-delivery-color); }
+.apollo-block .apollo-roadmap-lead .apollo-text-value { color: #0F6E56; font-weight: 700; }
+.apollo-block .apollo-roadmap-lead .apollo-text-delivery { color: #D04A02; font-weight: 700; }
+.apollo-roadmap-lead .apollo-text-value,
+.apollo-roadmap-lead .apollo-text-delivery,
+.apollo-value-section > h3 .apollo-text-value,
+.apollo-value-section > h3 .apollo-text-delivery { font-weight: 700; }
+.apollo-value-card h3 { font-size: 0.92rem; margin: 0 0 0.5rem; font-family: var(--font-sans); font-weight: 700; }
+.apollo-value-card p { margin: 0 0 0.45rem; font-size: 0.85rem; line-height: 1.4; }
+.apollo-value-metrics { font-size: 0.8rem !important; font-style: italic; margin-bottom: 0 !important; }
+.apollo-roadmap-section { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--pwc-grey-200); }
+.apollo-roadmap { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.65rem; margin-bottom: 1rem; }
+.apollo-step { text-align: center; }
+.apollo-step-num { width: 2.25rem; height: 2.25rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; color: var(--pwc-white); margin: 0 auto 0.55rem; }
+.apollo-step-orange .apollo-step-num { background: var(--pwc-orange); }
+.apollo-step-orange .apollo-step-body strong { color: var(--pwc-orange-dark); }
+.apollo-step-orange .apollo-step-body span { color: var(--pwc-orange); }
+.apollo-step-grey .apollo-step-num { background: var(--pwc-grey-700); }
+.apollo-step-grey .apollo-step-body strong { color: var(--pwc-grey-700); }
+.apollo-step-grey .apollo-step-body span { color: var(--pwc-grey-500); }
+.apollo-step-green .apollo-step-num { background: #0F6E56; }
+.apollo-step-green .apollo-step-body strong { color: #0F6E56; }
+.apollo-step-green .apollo-step-body span { color: #0F6E56; opacity: 0.85; }
+.apollo-step-purple .apollo-step-num { background: #534AB7; }
+.apollo-step-purple .apollo-step-body strong { color: #534AB7; }
+.apollo-step-purple .apollo-step-body span { color: #534AB7; opacity: 0.85; }
+.apollo-step-body { font-size: 0.72rem; line-height: 1.35; }
+.apollo-step-body strong { display: block; font-size: 0.78rem; margin-bottom: 0.2rem; }
+.apollo-roadmap-callout { margin-top: 1.25rem; padding: 1.25rem 1.35rem; background: var(--pwc-grey-100); border: 1px solid var(--pwc-grey-200); border-radius: var(--radius); border-left: 4px solid var(--pwc-orange); }
+.apollo-roadmap-lead { font-size: 0.95rem; font-weight: 600; color: var(--pwc-black); line-height: 1.55; margin: 0; }
+
 .sector-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.75rem; }
 .sector-card { background: var(--pwc-grey-100); padding: 1rem; border-radius: var(--radius); border-left: 3px solid var(--pwc-orange); }
 .sector-name { font-weight: 600; font-size: 0.9rem; }
@@ -821,6 +962,8 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
   .dashboard-top-row, .dashboard-mid-row { grid-template-columns: 1fr; }
   .training-initiatives-row { grid-template-columns: 1fr; }
   .cert-progress-grid { grid-template-columns: 1fr; }
+  .apollo-value-grid { grid-template-columns: 1fr; }
+  .apollo-roadmap { grid-template-columns: repeat(2, 1fr); }
   .clients-section-table .clients-table td { display: block; width: 100%; border-bottom: none; padding: 0.3rem 0; }
   .clients-section-table .clients-table tr { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; border-bottom: 1px solid var(--pwc-grey-200); padding: 0.25rem 0; }
   .clients-section-table .clients-table tr:last-child { border-bottom: none; }
