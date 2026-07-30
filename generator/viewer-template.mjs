@@ -396,7 +396,15 @@ function renderApolloProgram(block) {
       <h3>${escapeHtml(p.name)}</h3>
       <p>${escapeHtml(p.description)}</p>
     </div>
-    ${i === 0 ? '<div class="apollo-program-connector"><span>DCM</span></div>' : ""}`
+    ${i === 0 ? `
+    <div class="apollo-program-connector" aria-hidden="true">
+      <div class="apollo-program-arrow">
+        <div class="apollo-program-arrow-line"></div>
+        <span class="apollo-program-arrow-label">DCM</span>
+        <div class="apollo-program-arrow-line"></div>
+        <div class="apollo-program-arrow-head"></div>
+      </div>
+    </div>` : ""}`
     )
     .join("");
 
@@ -815,8 +823,11 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 .apollo-program-card p { margin: 0; font-size: 0.88rem; color: var(--pwc-grey-700); line-height: 1.45; }
 .apollo-program-highlight { background: linear-gradient(135deg, var(--pwc-orange-tint), var(--pwc-white)); border-color: var(--pwc-orange); border-left: 4px solid var(--pwc-orange); }
 .apollo-program-highlight h3 { color: var(--pwc-orange-dark); }
-.apollo-program-connector { display: flex; justify-content: center; padding: 0.5rem 0; color: var(--pwc-orange); font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
-.apollo-program-connector span { background: var(--pwc-white); border: 1px solid var(--pwc-orange); color: var(--pwc-orange); border-radius: 999px; padding: 0.2rem 0.75rem; }
+.apollo-program-connector { display: flex; justify-content: center; padding: 0.35rem 0; }
+.apollo-program-arrow { display: flex; flex-direction: column; align-items: center; width: 2.5rem; }
+.apollo-program-arrow-line { width: 2px; flex: 1; min-height: 0.65rem; background: var(--pwc-orange); }
+.apollo-program-arrow-label { background: var(--pwc-white); border: 1px solid var(--pwc-orange); color: var(--pwc-orange); border-radius: 999px; padding: 0.15rem 0.6rem; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; line-height: 1.2; white-space: nowrap; margin: 0.1rem 0; }
+.apollo-program-arrow-head { width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 10px solid var(--pwc-orange); margin-top: 0.1rem; }
 .apollo-value-section { margin-top: 1.75rem; }
 .apollo-value-section > h3 { font-size: 0.95rem; margin: 0 0 1rem; color: var(--pwc-grey-700); font-family: var(--font-sans); font-weight: 700; }
 .apollo-value-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
@@ -992,15 +1003,21 @@ export function buildWebsiteHtml(session, sessionId, options = {}) {
     )
     .join("");
 
+  const builtAt = new Date().toISOString();
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <title>${escapeHtml(model.title)} | PwC</title>
   <style>${SITE_CSS}</style>
 </head>
-<body>
+<body data-built-at="${builtAt}">
+  <!-- preview build: ${builtAt} -->
   <header class="site-header">
     <div class="header-accent"></div>
     <div class="header-inner">

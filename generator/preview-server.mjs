@@ -40,15 +40,21 @@ const mime = {
   ".webp": "image/webp",
 };
 
+const NO_CACHE = {
+  "Cache-Control": "no-store, no-cache, must-revalidate",
+  Pragma: "no-cache",
+  Expires: "0",
+};
+
 const server = http.createServer((req, res) => {
   const url = new URL(req.url || "/", `http://${host}:${port}`);
 
-  if (url.pathname === "/" || url.pathname === "/index.html") {
+  if (url.pathname === "/" || url.pathname === "/index.html" || url.pathname === "/preview.html") {
     const html = buildViewerHtml(session, sessionId, {
       assetPrefix: "/assets/",
       standalone: false,
     });
-    res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+    res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", ...NO_CACHE });
     res.end(html);
     return;
   }
