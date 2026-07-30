@@ -99,13 +99,17 @@ function renderClientGrid(clients) {
   </div>`;
 }
 
+function renderClientCell(cell) {
+  if (!cell) return "<td>&nbsp;</td>";
+  if (typeof cell === "string") return `<td>${escapeHtml(cell)}</td>`;
+  const style = cell.color ? ` style="color:${cell.color}"` : "";
+  return `<td${style}>${escapeHtml(cell.name)}</td>`;
+}
+
 function renderClientsTable(clients) {
   if (!clients?.rows?.length) return renderClientGrid(clients);
   const rows = clients.rows
-    .map(
-      ([left, right]) =>
-        `<tr><td>${escapeHtml(left)}</td><td>${right ? escapeHtml(right) : "&nbsp;"}</td></tr>`
-    )
+    .map(([left, right]) => `<tr>${renderClientCell(left)}${renderClientCell(right)}</tr>`)
     .join("");
 
   return `
@@ -146,10 +150,7 @@ function renderFinancial(block, assetPrefix) {
   const visualSection = useSideBySide
     ? `<div class="financial-visual-row">${chartHtml}${clientsHtml}</div>`
     : `${chartHtml}${clientsHtml}`;
-  const metricsClass =
-    block.keyMetrics?.length === 3
-      ? "metrics-grid metrics-primary metrics-grid-centered"
-      : "metrics-grid metrics-primary";
+  const metricsClass = "metrics-grid metrics-primary metrics-grid-centered";
 
   return `
   <article class="content-block financial-block">
@@ -162,6 +163,26 @@ function renderFinancial(block, assetPrefix) {
     ${visualSection}
     ${block.images?.length ? renderImages(block.images, assetPrefix, "stack") : ""}
   </article>`;
+}
+
+function renderDeliveryImpact(delivery, assetPrefix) {
+  const metrics = delivery.metrics || [];
+  const icons = delivery.images || [];
+  if (!metrics.length) return "";
+
+  return `<div class="delivery-impact-grid">${metrics
+    .map((m, i) => {
+      const icon = icons[i]
+        ? `<div class="delivery-impact-icon">${imgTag(icons[i].src, m.label, assetPrefix)}</div>`
+        : "";
+      return `
+    <div class="delivery-impact-card">
+      ${icon}
+      <div class="delivery-impact-value">${escapeHtml(m.value)}</div>
+      <div class="delivery-impact-label">${escapeHtml(m.label)}</div>
+    </div>`;
+    })
+    .join("")}</div>`;
 }
 
 function renderDashboardMetricCards(metrics, icons, assetPrefix) {
@@ -188,6 +209,145 @@ function renderDashboardChart(chart, assetPrefix, className = "dashboard-chart")
   return `<img class="${className}" src="${escapeHtml(url)}" alt="${escapeHtml(chart.alt || "Chart")}" loading="lazy" />`;
 }
 
+function renderInlineBarChart(chartData, alt = "Bar chart") {
+  if (!chartData?.bars?.length) return "";
+  const color = chartData.color || "#EB8C00";
+  const bars = chartData.bars;
+  const maxVal = Math.max(...bars.map((b) => b.value), 1) * 1.15;
+  const chartH = 100;
+  const slot = 140 / bars.length;
+  const barW = slot * 0.55;
+
+  const barEls = bars
+    .map((bar, i) => {
+      const h = (bar.value / maxVal) * chartH;
+      const x = 20 + i * slot + (slot - barW) / 2;
+      const y = 24 + chartH - h;
+      return `
+      <rect x="${x}" y="${y}" width="${barW}" height="${h}" fill="${color}" rx="3"/>
+      <text x="${x + barW / 2}" y="${y - 5}" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#2D2D2D">${bar.value}</text>
+      <text x="${x + barW / 2}" y="${24 + chartH + 16}" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#6B7280">${escapeHtml(bar.label)}</text>`;
+    })
+    .join("");
+
+  return `
+  <div class="dashboard-chart-area" role="img" aria-label="${escapeHtml(alt)}">
+    <svg class="dashboard-inline-chart" viewBox="0 0 180 150" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+      <line x1="16" y1="${24 + chartH}" x2="164" y2="${24 + chartH}" stroke="#D9DCE3" stroke-width="1.5"/>
+      ${barEls}
+    </svg>
+  </div>`;
+}
+
+function renderInlineLineChart(chartData, alt = "Line chart") {
+  if (!chartData?.points?.length) return "";
+  const color = chartData.color || "#EB8C00";
+  const points = chartData.points;
+  const minVal = 55;
+  const maxVal = 100;
+  const chartH = 100;
+  const chartW = 148;
+  const slot = points.length > 1 ? chartW / (points.length - 1) : chartW;
+
+  const coords = points.map((p, i) => ({
+    x: 16 + i * slot,
+    y: 24 + chartH - ((p.value - minVal) / (maxVal - minVal)) * chartH,
+    label: p.label,
+    value: p.value,
+  }));
+
+  const linePath = coords.map((c, i) => `${i === 0 ? "M" : "L"} ${c.x} ${c.y}`).join(" ");
+  const dots = coords
+    .map(
+      (c) => `
+      <circle cx="${c.x}" cy="${c.y}" r="4" fill="${color}" stroke="#FFFFFF" stroke-width="1.5"/>
+      <text x="${c.x}" y="${c.y - 8}" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#2D2D2D">${Math.round(c.value)}%</text>
+      <text x="${c.x}" y="${24 + chartH + 16}" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#6B7280">${escapeHtml(c.label)}</text>`
+    )
+    .join("");
+
+  return `
+  <div class="dashboard-chart-area" role="img" aria-label="${escapeHtml(alt)}">
+    <svg class="dashboard-inline-chart" viewBox="0 0 180 150" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+      <line x1="16" y1="${24 + chartH}" x2="164" y2="${24 + chartH}" stroke="#D9DCE3" stroke-width="1.5"/>
+      <path d="${linePath}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      ${dots}
+    </svg>
+  </div>`;
+}
+
+function renderDashboardTrendChart(section, assetPrefix) {
+  if (section.chartData?.type === "bar") {
+    return renderInlineBarChart(section.chartData, section.chart?.alt || "Team Size Growth");
+  }
+  if (section.chartData?.type === "line") {
+    return renderInlineLineChart(section.chartData, section.chart?.alt || "Utilization Trend");
+  }
+  return renderDashboardChart(section.chart, assetPrefix, "dashboard-inline-chart");
+}
+
+function renderAiCapabilityPanel(ai, assetPrefix) {
+  const metrics = ai.metrics || [];
+  const icons = ai.images || [];
+  const metricCards = metrics.length
+    ? `<div class="ai-cap-metrics">${metrics
+        .map((m, i) => {
+          const icon = icons[i]
+            ? `<div class="ai-cap-icon">${imgTag(icons[i].src, m.label, assetPrefix)}</div>`
+            : "";
+          return `
+        <div class="ai-cap-metric">
+          ${icon}
+          <div class="ai-cap-value">${escapeHtml(m.value)}</div>
+          <div class="ai-cap-label">${escapeHtml(m.label)}</div>
+        </div>`;
+        })
+        .join("")}</div>`
+    : "";
+
+  const skills = ai.skills?.length
+    ? `<div class="ai-cap-skills">
+        <div class="ai-cap-skills-label">AI Skills Added</div>
+        <div class="tag-row tag-row-compact">${ai.skills.map((s) => `<span class="tag tag-compact">${escapeHtml(s)}</span>`).join("")}</div>
+      </div>`
+    : "";
+
+  const ess = ai.ess
+    ? `<div class="ai-cap-ess">
+        <div class="ai-cap-ess-value">${escapeHtml(ai.ess)}</div>
+        <div class="ai-cap-ess-label">${escapeHtml(ai.essLabel || "Engagement Satisfaction Survey (ESS)")}</div>
+      </div>`
+    : "";
+
+  return `<div class="ai-capability-grid">${metricCards}${skills}${ess}</div>`;
+}
+
+function parsePercentMetric(value) {
+  const match = String(value || "").match(/([\d.]+)/);
+  if (!match) return 0;
+  return Math.min(100, Math.max(0, parseFloat(match[1])));
+}
+
+function renderAdaptabilityGauge(metric) {
+  if (!metric?.value) return "";
+  const pct = parsePercentMetric(metric.value);
+  const label = metric.label || "AI Adaptability";
+  const arcLength = 239;
+  const offset = arcLength * (1 - pct / 100);
+
+  return `
+  <div class="adapt-gauge-wrap" role="img" aria-label="${escapeHtml(label)}: ${escapeHtml(metric.value)}">
+    <svg class="adapt-gauge-svg" viewBox="0 0 200 120" aria-hidden="true">
+      <path class="adapt-gauge-track" d="M 24 100 A 76 76 0 0 1 176 100" pathLength="239" />
+      <path class="adapt-gauge-fill" d="M 24 100 A 76 76 0 0 1 176 100" pathLength="239" style="stroke-dasharray:239;stroke-dashoffset:${offset.toFixed(2)}" />
+    </svg>
+    <div class="adapt-gauge-label">
+      <div class="adapt-gauge-value">${escapeHtml(metric.value)}</div>
+      <div class="adapt-gauge-caption">${escapeHtml(label)}</div>
+    </div>
+  </div>`;
+}
+
 function renderDashboard(block, assetPrefix) {
   const delivery = block.deliveryImpact || {};
   const team = block.teamSizeGrowth || {};
@@ -210,64 +370,37 @@ function renderDashboard(block, assetPrefix) {
       ${block.subtitle ? `<p class="block-subtitle">${escapeHtml(block.subtitle)}</p>` : ""}
     </header>
 
-    <div class="dashboard-top-row">
-      <section class="dashboard-panel">
+    <div class="dashboard-mosaic">
+      <section class="dashboard-cell dashboard-cell-delivery">
         <h3>Delivery Impact</h3>
-        ${renderDashboardMetricCards(delivery.metrics, delivery.images, assetPrefix)}
+        ${renderDeliveryImpact(delivery, assetPrefix)}
       </section>
-      <section class="dashboard-panel dashboard-panel-ai">
+      <section class="dashboard-cell dashboard-cell-ai">
         <h3>AI Capability</h3>
-        ${renderDashboardMetricCards(ai.metrics?.slice(0, 1), ai.images?.slice(0, 1), assetPrefix)}
-        ${
-          ai.skills?.length
-            ? `<div class="dashboard-skills">
-            <div class="dashboard-skills-label">AI Skills Added</div>
-            <div class="tag-row">${ai.skills.map((s) => `<span class="tag">${escapeHtml(s)}</span>`).join("")}</div>
-          </div>`
-            : ""
-        }
-        ${renderDashboardMetricCards(ai.metrics?.slice(1), ai.images?.slice(1), assetPrefix)}
-        ${
-          ai.ess
-            ? `<div class="dashboard-ess">
-            <div class="dashboard-ess-value">${escapeHtml(ai.ess)}</div>
-            <div class="dashboard-ess-label">${escapeHtml(ai.essLabel || "Engagement Satisfaction Survey (ESS)")}</div>
-          </div>`
-            : ""
-        }
+        ${renderAiCapabilityPanel(ai, assetPrefix)}
       </section>
-    </div>
-
-    <div class="dashboard-mid-row">
-      <section class="dashboard-panel dashboard-panel-chart">
+      <section class="dashboard-cell dashboard-cell-chart">
         <h3>Team Size Growth</h3>
         ${team.stat ? `<p class="dashboard-stat">${escapeHtml(team.stat)}</p>` : ""}
-        ${renderDashboardChart(team.chart, assetPrefix)}
+        ${renderDashboardTrendChart(team, assetPrefix)}
       </section>
-      <section class="dashboard-panel dashboard-panel-chart">
+      <section class="dashboard-cell dashboard-cell-chart">
         <h3>Utilization Trend</h3>
-        ${renderDashboardChart(utilization.chart, assetPrefix)}
+        ${renderDashboardTrendChart(utilization, assetPrefix)}
       </section>
-      <section class="dashboard-panel dashboard-panel-chart dashboard-panel-adapt">
+      <section class="dashboard-cell dashboard-cell-chart dashboard-cell-adapt">
         <h3>AI Adaptability</h3>
-        ${
-          adapt.metric
-            ? `<div class="dashboard-adapt-value">${escapeHtml(adapt.metric.value)}</div>
-           <div class="dashboard-adapt-label">${escapeHtml(adapt.metric.label)}</div>`
-            : ""
-        }
-        ${renderDashboardChart(adapt.chart, assetPrefix, "dashboard-chart dashboard-chart-compact")}
+        ${adapt.metric ? renderAdaptabilityGauge(adapt.metric) : renderDashboardChart(adapt.chart, assetPrefix)}
       </section>
-    </div>
-
-    ${
-      clientLogos
-        ? `<section class="dashboard-panel dashboard-panel-clients">
+      ${
+        clientLogos
+          ? `<section class="dashboard-cell dashboard-cell-clients">
         <h3>Our Clients</h3>
         <div class="client-logo-grid">${clientLogos}</div>
       </section>`
-        : ""
-    }
+          : ""
+      }
+    </div>
   </article>`;
 }
 
@@ -512,8 +645,7 @@ const FY27_GTM_SECTOR_STRUCTURE = [
     app: "Dmitry Danilenko",
     accent: "#E8830E",
     tier: 3,
-    team: ["Divya Thathu"],
-    nestedGroups: [{ name: "TTL", members: ["Vish Gaitonde"] }],
+    team: ["Divya Thathu", "Vish Gaitonde"],
   },
   {
     id: "eur",
@@ -724,34 +856,92 @@ function renderPhotoGallery(block, assetPrefix) {
   </article>`;
 }
 
-function renderBlock(block, assetPrefix) {
+function slugify(text) {
+  return String(text || "")
+    .toLowerCase()
+    .replace(/&[^;]+;/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 56);
+}
+
+function sectionId(tabId, block, index) {
+  const slug = slugify(block.title) || `section-${index + 1}`;
+  return `${tabId}-${slug}`;
+}
+
+function attachSectionId(html, id) {
+  if (html.includes('class="content-block')) {
+    return html.replace(
+      /<article(\s+id="[^"]*")?\s+class="content-block/,
+      `<article id="${id}" class="content-block`
+    );
+  }
+  return `<article id="${id}" class="content-block">${html}</article>`;
+}
+
+function renderSectionNav(tab) {
+  const blocks = tab.blocks || [];
+  if (blocks.length < 2) return "";
+
+  const links = blocks
+    .map((block, index) => {
+      const id = sectionId(tab.id, block, index);
+      const label = block.title || `Section ${index + 1}`;
+      return `<a class="section-nav-link" href="#${id}" data-section="${id}">${escapeHtml(label)}</a>`;
+    })
+    .join("");
+
+  return `<aside class="section-nav-sidebar">
+    <p class="section-nav-heading">On this page</p>
+    <nav class="section-nav" aria-label="Jump to section">${links}</nav>
+  </aside>`;
+}
+
+function renderBlock(block, assetPrefix, tabId, index = 0) {
+  let html;
   switch (block.type) {
     case "financial":
-      return renderFinancial(block, assetPrefix);
+      html = renderFinancial(block, assetPrefix);
+      break;
     case "dashboard":
-      return renderDashboard(block, assetPrefix);
+      html = renderDashboard(block, assetPrefix);
+      break;
     case "people-table":
     case "promotions-table":
-      return renderPeopleTable(block, assetPrefix);
+      html = renderPeopleTable(block, assetPrefix);
+      break;
     case "profile":
-      return renderProfile(block, assetPrefix);
+      html = renderProfile(block, assetPrefix);
+      break;
     case "org-design":
-      return renderOrgDesign(block);
+      html = renderOrgDesign(block);
+      break;
     case "apollo-program":
-      return renderApolloProgram(block);
+      html = renderApolloProgram(block);
+      break;
     case "placeholder":
-      return renderPlaceholder(block);
+      html = renderPlaceholder(block);
+      break;
     case "sector-org-chart":
-      return renderSectorOrgChart(block);
+      html = renderSectorOrgChart(block);
+      break;
     case "sector-list":
-      return renderSectorList(block);
+      html = renderSectorList(block);
+      break;
     case "training":
-      return renderTraining(block, assetPrefix);
+      html = renderTraining(block, assetPrefix);
+      break;
     case "photo-gallery":
-      return renderPhotoGallery(block, assetPrefix);
+      html = renderPhotoGallery(block, assetPrefix);
+      break;
     default:
-      return `<article class="content-block"><h2>${escapeHtml(block.title)}</h2><ul>${(block.bullets || []).map((b) => `<li>${escapeHtml(b)}</li>`).join("")}</ul></article>`;
+      html = `<article class="content-block"><h2>${escapeHtml(block.title)}</h2><ul>${(block.bullets || []).map((b) => `<li>${escapeHtml(b)}</li>`).join("")}</ul></article>`;
   }
+  if (tabId) {
+    html = attachSectionId(html, sectionId(tabId, block, index));
+  }
+  return html;
 }
 
 function renderHome(tab, assetPrefix) {
@@ -780,13 +970,20 @@ function renderHome(tab, assetPrefix) {
 }
 
 function renderContentTab(tab, assetPrefix) {
-  const blocksHtml = (tab.blocks || []).map((b) => renderBlock(b, assetPrefix)).join("");
+  const blocksHtml = (tab.blocks || []).map((b, i) => renderBlock(b, assetPrefix, tab.id, i)).join("");
+  const sectionNav = renderSectionNav(tab);
+  const hasNav = Boolean(sectionNav);
   return `
     <section class="page-header">
       <h1>${escapeHtml(tab.headline)}</h1>
       ${tab.intro ? `<p class="lead">${escapeHtml(tab.intro)}</p>` : ""}
     </section>
-    <div class="blocks-stack">${blocksHtml}</div>`;
+    <div class="tab-body${hasNav ? " tab-body-with-nav" : ""}">
+      ${sectionNav}
+      <div class="tab-body-main">
+        <div class="blocks-stack">${blocksHtml}</div>
+      </div>
+    </div>`;
 }
 
 function renderQa(tab) {
@@ -832,6 +1029,7 @@ const SITE_CSS = `
   --page-padding: clamp(1.25rem, 3vw, 2.75rem);
   --content-max: min(1280px, calc(100% - 2 * var(--page-padding)));
   --header-height: 64px;
+  --section-nav-width: clamp(200px, 18vw, 260px);
 }
 * { box-sizing: border-box; }
 html { height: 100%; }
@@ -868,13 +1066,77 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 .page-header { margin: 0; padding: clamp(1.75rem, 4vh, 2.5rem) var(--page-padding) 1.25rem; border-bottom: 2px solid var(--pwc-orange); background: var(--pwc-grey-100); text-align: center; }
 .page-header h1 { font-size: clamp(1.65rem, 3vw, 2.25rem); margin: 0 auto 0.5rem; max-width: var(--content-max); }
 .page-header .lead, .page-header .subtitle { max-width: var(--content-max); margin-inline: auto; }
+
+.tab-body { width: 100%; }
+.tab-body-with-nav {
+  display: grid;
+  grid-template-columns: var(--section-nav-width) 1fr;
+  align-items: start;
+  width: 100%;
+}
+.tab-body-main { min-width: 0; text-align: center; }
+
+.section-nav-sidebar {
+  position: sticky;
+  top: var(--header-height);
+  z-index: 40;
+  align-self: start;
+  width: var(--section-nav-width);
+  height: calc(100vh - var(--header-height));
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-right: 1px solid var(--pwc-grey-200);
+  background: var(--pwc-grey-100);
+  padding: 1rem 0 1.5rem;
+  text-align: left;
+}
+.section-nav-heading {
+  margin: 0 0 0.65rem;
+  padding: 0 1rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--pwc-grey-500);
+  font-family: var(--font-sans);
+}
+.section-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0 0.5rem;
+}
+.section-nav-link {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--pwc-grey-700);
+  text-decoration: none;
+  border: none;
+  border-left: 3px solid transparent;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: transparent;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  line-height: 1.35;
+}
+.section-nav-link:hover {
+  color: var(--pwc-orange-dark);
+  border-left-color: var(--pwc-orange);
+  background: var(--pwc-orange-tint);
+}
+.section-nav-link.active {
+  color: var(--pwc-orange-dark);
+  border-left-color: var(--pwc-orange);
+  background: var(--pwc-orange-tint);
+}
 .subtitle { color: var(--pwc-grey-500); font-size: 1rem; margin: 0 0 0.5rem; }
 
 .content-section { background: var(--pwc-white); border: none; padding: clamp(1.75rem, 4vh, 2.5rem) var(--page-padding); margin: 0; box-shadow: none; border-bottom: 1px solid var(--pwc-grey-200); text-align: center; }
 .content-section > * { max-width: var(--content-max); margin-inline: auto; }
 .blocks-stack { display: flex; flex-direction: column; gap: 0; width: 100%; align-items: center; }
 
-.content-block { background: var(--pwc-white); border: none; border-bottom: 1px solid var(--pwc-grey-200); padding: clamp(1.75rem, 4vh, 2.5rem) var(--page-padding); box-shadow: none; border-left: none; border-radius: 0; width: 100%; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.content-block { background: var(--pwc-white); border: none; border-bottom: 1px solid var(--pwc-grey-200); padding: clamp(1.75rem, 4vh, 2.5rem) var(--page-padding); box-shadow: none; border-left: none; border-radius: 0; width: 100%; display: flex; flex-direction: column; align-items: center; text-align: center; scroll-margin-top: calc(var(--header-height) + 0.75rem); }
 .content-block:last-child { border-bottom: none; }
 .content-block > * { width: 100%; max-width: var(--content-max); }
 .block-header { text-align: center; }
@@ -888,8 +1150,7 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 .content-block .clients-table,
 .content-block .people-map-table,
 .content-block .financial-visual-row,
-.content-block .dashboard-top-row,
-.content-block .dashboard-mid-row,
+.content-block .dashboard-mosaic,
 .content-block .training-initiatives-row,
 .content-block .cert-progress-grid,
 .content-block .profile-layout,
@@ -907,7 +1168,7 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 .donut-legend { text-align: left; }
 
 .metrics-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: clamp(0.75rem, 1.5vw, 1rem); margin: 1rem auto; width: 100%; }
-.metrics-grid-centered { grid-template-columns: repeat(3, minmax(160px, 220px)); justify-content: center; width: fit-content; max-width: 100%; }
+.metrics-grid-centered { grid-template-columns: repeat(auto-fit, minmax(150px, 200px)); justify-content: center; width: fit-content; max-width: 100%; margin-inline: auto; }
 .metrics-primary .metric-card { background: linear-gradient(135deg, var(--pwc-orange-tint), var(--pwc-white)); }
 .metric-card { background: var(--pwc-orange-tint); border: 1px solid var(--pwc-grey-200); padding: 1.1rem 0.75rem; text-align: center; border-radius: var(--radius); }
 .metric-value { font-size: 1.5rem; font-weight: 700; color: var(--pwc-orange-dark); line-height: 1.2; }
@@ -1114,30 +1375,100 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 .highlight-banner { background: var(--pwc-orange); color: var(--pwc-white); padding: 0.85rem 1.25rem; border-radius: var(--radius); margin: 1rem 0; font-size: 0.95rem; }
 .tag-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.75rem 0; }
 
-.dashboard-top-row, .dashboard-mid-row { display: grid; gap: clamp(1rem, 2vw, 1.5rem); margin-top: 1.5rem; width: 100%; }
-.dashboard-top-row { grid-template-columns: 1.4fr 1fr; }
-.dashboard-mid-row { grid-template-columns: repeat(3, 1fr); }
-.dashboard-panel { background: var(--pwc-grey-100); border: 1px solid var(--pwc-grey-200); border-radius: var(--radius); padding: 1.25rem; box-shadow: none; }
-.dashboard-panel h3 { font-size: 0.82rem; margin: 0 0 1rem; color: var(--pwc-grey-700); text-transform: uppercase; letter-spacing: 0.06em; font-family: var(--font-sans); font-weight: 700; }
-.dashboard-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 0.85rem; }
-.dashboard-metric-card { text-align: center; padding: 0.75rem 0.5rem; background: var(--pwc-grey-100); border-radius: var(--radius); border: 1px solid var(--pwc-grey-200); }
-.dashboard-metric-icon img { width: 36px; height: 36px; object-fit: contain; margin-bottom: 0.45rem; }
-.dashboard-metric-value { font-family: var(--font-serif); font-size: 1.35rem; font-weight: 700; color: var(--pwc-black); line-height: 1.1; }
-.dashboard-metric-label { font-size: 0.72rem; color: var(--pwc-grey-500); margin-top: 0.35rem; line-height: 1.3; }
-.dashboard-skills { margin-top: 1rem; }
-.dashboard-skills-label { font-size: 0.75rem; font-weight: 700; color: var(--pwc-grey-700); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.5rem; }
-.dashboard-ess { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--pwc-grey-200); text-align: center; }
-.dashboard-ess-value { font-family: var(--font-serif); font-size: 1.75rem; font-weight: 700; color: var(--pwc-orange-dark); }
-.dashboard-ess-label { font-size: 0.78rem; color: var(--pwc-grey-500); margin-top: 0.25rem; }
-.dashboard-stat { font-size: 0.95rem; font-weight: 700; color: var(--pwc-orange-dark); margin: 0 0 0.75rem; }
-.dashboard-chart { display: block; width: 100%; max-width: 100%; height: auto; margin-top: 0.5rem; }
-.dashboard-chart-compact { max-width: 180px; margin: 0.5rem auto 0; }
-.dashboard-adapt-value { font-family: var(--font-serif); font-size: 1.5rem; font-weight: 700; color: var(--pwc-orange-dark); text-align: center; }
-.dashboard-adapt-label { font-size: 0.78rem; color: var(--pwc-grey-500); text-align: center; margin-bottom: 0.25rem; }
-.dashboard-panel-clients { margin-top: 1.25rem; }
-.client-logo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 0.85rem; margin-top: 0.75rem; }
-.client-logo-item { display: flex; align-items: center; justify-content: center; padding: 0.65rem; background: var(--pwc-grey-100); border: 1px solid var(--pwc-grey-200); border-radius: var(--radius); min-height: 64px; }
-.client-logo-item img { max-width: 100%; max-height: 48px; object-fit: contain; }
+.dashboard-mosaic {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 1px;
+  margin-top: 1rem;
+  width: 100%;
+  background: var(--pwc-grey-200);
+  border: 1px solid var(--pwc-grey-200);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.dashboard-cell {
+  background: var(--pwc-white);
+  padding: 0.7rem 0.65rem 0.75rem;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.dashboard-cell-delivery,
+.dashboard-cell-ai { grid-column: span 3; }
+.dashboard-cell-chart { grid-column: span 2; }
+.dashboard-cell-clients { grid-column: 1 / -1; }
+.dashboard-cell h3 {
+  font-size: 0.78rem;
+  margin: 0 0 0.55rem;
+  color: var(--pwc-grey-700);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  text-align: center;
+  flex-shrink: 0;
+}
+.delivery-impact-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0;
+  width: 100%;
+  flex: 1;
+  align-items: stretch;
+  border: 1px solid var(--pwc-grey-200);
+  border-radius: calc(var(--radius) - 2px);
+  overflow: hidden;
+}
+.delivery-impact-card {
+  background: var(--pwc-grey-100);
+  border: none;
+  border-right: 1px solid var(--pwc-grey-200);
+  border-top: 3px solid var(--pwc-orange);
+  border-radius: 0;
+  padding: 0.55rem 0.35rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 5.5rem;
+}
+.delivery-impact-card:last-child { border-right: none; }
+.delivery-impact-icon { width: 28px; height: 28px; margin: 0 auto 0.35rem; background: var(--pwc-orange-tint); border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
+.delivery-impact-icon img { width: 16px; height: 16px; object-fit: contain; }
+.delivery-impact-value { font-family: var(--font-serif); font-size: clamp(1.05rem, 1.6vw, 1.35rem); font-weight: 700; color: var(--pwc-orange-dark); line-height: 1.1; }
+.delivery-impact-label { font-size: 0.62rem; color: var(--pwc-grey-700); margin-top: 0.25rem; line-height: 1.2; font-weight: 600; max-width: 9em; }
+.ai-capability-grid { display: flex; flex-direction: column; gap: 0.55rem; flex: 1; }
+.ai-cap-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border: 1px solid var(--pwc-grey-200); border-radius: calc(var(--radius) - 2px); overflow: hidden; }
+.ai-cap-metric { text-align: center; padding: 0.45rem 0.3rem; background: var(--pwc-grey-100); border-right: 1px solid var(--pwc-grey-200); }
+.ai-cap-metric:last-child { border-right: none; }
+.ai-cap-icon img { width: 26px; height: 26px; object-fit: contain; margin-bottom: 0.25rem; }
+.ai-cap-value { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 700; color: var(--pwc-black); line-height: 1.1; }
+.ai-cap-label { font-size: 0.62rem; color: var(--pwc-grey-500); margin-top: 0.2rem; line-height: 1.2; }
+.ai-cap-skills { padding: 0.45rem 0.5rem; background: var(--pwc-grey-100); border: 1px solid var(--pwc-grey-200); border-radius: calc(var(--radius) - 2px); }
+.ai-cap-skills-label { font-size: 0.68rem; font-weight: 700; color: var(--pwc-grey-700); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.35rem; text-align: center; }
+.ai-cap-ess { text-align: center; padding: 0.45rem 0.5rem; background: var(--pwc-orange-tint); border: 1px solid var(--pwc-grey-200); border-radius: calc(var(--radius) - 2px); }
+.ai-cap-ess-value { font-family: var(--font-serif); font-size: 1.35rem; font-weight: 700; color: var(--pwc-orange-dark); line-height: 1.1; }
+.ai-cap-ess-label { font-size: 0.68rem; color: var(--pwc-grey-500); margin-top: 0.15rem; line-height: 1.25; }
+.tag-row-compact { margin: 0; gap: 0.35rem; justify-content: center; }
+.tag-compact { padding: 0.2rem 0.5rem; font-size: 0.68rem; background: var(--pwc-white); }
+.dashboard-stat { font-size: 0.82rem; font-weight: 700; color: var(--pwc-orange-dark); margin: 0 0 0.25rem; text-align: center; flex-shrink: 0; }
+.dashboard-chart-area { flex: 1; display: flex; align-items: flex-end; justify-content: center; min-height: 130px; width: 100%; }
+.dashboard-inline-chart { display: block; width: 100%; height: auto; max-height: 150px; }
+.dashboard-cell-adapt { align-items: stretch; }
+.dashboard-cell-adapt .adapt-gauge-wrap { width: min(100%, 220px); margin: auto auto 0; flex: 1; display: flex; flex-direction: column; justify-content: flex-end; }
+.adapt-gauge-wrap { position: relative; width: min(100%, 220px); margin: 0 auto; }
+.adapt-gauge-svg { display: block; width: 100%; height: auto; overflow: visible; }
+.adapt-gauge-track { fill: none; stroke: var(--pwc-grey-200); stroke-width: 22; stroke-linecap: round; }
+.adapt-gauge-fill { fill: none; stroke: var(--pwc-orange); stroke-width: 22; stroke-linecap: round; }
+.adapt-gauge-label { position: absolute; left: 50%; bottom: 0.2rem; transform: translateX(-50%); text-align: center; width: 100%; }
+.adapt-gauge-value { font-family: var(--font-serif); font-size: clamp(1.35rem, 2.5vw, 1.65rem); font-weight: 700; color: var(--pwc-orange-dark); line-height: 1.1; }
+.adapt-gauge-caption { font-size: 0.68rem; color: var(--pwc-grey-500); margin-top: 0.15rem; }
+.dashboard-cell-clients .client-logo-grid { margin-top: 0.35rem; gap: 0; border: 1px solid var(--pwc-grey-200); border-radius: calc(var(--radius) - 2px); overflow: hidden; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.client-logo-grid { display: grid; gap: 0; }
+.client-logo-item { display: flex; align-items: center; justify-content: center; padding: 0.45rem; background: var(--pwc-grey-100); border: none; border-right: 1px solid var(--pwc-grey-200); border-bottom: 1px solid var(--pwc-grey-200); border-radius: 0; min-height: 52px; }
+.client-logo-item:nth-child(7n) { border-right: none; }
+.client-logo-item img { max-width: 100%; max-height: 36px; object-fit: contain; }
 .tag { background: var(--pwc-grey-100); border: 1px solid var(--pwc-grey-200); padding: 0.3rem 0.65rem; border-radius: 999px; font-size: 0.78rem; }
 
 .agenda-link { background: none; border: none; padding: 0; font: inherit; color: var(--pwc-black); cursor: pointer; text-align: left; font-weight: 600; }
@@ -1170,12 +1501,29 @@ body { padding-bottom: 2rem; }
 }
 
 @media (max-width: 800px) {
+  .tab-body-with-nav { --section-nav-width: 168px; }
+  .section-nav-link { font-size: 0.72rem; padding: 0.42rem 0.55rem; }
+  .section-nav-heading { font-size: 0.62rem; padding: 0 0.65rem; }
   .hero { grid-template-columns: 1fr; }
   .hero h1 { font-size: 1.5rem; }
   .profile-layout { grid-template-columns: 1fr; }
   .donut-chart-wrap { grid-template-columns: 1fr; justify-items: center; }
   .financial-visual-row { grid-template-columns: 1fr; }
-  .dashboard-top-row, .dashboard-mid-row { grid-template-columns: 1fr; }
+  .dashboard-mosaic { grid-template-columns: 1fr; }
+  .dashboard-cell-delivery,
+  .dashboard-cell-ai,
+  .dashboard-cell-chart,
+  .dashboard-cell-clients { grid-column: 1 / -1; }
+  .delivery-impact-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .delivery-impact-card { border-right: 1px solid var(--pwc-grey-200); }
+  .delivery-impact-card:nth-child(3n) { border-right: none; }
+  .delivery-impact-card:nth-child(-n+3) { border-bottom: 1px solid var(--pwc-grey-200); }
+  .ai-cap-metrics { grid-template-columns: 1fr; }
+  .ai-cap-metric { border-right: none; border-bottom: 1px solid var(--pwc-grey-200); }
+  .ai-cap-metric:last-child { border-bottom: none; }
+  .dashboard-cell-clients .client-logo-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .client-logo-item:nth-child(7n) { border-right: 1px solid var(--pwc-grey-200); }
+  .client-logo-item:nth-child(4n) { border-right: none; }
   .training-initiatives-row { grid-template-columns: 1fr; }
   .cert-progress-grid { grid-template-columns: 1fr; }
   .apollo-value-grid { grid-template-columns: 1fr; }
@@ -1189,6 +1537,17 @@ body { padding-bottom: 2rem; }
   .practice-name { border-left: none; padding-left: 0; }
 }
 @media (max-width: 520px) {
+  .tab-body-with-nav { --section-nav-width: 140px; }
+  .section-nav-link { font-size: 0.68rem; padding: 0.38rem 0.45rem; }
+  .delivery-impact-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .delivery-impact-card:nth-child(3n) { border-right: 1px solid var(--pwc-grey-200); }
+  .delivery-impact-card:nth-child(2n) { border-right: none; }
+  .delivery-impact-card:nth-child(-n+3) { border-bottom: 1px solid var(--pwc-grey-200); }
+  .delivery-impact-card:nth-child(-n+2) { border-bottom: 1px solid var(--pwc-grey-200); }
+  .delivery-impact-card:nth-last-child(-n+1) { border-bottom: none; }
+  .dashboard-cell-clients .client-logo-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .client-logo-item:nth-child(4n) { border-right: 1px solid var(--pwc-grey-200); }
+  .client-logo-item:nth-child(3n) { border-right: none; }
   .gtm-sector-block { min-width: 118px; max-width: 148px; }
   #gtm-sector-hls { min-width: 132px; max-width: 160px; }
   .gtm-team-node, .gtm-subgroup-label { font-size: 0.65rem; }
@@ -1250,13 +1609,67 @@ export function buildWebsiteHtml(session, sessionId, options = {}) {
         btn.classList.add('active');
         document.getElementById('panel-' + id).classList.add('active');
         history.replaceState(null, '', '#' + id);
+        window.scrollTo({ top: 0, behavior: 'auto' });
       });
     });
-    const hash = location.hash.slice(1);
-    if (hash) {
-      const btn = document.querySelector('[data-tab="' + hash + '"]');
-      if (btn) btn.click();
+    function scrollToSection(id, smooth) {
+      const el = document.getElementById(id);
+      if (!el) return false;
+      el.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+      history.replaceState(null, '', '#' + id);
+      return true;
     }
+    function activateSectionNav(id) {
+      const section = document.getElementById(id);
+      const panel = section && section.closest('.tab-panel');
+      const scope = panel || document;
+      scope.querySelectorAll('.section-nav-link').forEach(link => {
+        link.classList.toggle('active', link.dataset.section === id);
+      });
+    }
+    document.querySelectorAll('.section-nav-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const id = link.dataset.section;
+        scrollToSection(id, true);
+        activateSectionNav(id);
+      });
+    });
+    if ('IntersectionObserver' in window) {
+      const sectionObserver = new IntersectionObserver((entries) => {
+        const visible = entries
+          .filter(e => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible && visible.target.id) activateSectionNav(visible.target.id);
+      }, { rootMargin: '-96px 0px -55% 0px', threshold: [0, 0.15, 0.4] });
+      document.querySelectorAll('.content-block[id]').forEach(block => sectionObserver.observe(block));
+    }
+    function handleLocationHash() {
+      const hash = location.hash.slice(1);
+      if (!hash) return;
+      const tabBtn = document.querySelector('[data-tab="' + hash + '"]');
+      if (tabBtn) {
+        tabBtn.click();
+        return;
+      }
+      const section = document.getElementById(hash);
+      if (section) {
+        const panel = section.closest('.tab-panel');
+        if (panel) {
+          const tabId = panel.id.replace('panel-', '');
+          const btn = document.querySelector('[data-tab="' + tabId + '"]');
+          if (btn && !btn.classList.contains('active')) btn.click();
+          requestAnimationFrame(() => {
+            setTimeout(() => {
+              scrollToSection(hash, false);
+              activateSectionNav(hash);
+            }, 50);
+          });
+        }
+      }
+    }
+    handleLocationHash();
+    window.addEventListener('hashchange', handleLocationHash);
     function goToTab(id) {
       const btn = document.querySelector('[data-tab="' + id + '"]');
       if (btn) { btn.click(); window.scrollTo({ top: 0, behavior: 'smooth' }); }

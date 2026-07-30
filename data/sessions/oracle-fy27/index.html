@@ -25,6 +25,7 @@
   --page-padding: clamp(1.25rem, 3vw, 2.75rem);
   --content-max: min(1280px, calc(100% - 2 * var(--page-padding)));
   --header-height: 64px;
+  --section-nav-width: clamp(200px, 18vw, 260px);
 }
 * { box-sizing: border-box; }
 html { height: 100%; }
@@ -61,13 +62,77 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 .page-header { margin: 0; padding: clamp(1.75rem, 4vh, 2.5rem) var(--page-padding) 1.25rem; border-bottom: 2px solid var(--pwc-orange); background: var(--pwc-grey-100); text-align: center; }
 .page-header h1 { font-size: clamp(1.65rem, 3vw, 2.25rem); margin: 0 auto 0.5rem; max-width: var(--content-max); }
 .page-header .lead, .page-header .subtitle { max-width: var(--content-max); margin-inline: auto; }
+
+.tab-body { width: 100%; }
+.tab-body-with-nav {
+  display: grid;
+  grid-template-columns: var(--section-nav-width) 1fr;
+  align-items: start;
+  width: 100%;
+}
+.tab-body-main { min-width: 0; text-align: center; }
+
+.section-nav-sidebar {
+  position: sticky;
+  top: var(--header-height);
+  z-index: 40;
+  align-self: start;
+  width: var(--section-nav-width);
+  height: calc(100vh - var(--header-height));
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-right: 1px solid var(--pwc-grey-200);
+  background: var(--pwc-grey-100);
+  padding: 1rem 0 1.5rem;
+  text-align: left;
+}
+.section-nav-heading {
+  margin: 0 0 0.65rem;
+  padding: 0 1rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--pwc-grey-500);
+  font-family: var(--font-sans);
+}
+.section-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0 0.5rem;
+}
+.section-nav-link {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--pwc-grey-700);
+  text-decoration: none;
+  border: none;
+  border-left: 3px solid transparent;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: transparent;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  line-height: 1.35;
+}
+.section-nav-link:hover {
+  color: var(--pwc-orange-dark);
+  border-left-color: var(--pwc-orange);
+  background: var(--pwc-orange-tint);
+}
+.section-nav-link.active {
+  color: var(--pwc-orange-dark);
+  border-left-color: var(--pwc-orange);
+  background: var(--pwc-orange-tint);
+}
 .subtitle { color: var(--pwc-grey-500); font-size: 1rem; margin: 0 0 0.5rem; }
 
 .content-section { background: var(--pwc-white); border: none; padding: clamp(1.75rem, 4vh, 2.5rem) var(--page-padding); margin: 0; box-shadow: none; border-bottom: 1px solid var(--pwc-grey-200); text-align: center; }
 .content-section > * { max-width: var(--content-max); margin-inline: auto; }
 .blocks-stack { display: flex; flex-direction: column; gap: 0; width: 100%; align-items: center; }
 
-.content-block { background: var(--pwc-white); border: none; border-bottom: 1px solid var(--pwc-grey-200); padding: clamp(1.75rem, 4vh, 2.5rem) var(--page-padding); box-shadow: none; border-left: none; border-radius: 0; width: 100%; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.content-block { background: var(--pwc-white); border: none; border-bottom: 1px solid var(--pwc-grey-200); padding: clamp(1.75rem, 4vh, 2.5rem) var(--page-padding); box-shadow: none; border-left: none; border-radius: 0; width: 100%; display: flex; flex-direction: column; align-items: center; text-align: center; scroll-margin-top: calc(var(--header-height) + 0.75rem); }
 .content-block:last-child { border-bottom: none; }
 .content-block > * { width: 100%; max-width: var(--content-max); }
 .block-header { text-align: center; }
@@ -81,8 +146,7 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 .content-block .clients-table,
 .content-block .people-map-table,
 .content-block .financial-visual-row,
-.content-block .dashboard-top-row,
-.content-block .dashboard-mid-row,
+.content-block .dashboard-mosaic,
 .content-block .training-initiatives-row,
 .content-block .cert-progress-grid,
 .content-block .profile-layout,
@@ -100,7 +164,7 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 .donut-legend { text-align: left; }
 
 .metrics-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: clamp(0.75rem, 1.5vw, 1rem); margin: 1rem auto; width: 100%; }
-.metrics-grid-centered { grid-template-columns: repeat(3, minmax(160px, 220px)); justify-content: center; width: fit-content; max-width: 100%; }
+.metrics-grid-centered { grid-template-columns: repeat(auto-fit, minmax(150px, 200px)); justify-content: center; width: fit-content; max-width: 100%; margin-inline: auto; }
 .metrics-primary .metric-card { background: linear-gradient(135deg, var(--pwc-orange-tint), var(--pwc-white)); }
 .metric-card { background: var(--pwc-orange-tint); border: 1px solid var(--pwc-grey-200); padding: 1.1rem 0.75rem; text-align: center; border-radius: var(--radius); }
 .metric-value { font-size: 1.5rem; font-weight: 700; color: var(--pwc-orange-dark); line-height: 1.2; }
@@ -307,30 +371,100 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 .highlight-banner { background: var(--pwc-orange); color: var(--pwc-white); padding: 0.85rem 1.25rem; border-radius: var(--radius); margin: 1rem 0; font-size: 0.95rem; }
 .tag-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.75rem 0; }
 
-.dashboard-top-row, .dashboard-mid-row { display: grid; gap: clamp(1rem, 2vw, 1.5rem); margin-top: 1.5rem; width: 100%; }
-.dashboard-top-row { grid-template-columns: 1.4fr 1fr; }
-.dashboard-mid-row { grid-template-columns: repeat(3, 1fr); }
-.dashboard-panel { background: var(--pwc-grey-100); border: 1px solid var(--pwc-grey-200); border-radius: var(--radius); padding: 1.25rem; box-shadow: none; }
-.dashboard-panel h3 { font-size: 0.82rem; margin: 0 0 1rem; color: var(--pwc-grey-700); text-transform: uppercase; letter-spacing: 0.06em; font-family: var(--font-sans); font-weight: 700; }
-.dashboard-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 0.85rem; }
-.dashboard-metric-card { text-align: center; padding: 0.75rem 0.5rem; background: var(--pwc-grey-100); border-radius: var(--radius); border: 1px solid var(--pwc-grey-200); }
-.dashboard-metric-icon img { width: 36px; height: 36px; object-fit: contain; margin-bottom: 0.45rem; }
-.dashboard-metric-value { font-family: var(--font-serif); font-size: 1.35rem; font-weight: 700; color: var(--pwc-black); line-height: 1.1; }
-.dashboard-metric-label { font-size: 0.72rem; color: var(--pwc-grey-500); margin-top: 0.35rem; line-height: 1.3; }
-.dashboard-skills { margin-top: 1rem; }
-.dashboard-skills-label { font-size: 0.75rem; font-weight: 700; color: var(--pwc-grey-700); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.5rem; }
-.dashboard-ess { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--pwc-grey-200); text-align: center; }
-.dashboard-ess-value { font-family: var(--font-serif); font-size: 1.75rem; font-weight: 700; color: var(--pwc-orange-dark); }
-.dashboard-ess-label { font-size: 0.78rem; color: var(--pwc-grey-500); margin-top: 0.25rem; }
-.dashboard-stat { font-size: 0.95rem; font-weight: 700; color: var(--pwc-orange-dark); margin: 0 0 0.75rem; }
-.dashboard-chart { display: block; width: 100%; max-width: 100%; height: auto; margin-top: 0.5rem; }
-.dashboard-chart-compact { max-width: 180px; margin: 0.5rem auto 0; }
-.dashboard-adapt-value { font-family: var(--font-serif); font-size: 1.5rem; font-weight: 700; color: var(--pwc-orange-dark); text-align: center; }
-.dashboard-adapt-label { font-size: 0.78rem; color: var(--pwc-grey-500); text-align: center; margin-bottom: 0.25rem; }
-.dashboard-panel-clients { margin-top: 1.25rem; }
-.client-logo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 0.85rem; margin-top: 0.75rem; }
-.client-logo-item { display: flex; align-items: center; justify-content: center; padding: 0.65rem; background: var(--pwc-grey-100); border: 1px solid var(--pwc-grey-200); border-radius: var(--radius); min-height: 64px; }
-.client-logo-item img { max-width: 100%; max-height: 48px; object-fit: contain; }
+.dashboard-mosaic {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 1px;
+  margin-top: 1rem;
+  width: 100%;
+  background: var(--pwc-grey-200);
+  border: 1px solid var(--pwc-grey-200);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.dashboard-cell {
+  background: var(--pwc-white);
+  padding: 0.7rem 0.65rem 0.75rem;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.dashboard-cell-delivery,
+.dashboard-cell-ai { grid-column: span 3; }
+.dashboard-cell-chart { grid-column: span 2; }
+.dashboard-cell-clients { grid-column: 1 / -1; }
+.dashboard-cell h3 {
+  font-size: 0.78rem;
+  margin: 0 0 0.55rem;
+  color: var(--pwc-grey-700);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  text-align: center;
+  flex-shrink: 0;
+}
+.delivery-impact-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0;
+  width: 100%;
+  flex: 1;
+  align-items: stretch;
+  border: 1px solid var(--pwc-grey-200);
+  border-radius: calc(var(--radius) - 2px);
+  overflow: hidden;
+}
+.delivery-impact-card {
+  background: var(--pwc-grey-100);
+  border: none;
+  border-right: 1px solid var(--pwc-grey-200);
+  border-top: 3px solid var(--pwc-orange);
+  border-radius: 0;
+  padding: 0.55rem 0.35rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 5.5rem;
+}
+.delivery-impact-card:last-child { border-right: none; }
+.delivery-impact-icon { width: 28px; height: 28px; margin: 0 auto 0.35rem; background: var(--pwc-orange-tint); border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
+.delivery-impact-icon img { width: 16px; height: 16px; object-fit: contain; }
+.delivery-impact-value { font-family: var(--font-serif); font-size: clamp(1.05rem, 1.6vw, 1.35rem); font-weight: 700; color: var(--pwc-orange-dark); line-height: 1.1; }
+.delivery-impact-label { font-size: 0.62rem; color: var(--pwc-grey-700); margin-top: 0.25rem; line-height: 1.2; font-weight: 600; max-width: 9em; }
+.ai-capability-grid { display: flex; flex-direction: column; gap: 0.55rem; flex: 1; }
+.ai-cap-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border: 1px solid var(--pwc-grey-200); border-radius: calc(var(--radius) - 2px); overflow: hidden; }
+.ai-cap-metric { text-align: center; padding: 0.45rem 0.3rem; background: var(--pwc-grey-100); border-right: 1px solid var(--pwc-grey-200); }
+.ai-cap-metric:last-child { border-right: none; }
+.ai-cap-icon img { width: 26px; height: 26px; object-fit: contain; margin-bottom: 0.25rem; }
+.ai-cap-value { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 700; color: var(--pwc-black); line-height: 1.1; }
+.ai-cap-label { font-size: 0.62rem; color: var(--pwc-grey-500); margin-top: 0.2rem; line-height: 1.2; }
+.ai-cap-skills { padding: 0.45rem 0.5rem; background: var(--pwc-grey-100); border: 1px solid var(--pwc-grey-200); border-radius: calc(var(--radius) - 2px); }
+.ai-cap-skills-label { font-size: 0.68rem; font-weight: 700; color: var(--pwc-grey-700); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.35rem; text-align: center; }
+.ai-cap-ess { text-align: center; padding: 0.45rem 0.5rem; background: var(--pwc-orange-tint); border: 1px solid var(--pwc-grey-200); border-radius: calc(var(--radius) - 2px); }
+.ai-cap-ess-value { font-family: var(--font-serif); font-size: 1.35rem; font-weight: 700; color: var(--pwc-orange-dark); line-height: 1.1; }
+.ai-cap-ess-label { font-size: 0.68rem; color: var(--pwc-grey-500); margin-top: 0.15rem; line-height: 1.25; }
+.tag-row-compact { margin: 0; gap: 0.35rem; justify-content: center; }
+.tag-compact { padding: 0.2rem 0.5rem; font-size: 0.68rem; background: var(--pwc-white); }
+.dashboard-stat { font-size: 0.82rem; font-weight: 700; color: var(--pwc-orange-dark); margin: 0 0 0.25rem; text-align: center; flex-shrink: 0; }
+.dashboard-chart-area { flex: 1; display: flex; align-items: flex-end; justify-content: center; min-height: 130px; width: 100%; }
+.dashboard-inline-chart { display: block; width: 100%; height: auto; max-height: 150px; }
+.dashboard-cell-adapt { align-items: stretch; }
+.dashboard-cell-adapt .adapt-gauge-wrap { width: min(100%, 220px); margin: auto auto 0; flex: 1; display: flex; flex-direction: column; justify-content: flex-end; }
+.adapt-gauge-wrap { position: relative; width: min(100%, 220px); margin: 0 auto; }
+.adapt-gauge-svg { display: block; width: 100%; height: auto; overflow: visible; }
+.adapt-gauge-track { fill: none; stroke: var(--pwc-grey-200); stroke-width: 22; stroke-linecap: round; }
+.adapt-gauge-fill { fill: none; stroke: var(--pwc-orange); stroke-width: 22; stroke-linecap: round; }
+.adapt-gauge-label { position: absolute; left: 50%; bottom: 0.2rem; transform: translateX(-50%); text-align: center; width: 100%; }
+.adapt-gauge-value { font-family: var(--font-serif); font-size: clamp(1.35rem, 2.5vw, 1.65rem); font-weight: 700; color: var(--pwc-orange-dark); line-height: 1.1; }
+.adapt-gauge-caption { font-size: 0.68rem; color: var(--pwc-grey-500); margin-top: 0.15rem; }
+.dashboard-cell-clients .client-logo-grid { margin-top: 0.35rem; gap: 0; border: 1px solid var(--pwc-grey-200); border-radius: calc(var(--radius) - 2px); overflow: hidden; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.client-logo-grid { display: grid; gap: 0; }
+.client-logo-item { display: flex; align-items: center; justify-content: center; padding: 0.45rem; background: var(--pwc-grey-100); border: none; border-right: 1px solid var(--pwc-grey-200); border-bottom: 1px solid var(--pwc-grey-200); border-radius: 0; min-height: 52px; }
+.client-logo-item:nth-child(7n) { border-right: none; }
+.client-logo-item img { max-width: 100%; max-height: 36px; object-fit: contain; }
 .tag { background: var(--pwc-grey-100); border: 1px solid var(--pwc-grey-200); padding: 0.3rem 0.65rem; border-radius: 999px; font-size: 0.78rem; }
 
 .agenda-link { background: none; border: none; padding: 0; font: inherit; color: var(--pwc-black); cursor: pointer; text-align: left; font-weight: 600; }
@@ -363,12 +497,29 @@ body { padding-bottom: 2rem; }
 }
 
 @media (max-width: 800px) {
+  .tab-body-with-nav { --section-nav-width: 168px; }
+  .section-nav-link { font-size: 0.72rem; padding: 0.42rem 0.55rem; }
+  .section-nav-heading { font-size: 0.62rem; padding: 0 0.65rem; }
   .hero { grid-template-columns: 1fr; }
   .hero h1 { font-size: 1.5rem; }
   .profile-layout { grid-template-columns: 1fr; }
   .donut-chart-wrap { grid-template-columns: 1fr; justify-items: center; }
   .financial-visual-row { grid-template-columns: 1fr; }
-  .dashboard-top-row, .dashboard-mid-row { grid-template-columns: 1fr; }
+  .dashboard-mosaic { grid-template-columns: 1fr; }
+  .dashboard-cell-delivery,
+  .dashboard-cell-ai,
+  .dashboard-cell-chart,
+  .dashboard-cell-clients { grid-column: 1 / -1; }
+  .delivery-impact-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .delivery-impact-card { border-right: 1px solid var(--pwc-grey-200); }
+  .delivery-impact-card:nth-child(3n) { border-right: none; }
+  .delivery-impact-card:nth-child(-n+3) { border-bottom: 1px solid var(--pwc-grey-200); }
+  .ai-cap-metrics { grid-template-columns: 1fr; }
+  .ai-cap-metric { border-right: none; border-bottom: 1px solid var(--pwc-grey-200); }
+  .ai-cap-metric:last-child { border-bottom: none; }
+  .dashboard-cell-clients .client-logo-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .client-logo-item:nth-child(7n) { border-right: 1px solid var(--pwc-grey-200); }
+  .client-logo-item:nth-child(4n) { border-right: none; }
   .training-initiatives-row { grid-template-columns: 1fr; }
   .cert-progress-grid { grid-template-columns: 1fr; }
   .apollo-value-grid { grid-template-columns: 1fr; }
@@ -382,14 +533,25 @@ body { padding-bottom: 2rem; }
   .practice-name { border-left: none; padding-left: 0; }
 }
 @media (max-width: 520px) {
+  .tab-body-with-nav { --section-nav-width: 140px; }
+  .section-nav-link { font-size: 0.68rem; padding: 0.38rem 0.45rem; }
+  .delivery-impact-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .delivery-impact-card:nth-child(3n) { border-right: 1px solid var(--pwc-grey-200); }
+  .delivery-impact-card:nth-child(2n) { border-right: none; }
+  .delivery-impact-card:nth-child(-n+3) { border-bottom: 1px solid var(--pwc-grey-200); }
+  .delivery-impact-card:nth-child(-n+2) { border-bottom: 1px solid var(--pwc-grey-200); }
+  .delivery-impact-card:nth-last-child(-n+1) { border-bottom: none; }
+  .dashboard-cell-clients .client-logo-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .client-logo-item:nth-child(4n) { border-right: 1px solid var(--pwc-grey-200); }
+  .client-logo-item:nth-child(3n) { border-right: none; }
   .gtm-sector-block { min-width: 118px; max-width: 148px; }
   #gtm-sector-hls { min-width: 132px; max-width: 160px; }
   .gtm-team-node, .gtm-subgroup-label { font-size: 0.65rem; }
 }
 </style>
 </head>
-<body data-built-at="2026-07-30T15:40:07.740Z">
-  <!-- preview build: 2026-07-30T15:40:07.740Z -->
+<body data-built-at="2026-07-30T16:43:12.003Z">
+  <!-- preview build: 2026-07-30T16:43:12.003Z -->
   <header class="site-header">
     <div class="header-accent"></div>
     <div class="header-inner">
@@ -418,13 +580,19 @@ body { padding-bottom: 2rem; }
       <h1>FY26 Recap</h1>
       <p class="lead">A look back at FY26 — financial performance, AC delivery impact, talent movement, and promotions across Oracle D&amp;A.</p>
     </section>
-    <div class="blocks-stack">
-  <article class="content-block financial-block">
+    <div class="tab-body tab-body-with-nav">
+      <aside class="section-nav-sidebar">
+    <p class="section-nav-heading">On this page</p>
+    <nav class="section-nav" aria-label="Jump to section"><a class="section-nav-link" href="#fy26-recap-fy26-financials-headcount" data-section="fy26-recap-fy26-financials-headcount">FY26 Financials, Headcount</a><a class="section-nav-link" href="#fy26-recap-oracle-d-a-ac-executive-summary" data-section="fy26-recap-oracle-d-a-ac-executive-summary">Oracle D&amp;A AC Executive Summary</a><a class="section-nav-link" href="#fy26-recap-new-hires-internal-transfers-interns" data-section="fy26-recap-new-hires-internal-transfers-interns">New Hires, Internal Transfers &amp; Interns</a><a class="section-nav-link" href="#fy26-recap-abhishek-chetnani" data-section="fy26-recap-abhishek-chetnani">Abhishek Chetnani</a><a class="section-nav-link" href="#fy26-recap-ac-new-hires-internal-transfers-interns" data-section="fy26-recap-ac-new-hires-internal-transfers-interns">AC New Hires, Internal Transfers &amp; Interns</a><a class="section-nav-link" href="#fy26-recap-fy27-promotions" data-section="fy26-recap-fy27-promotions">FY27 Promotions</a></nav>
+  </aside>
+      <div class="tab-body-main">
+        <div class="blocks-stack">
+  <article id="fy26-recap-fy26-financials-headcount" class="content-block financial-block">
     <header class="block-header">
       <h2>FY26 Financials, Headcount</h2>
       <p class="block-subtitle">Delivery, People &amp; Financial Impact — FY'26</p>
     </header>
-    <div class="metrics-grid metrics-primary">
+    <div class="metrics-grid metrics-primary metrics-grid-centered">
     <div class="metric-card">
       <div class="metric-value">$43M</div>
       <div class="metric-label">Revenue (Won Oppts)</div>
@@ -447,105 +615,174 @@ body { padding-bottom: 2rem; }
     </div></div>
     <p class="block-note">Delivery $ — pending partner allocation. Partners to review FY25/FY26 contract $</p>
     <div class="financial-visual-row"><div class="industry-section">
-      <img class="industry-chart-svg" src="assets/slide-4-industry-chart.svg" alt="Industry Split of Projects" loading="lazy" />
+      <h3>Industry Split of Projects</h3>
+      
+  <div class="donut-chart-wrap">
+    <div class="donut-chart" style="background: conic-gradient(#1B2A4A 0% 34%, #0F6E56 34% 55%, #C56A00 55% 73%, #993556 73% 84%, #534AB7 84% 95%, #A32D2D 95% 100%)">
+      <div class="donut-hole"><span>Industry<br>Split</span></div>
+    </div>
+    <div class="donut-legend">
+    <div class="donut-legend-item">
+      <span class="donut-swatch" style="background:#1B2A4A"></span>
+      <span class="donut-legend-label">Financial Services</span>
+      <span class="donut-legend-value">34%</span>
+    </div>
+    <div class="donut-legend-item">
+      <span class="donut-swatch" style="background:#0F6E56"></span>
+      <span class="donut-legend-label">Technology, Media &amp; Telecom</span>
+      <span class="donut-legend-value">21%</span>
+    </div>
+    <div class="donut-legend-item">
+      <span class="donut-swatch" style="background:#C56A00"></span>
+      <span class="donut-legend-label">Industrials &amp; Services</span>
+      <span class="donut-legend-value">18%</span>
+    </div>
+    <div class="donut-legend-item">
+      <span class="donut-swatch" style="background:#993556"></span>
+      <span class="donut-legend-label">Health Industries</span>
+      <span class="donut-legend-value">11%</span>
+    </div>
+    <div class="donut-legend-item">
+      <span class="donut-swatch" style="background:#534AB7"></span>
+      <span class="donut-legend-label">Consumer Markets</span>
+      <span class="donut-legend-value">11%</span>
+    </div>
+    <div class="donut-legend-item">
+      <span class="donut-swatch" style="background:#A32D2D"></span>
+      <span class="donut-legend-label">Energy, Utilities &amp; Resources</span>
+      <span class="donut-legend-value">5%</span>
+    </div></div>
+  </div>
     </div>
   <div class="clients-section clients-section-table">
     <h3>Our Clients</h3>
     <p class="clients-summary">— 39 unique accounts, US &amp; AC</p>
-    <table class="clients-table"><tbody><tr><td>Munich Reinsurance America</td><td>Lennar Homes LLC</td></tr><tr><td>Principal Financial Services</td><td>Abbvie Inc</td></tr><tr><td>TD Bank National Association</td><td>HealthPartners</td></tr><tr><td>Microsoft Corporation</td><td>QXO Inc</td></tr><tr><td>Hewlett Packard Enterprise</td><td>United Parcel Service, Inc.</td></tr><tr><td>Palo Alto Networks, Inc.</td><td>Fermi Inc.</td></tr><tr><td>GE Vernova International</td><td>Arizona Public Service Co.</td></tr></tbody></table>
+    <table class="clients-table"><tbody><tr><td style="color:#1B2A4A">Munich Reinsurance America</td><td style="color:#C56A00">Lennar Homes LLC</td></tr><tr><td style="color:#1B2A4A">Principal Financial Services</td><td style="color:#993556">Abbvie Inc</td></tr><tr><td style="color:#1B2A4A">TD Bank National Association</td><td style="color:#993556">HealthPartners</td></tr><tr><td style="color:#0F6E56">Microsoft Corporation</td><td style="color:#534AB7">QXO Inc</td></tr><tr><td style="color:#0F6E56">Hewlett Packard Enterprise</td><td style="color:#534AB7">United Parcel Service, Inc.</td></tr><tr><td style="color:#0F6E56">Palo Alto Networks, Inc.</td><td style="color:#A32D2D">Fermi Inc.</td></tr><tr><td style="color:#C56A00">GE Vernova International</td><td style="color:#A32D2D">Arizona Public Service Co.</td></tr></tbody></table>
   </div></div>
     
   </article>
-  <article class="content-block dashboard-block">
+  <article id="fy26-recap-oracle-d-a-ac-executive-summary" class="content-block dashboard-block">
     <header class="block-header">
       <h2>Oracle D&amp;A AC Executive Summary</h2>
       <p class="block-subtitle">Delivery, People &amp; AI Impact — FY'26</p>
     </header>
 
-    <div class="dashboard-top-row">
-      <section class="dashboard-panel">
+    <div class="dashboard-mosaic">
+      <section class="dashboard-cell dashboard-cell-delivery">
         <h3>Delivery Impact</h3>
-        <div class="dashboard-metrics">
-      <div class="dashboard-metric-card">
-        <div class="dashboard-metric-icon"><img src="assets/slide-5-image4.png" alt="Projects Delivered" loading="lazy" /></div>
-        <div class="dashboard-metric-value">40</div>
-        <div class="dashboard-metric-label">Projects Delivered</div>
-      </div>
-      <div class="dashboard-metric-card">
-        <div class="dashboard-metric-icon"><img src="assets/slide-5-image5.png" alt="People Employed" loading="lazy" /></div>
-        <div class="dashboard-metric-value">80</div>
-        <div class="dashboard-metric-label">People Employed</div>
-      </div>
-      <div class="dashboard-metric-card">
-        <div class="dashboard-metric-icon"><img src="assets/slide-5-image6.png" alt="Assets Built" loading="lazy" /></div>
-        <div class="dashboard-metric-value">43</div>
-        <div class="dashboard-metric-label">Assets Built</div>
-      </div>
-      <div class="dashboard-metric-card">
-        <div class="dashboard-metric-icon"><img src="assets/slide-5-image7.png" alt="Assets Used in Projects" loading="lazy" /></div>
-        <div class="dashboard-metric-value">8</div>
-        <div class="dashboard-metric-label">Assets Used in Projects</div>
-      </div>
-      <div class="dashboard-metric-card">
-        <div class="dashboard-metric-icon"><img src="assets/slide-5-image8.png" alt="Hours Saved (PY'26)" loading="lazy" /></div>
-        <div class="dashboard-metric-value">~1K</div>
-        <div class="dashboard-metric-label">Hours Saved (PY'26)</div>
-      </div></div>
-      </section>
-      <section class="dashboard-panel dashboard-panel-ai">
-        <h3>AI Capability</h3>
-        <div class="dashboard-metrics">
-      <div class="dashboard-metric-card">
-        <div class="dashboard-metric-icon"><img src="assets/slide-5-image9.png" alt="AI Headcount" loading="lazy" /></div>
-        <div class="dashboard-metric-value">24</div>
-        <div class="dashboard-metric-label">AI Headcount</div>
-      </div></div>
-        <div class="dashboard-skills">
-            <div class="dashboard-skills-label">AI Skills Added</div>
-            <div class="tag-row"><span class="tag">Prompt Engineering</span><span class="tag">GenAI Tooling</span><span class="tag">Agentic Workflows</span><span class="tag">ML Ops</span><span class="tag">LLM Evaluation</span></div>
-          </div>
-        <div class="dashboard-metrics">
-      <div class="dashboard-metric-card">
-        <div class="dashboard-metric-icon"><img src="assets/slide-5-image10.png" alt="External Trainings" loading="lazy" /></div>
-        <div class="dashboard-metric-value">2</div>
-        <div class="dashboard-metric-label">External Trainings</div>
-      </div>
-      <div class="dashboard-metric-card">
-        <div class="dashboard-metric-icon"><img src="assets/slide-5-image11.png" alt="Internal Trainings" loading="lazy" /></div>
-        <div class="dashboard-metric-value">25</div>
-        <div class="dashboard-metric-label">Internal Trainings</div>
-      </div></div>
-        <div class="dashboard-ess">
-            <div class="dashboard-ess-value">9.15 /10</div>
-            <div class="dashboard-ess-label">Engagement Satisfaction Survey (ESS)</div>
-          </div>
-      </section>
+        <div class="delivery-impact-grid">
+    <div class="delivery-impact-card">
+      <div class="delivery-impact-icon"><img src="assets/slide-5-image4.png" alt="Projects Delivered" loading="lazy" /></div>
+      <div class="delivery-impact-value">40</div>
+      <div class="delivery-impact-label">Projects Delivered</div>
     </div>
-
-    <div class="dashboard-mid-row">
-      <section class="dashboard-panel dashboard-panel-chart">
+    <div class="delivery-impact-card">
+      <div class="delivery-impact-icon"><img src="assets/slide-5-image5.png" alt="People Employed" loading="lazy" /></div>
+      <div class="delivery-impact-value">80</div>
+      <div class="delivery-impact-label">People Employed</div>
+    </div>
+    <div class="delivery-impact-card">
+      <div class="delivery-impact-icon"><img src="assets/slide-5-image6.png" alt="Assets Built" loading="lazy" /></div>
+      <div class="delivery-impact-value">43</div>
+      <div class="delivery-impact-label">Assets Built</div>
+    </div>
+    <div class="delivery-impact-card">
+      <div class="delivery-impact-icon"><img src="assets/slide-5-image7.png" alt="Assets Used in Projects" loading="lazy" /></div>
+      <div class="delivery-impact-value">8</div>
+      <div class="delivery-impact-label">Assets Used in Projects</div>
+    </div>
+    <div class="delivery-impact-card">
+      <div class="delivery-impact-icon"><img src="assets/slide-5-image8.png" alt="Hours Saved (PY'26)" loading="lazy" /></div>
+      <div class="delivery-impact-value">~1K</div>
+      <div class="delivery-impact-label">Hours Saved (PY'26)</div>
+    </div></div>
+      </section>
+      <section class="dashboard-cell dashboard-cell-ai">
+        <h3>AI Capability</h3>
+        <div class="ai-capability-grid"><div class="ai-cap-metrics">
+        <div class="ai-cap-metric">
+          <div class="ai-cap-icon"><img src="assets/slide-5-image9.png" alt="AI Headcount" loading="lazy" /></div>
+          <div class="ai-cap-value">24</div>
+          <div class="ai-cap-label">AI Headcount</div>
+        </div>
+        <div class="ai-cap-metric">
+          <div class="ai-cap-icon"><img src="assets/slide-5-image10.png" alt="External Trainings" loading="lazy" /></div>
+          <div class="ai-cap-value">2</div>
+          <div class="ai-cap-label">External Trainings</div>
+        </div>
+        <div class="ai-cap-metric">
+          <div class="ai-cap-icon"><img src="assets/slide-5-image11.png" alt="Internal Trainings" loading="lazy" /></div>
+          <div class="ai-cap-value">25</div>
+          <div class="ai-cap-label">Internal Trainings</div>
+        </div></div><div class="ai-cap-skills">
+        <div class="ai-cap-skills-label">AI Skills Added</div>
+        <div class="tag-row tag-row-compact"><span class="tag tag-compact">Prompt Engineering</span><span class="tag tag-compact">GenAI Tooling</span><span class="tag tag-compact">Agentic Workflows</span><span class="tag tag-compact">ML Ops</span><span class="tag tag-compact">LLM Evaluation</span></div>
+      </div><div class="ai-cap-ess">
+        <div class="ai-cap-ess-value">9.15 /10</div>
+        <div class="ai-cap-ess-label">Engagement Satisfaction Survey (ESS)</div>
+      </div></div>
+      </section>
+      <section class="dashboard-cell dashboard-cell-chart">
         <h3>Team Size Growth</h3>
         <p class="dashboard-stat">+31.1% headcount</p>
-        <img class="dashboard-chart" src="assets/slide-5-team-size-chart.svg" alt="Team Size Growth" loading="lazy" />
+        
+  <div class="dashboard-chart-area" role="img" aria-label="Team Size Growth">
+    <svg class="dashboard-inline-chart" viewBox="0 0 180 150" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+      <line x1="16" y1="124" x2="164" y2="124" stroke="#D9DCE3" stroke-width="1.5"/>
+      
+      <rect x="35.75" y="56.85635663181067" width="38.5" height="67.14364336818933" fill="#EB8C00" rx="3"/>
+      <text x="55" y="51.85635663181067" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#2D2D2D">61</text>
+      <text x="55" y="140" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#6B7280">Start</text>
+      <rect x="105.75" y="37.04347826086956" width="38.5" height="86.95652173913044" fill="#EB8C00" rx="3"/>
+      <text x="125" y="32.04347826086956" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#2D2D2D">79</text>
+      <text x="125" y="140" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#6B7280">End</text>
+    </svg>
+  </div>
       </section>
-      <section class="dashboard-panel dashboard-panel-chart">
+      <section class="dashboard-cell dashboard-cell-chart">
         <h3>Utilization Trend</h3>
-        <img class="dashboard-chart" src="assets/slide-5-utilization-chart.svg" alt="Utilization Trend" loading="lazy" />
+        
+  <div class="dashboard-chart-area" role="img" aria-label="Utilization Trend">
+    <svg class="dashboard-inline-chart" viewBox="0 0 180 150" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+      <line x1="16" y1="124" x2="164" y2="124" stroke="#D9DCE3" stroke-width="1.5"/>
+      <path d="M 16 55.111111111111114 L 65.33333333333334 112.88888888888889 L 114.66666666666667 90.66666666666667 L 164 70.66666666666666" fill="none" stroke="#EB8C00" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      
+      <circle cx="16" cy="55.111111111111114" r="4" fill="#EB8C00" stroke="#FFFFFF" stroke-width="1.5"/>
+      <text x="16" y="47.111111111111114" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#2D2D2D">86%</text>
+      <text x="16" y="140" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#6B7280">Q1</text>
+      <circle cx="65.33333333333334" cy="112.88888888888889" r="4" fill="#EB8C00" stroke="#FFFFFF" stroke-width="1.5"/>
+      <text x="65.33333333333334" y="104.88888888888889" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#2D2D2D">60%</text>
+      <text x="65.33333333333334" y="140" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#6B7280">Q2</text>
+      <circle cx="114.66666666666667" cy="90.66666666666667" r="4" fill="#EB8C00" stroke="#FFFFFF" stroke-width="1.5"/>
+      <text x="114.66666666666667" y="82.66666666666667" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#2D2D2D">70%</text>
+      <text x="114.66666666666667" y="140" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#6B7280">Q3</text>
+      <circle cx="164" cy="70.66666666666666" r="4" fill="#EB8C00" stroke="#FFFFFF" stroke-width="1.5"/>
+      <text x="164" y="62.66666666666666" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#2D2D2D">79%</text>
+      <text x="164" y="140" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#6B7280">Q4</text>
+    </svg>
+  </div>
       </section>
-      <section class="dashboard-panel dashboard-panel-chart dashboard-panel-adapt">
+      <section class="dashboard-cell dashboard-cell-chart dashboard-cell-adapt">
         <h3>AI Adaptability</h3>
-        <div class="dashboard-adapt-value">100%</div>
-           <div class="dashboard-adapt-label">AI Adaptability</div>
-        <img class="dashboard-chart dashboard-chart-compact" src="assets/slide-5-ai-adaptability-chart.svg" alt="AI Adaptability" loading="lazy" />
-      </section>
+        
+  <div class="adapt-gauge-wrap" role="img" aria-label="AI Adaptability: 100%">
+    <svg class="adapt-gauge-svg" viewBox="0 0 200 120" aria-hidden="true">
+      <path class="adapt-gauge-track" d="M 24 100 A 76 76 0 0 1 176 100" pathLength="239" />
+      <path class="adapt-gauge-fill" d="M 24 100 A 76 76 0 0 1 176 100" pathLength="239" style="stroke-dasharray:239;stroke-dashoffset:0.00" />
+    </svg>
+    <div class="adapt-gauge-label">
+      <div class="adapt-gauge-value">100%</div>
+      <div class="adapt-gauge-caption">AI Adaptability</div>
     </div>
-
-    <section class="dashboard-panel dashboard-panel-clients">
+  </div>
+      </section>
+      <section class="dashboard-cell dashboard-cell-clients">
         <h3>Our Clients</h3>
         <div class="client-logo-grid"><figure class="client-logo-item"><img src="assets/slide-5-image13.png" alt="image13.png" loading="lazy" /></figure><figure class="client-logo-item"><img src="assets/slide-5-image14.png" alt="image14.png" loading="lazy" /></figure><figure class="client-logo-item"><img src="assets/slide-5-image15.png" alt="image15.png" loading="lazy" /></figure><figure class="client-logo-item"><img src="assets/slide-5-image16.png" alt="image16.png" loading="lazy" /></figure><figure class="client-logo-item"><img src="assets/slide-5-image17.png" alt="image17.png" loading="lazy" /></figure><figure class="client-logo-item"><img src="assets/slide-5-image18.png" alt="image18.png" loading="lazy" /></figure><figure class="client-logo-item"><img src="assets/slide-5-image19.png" alt="image19.png" loading="lazy" /></figure><figure class="client-logo-item"><img src="assets/slide-5-image20.png" alt="image20.png" loading="lazy" /></figure><figure class="client-logo-item"><img src="assets/slide-5-image21.png" alt="image21.png" loading="lazy" /></figure><figure class="client-logo-item"><img src="assets/slide-5-image22.png" alt="image22.png" loading="lazy" /></figure><figure class="client-logo-item"><img src="assets/slide-5-image23.png" alt="image23.png" loading="lazy" /></figure><figure class="client-logo-item"><img src="assets/slide-5-image24.png" alt="image24.png" loading="lazy" /></figure><figure class="client-logo-item"><img src="assets/slide-5-image25.png" alt="image25.png" loading="lazy" /></figure><figure class="client-logo-item"><img src="assets/slide-5-image26.png" alt="image26.png" loading="lazy" /></figure></div>
       </section>
+    </div>
   </article>
-  <article class="content-block table-block people-map-block">
+  <article id="fy26-recap-new-hires-internal-transfers-interns" class="content-block table-block people-map-block">
     <header class="block-header">
       <h2>New Hires, Internal Transfers &amp; Interns</h2>
       <p class="block-subtitle">FY26 Talent Movement</p>
@@ -638,7 +875,7 @@ body { padding-bottom: 2rem; }
       </table>
     </div>
   </article>
-  <article class="content-block profile-block">
+  <article id="fy26-recap-abhishek-chetnani" class="content-block profile-block">
     <div class="profile-layout">
       <div class="profile-photo"><img src="assets/slide-7-image28.jpeg" alt="Abhishek Chetnani" loading="lazy" /></div>
       <div class="profile-body">
@@ -651,7 +888,7 @@ body { padding-bottom: 2rem; }
       </div>
     </div>
   </article>
-  <article class="content-block table-block">
+  <article id="fy26-recap-ac-new-hires-internal-transfers-interns" class="content-block table-block">
     <header class="block-header">
       <h2>AC New Hires, Internal Transfers &amp; Interns</h2>
       
@@ -664,7 +901,7 @@ body { padding-bottom: 2rem; }
       </table>
     </div>
   </article>
-  <article class="content-block table-block">
+  <article id="fy26-recap-fy27-promotions" class="content-block table-block">
     <header class="block-header">
       <h2>FY27 Promotions</h2>
       <p class="block-subtitle">Congratulations to all our FY27 D&amp;A promotes below!</p>
@@ -676,13 +913,21 @@ body { padding-bottom: 2rem; }
         <tbody><tr><td>Divya Thathu</td><td>D&amp;A</td><td>Chicago – One North Wacker Dr</td><td><span class="badge">Director</span></td><td>Yeon Lee</td></tr><tr><td>Shierly Mondianti</td><td>D&amp;A</td><td>New York – 300 Madison Ave</td><td><span class="badge">Director</span></td><td>Tojo Johnson</td></tr><tr><td>Christina Maurer</td><td>D&amp;A</td><td>St. Louis – 6 Cardinal Way</td><td><span class="badge">Senior Manager</span></td><td>Ajeetha Menezes</td></tr><tr><td>Emily Zolkowski</td><td>D&amp;A</td><td>Washington D.C - 655 New York Ave</td><td><span class="badge">Senior Manager</span></td><td>Ajeetha Menezes</td></tr><tr><td>Hemant Patil</td><td>D&amp;A</td><td>Silicon Valley – 488 Almaden Blvd</td><td><span class="badge">Senior Manager</span></td><td>Brad Housour</td></tr><tr><td>Deepak M Chakrasali</td><td>D&amp;A</td><td>Bangalore</td><td><span class="badge">Manager</span></td><td>Sujit Shaw</td></tr><tr><td>Rajeswari Chandu</td><td>D&amp;A</td><td>Hyderabad</td><td><span class="badge">Manager</span></td><td>Sujit Shaw</td></tr><tr><td>Sai Keerthi Ramaraju</td><td>D&amp;A</td><td>Hartford – CityPlace1. 185 Asylum street</td><td><span class="badge">Manager</span></td><td>Fania Georgiades</td></tr><tr><td>Souradeep Pramanik</td><td>D&amp;A</td><td>Chicago – One North Wacker Dr</td><td><span class="badge">Manager</span></td><td>Rikin Parekh</td></tr><tr><td>Hannah Marcus</td><td>D&amp;A</td><td>Boston - 101 Seaport Boulevard</td><td><span class="badge">Senior Associate</span></td><td>Rikin Parekh</td></tr><tr><td>Ritvik Rajeev</td><td>D&amp;A</td><td>New York - 300 Madison Avenue</td><td><span class="badge">Senior Associate</span></td><td>Srikanth Vemula</td></tr><tr><td>Vatsala Singh</td><td>D&amp;A</td><td>Gurugram</td><td><span class="badge">Senior Associate</span></td><td>Sahithi Kolasani</td></tr></tbody>
       </table>
     </div>
-  </article></div></div><div class="tab-panel" id="panel-fy27-kickoff" role="tabpanel">
+  </article></div>
+      </div>
+    </div></div><div class="tab-panel" id="panel-fy27-kickoff" role="tabpanel">
     <section class="page-header">
       <h1>FY27 Kickoff</h1>
       <p class="lead">Our direction for FY27 — structural changes to how we operate and key initiatives ahead.</p>
     </section>
-    <div class="blocks-stack">
-  <article class="content-block org-block">
+    <div class="tab-body tab-body-with-nav">
+      <aside class="section-nav-sidebar">
+    <p class="section-nav-heading">On this page</p>
+    <nav class="section-nav" aria-label="Jump to section"><a class="section-nav-link" href="#fy27-kickoff-the-structural-change-one-team" data-section="fy27-kickoff-the-structural-change-one-team">The Structural Change: One Team</a><a class="section-nav-link" href="#fy27-kickoff-apollo-and-ate" data-section="fy27-kickoff-apollo-and-ate">Apollo and ATE</a></nav>
+  </aside>
+      <div class="tab-body-main">
+        <div class="blocks-stack">
+  <article id="fy27-kickoff-the-structural-change-one-team" class="content-block org-block">
     <header class="block-header">
       <h2>The Structural Change: One Team</h2>
       <p class="lead-text">Data &amp; Analytics and Technology merge into a single team. Within it, sub-pillars including the Oracle AI Tower, making data a strategic value enabler for our clients foundational for AI.</p>
@@ -707,7 +952,7 @@ body { padding-bottom: 2rem; }
         </div>
     </div>
   </article>
-  <article class="content-block apollo-block">
+  <article id="fy27-kickoff-apollo-and-ate" class="content-block apollo-block">
     <header class="block-header">
       <p class="eyebrow">The Program</p>
       <h2>Apollo and ATE</h2>
@@ -799,13 +1044,21 @@ body { padding-bottom: 2rem; }
     <p class="apollo-roadmap-lead">Every team runs this schedule on two lanes: <strong class="apollo-text-value" style="color:#0F6E56 !important;font-weight:700">AI for Value</strong> and <strong class="apollo-text-delivery" style="color:#D04A02 !important;font-weight:700">AI for Delivery</strong>. CT&amp;I builds alongside every pod, contributing PMs and AI engineers so we build together.</p>
   </div>
     </section>
-  </article></div></div><div class="tab-panel" id="panel-pipeline" role="tabpanel">
+  </article></div>
+      </div>
+    </div></div><div class="tab-panel" id="panel-pipeline" role="tabpanel">
     <section class="page-header">
       <h1>Pipeline and Sectors</h1>
       <p class="lead">FY27 pipeline, financial outlook, and sector leadership assignments.</p>
     </section>
-    <div class="blocks-stack">
-  <article class="content-block financial-block">
+    <div class="tab-body tab-body-with-nav">
+      <aside class="section-nav-sidebar">
+    <p class="section-nav-heading">On this page</p>
+    <nav class="section-nav" aria-label="Jump to section"><a class="section-nav-link" href="#pipeline-fy27-financials" data-section="pipeline-fy27-financials">FY27 Financials</a><a class="section-nav-link" href="#pipeline-sector-breakout-assignments" data-section="pipeline-sector-breakout-assignments">Sector Breakout / Assignments</a></nav>
+  </aside>
+      <div class="tab-body-main">
+        <div class="blocks-stack">
+  <article id="pipeline-fy27-financials" class="content-block financial-block">
     <header class="block-header">
       <h2>FY27 Financials</h2>
       <p class="block-subtitle">Delivery, People &amp; Financial Impact — FY'27</p>
@@ -867,11 +1120,11 @@ body { padding-bottom: 2rem; }
   <div class="clients-section clients-section-table">
     <h3>Our Clients</h3>
     <p class="clients-summary">— 47 unique accounts</p>
-    <table class="clients-table"><tbody><tr><td>Citigroup Inc.</td><td>Pfizer Inc.</td></tr><tr><td>Visa Inc.</td><td>Boston Scientific Corporation</td></tr><tr><td>The Charles Schwab Corporation</td><td>Community Health Systems Inc.</td></tr><tr><td>Comcast Corporation</td><td>Honeywell</td></tr><tr><td>OpenAI Foundation</td><td>DENSO International America, Inc.</td></tr><tr><td>Palo Alto Networks, Inc.</td><td>Acuity Brands INC.</td></tr><tr><td>Chipotle Mexican Grill</td><td>Arizona Public Service Company</td></tr><tr><td>United Parcel Service, Inc.</td><td>Vulcan Materials Company</td></tr><tr><td>Dollar General Corporation</td><td>Weatherford International Public Li Company</td></tr></tbody></table>
+    <table class="clients-table"><tbody><tr><td style="color:#1B2A4A">Citigroup Inc.</td><td style="color:#993556">Pfizer Inc.</td></tr><tr><td style="color:#1B2A4A">Visa Inc.</td><td style="color:#993556">Boston Scientific Corporation</td></tr><tr><td style="color:#1B2A4A">The Charles Schwab Corporation</td><td style="color:#993556">Community Health Systems Inc.</td></tr><tr><td style="color:#0F6E56">Comcast Corporation</td><td style="color:#C56A00">Honeywell</td></tr><tr><td style="color:#0F6E56">OpenAI Foundation</td><td style="color:#C56A00">DENSO International America, Inc.</td></tr><tr><td style="color:#0F6E56">Palo Alto Networks, Inc.</td><td style="color:#C56A00">Acuity Brands INC.</td></tr><tr><td style="color:#534AB7">Chipotle Mexican Grill</td><td style="color:#A32D2D">Arizona Public Service Company</td></tr><tr><td style="color:#534AB7">United Parcel Service, Inc.</td><td style="color:#A32D2D">Vulcan Materials Company</td></tr><tr><td style="color:#534AB7">Dollar General Corporation</td><td style="color:#A32D2D">Weatherford International Public Li Company</td></tr></tbody></table>
   </div></div>
     
   </article>
-  <article class="content-block sector-org-block">
+  <article id="pipeline-sector-breakout-assignments" class="content-block sector-org-block">
     <header class="block-header">
       <h2>Sector Breakout / Assignments</h2>
     </header>
@@ -899,11 +1152,7 @@ body { padding-bottom: 2rem; }
     <div class="gtm-sector-node">CM</div>
     <div class="gtm-connector-v" aria-hidden="true"></div>
     <div class="gtm-app-node">APP: Dmitry Danilenko</div>
-    <div class="gtm-team-tier"><div class="gtm-connector-v" aria-hidden="true"></div><div class="gtm-team-node" style="--gtm-accent:#E8830E">Divya Thathu</div><div class="gtm-connector-v" aria-hidden="true"></div>
-      <div class="gtm-subgroup">
-        <div class="gtm-subgroup-label">TTL</div>
-        <div class="gtm-connector-v" aria-hidden="true"></div><div class="gtm-team-node" style="--gtm-accent:#E8830E">Vish Gaitonde</div>
-      </div></div>
+    <div class="gtm-team-tier"><div class="gtm-connector-v" aria-hidden="true"></div><div class="gtm-team-node" style="--gtm-accent:#E8830E">Divya Thathu</div><div class="gtm-connector-v" aria-hidden="true"></div><div class="gtm-team-node" style="--gtm-accent:#E8830E">Vish Gaitonde</div></div>
   </div>
   <div class="gtm-sector-block gtm-sector-block--muted" id="gtm-sector-eur" style="--gtm-accent:#78716C">
     <div class="gtm-sector-node">EUR</div>
@@ -919,13 +1168,21 @@ body { padding-bottom: 2rem; }
   </div></div>
     </div>
     <p class="sector-org-note">Sujith Kumar — sector TBD, not yet officially moved (pending transfer to US firm).</p>
-  </article></div></div><div class="tab-panel" id="panel-training" role="tabpanel">
+  </article></div>
+      </div>
+    </div></div><div class="tab-panel" id="panel-training" role="tabpanel">
     <section class="page-header">
       <h1>Training and Certs</h1>
       <p class="lead">L&amp;D initiatives for FY27 and partner basecamp highlights.</p>
     </section>
-    <div class="blocks-stack">
-  <article class="content-block training-block">
+    <div class="tab-body tab-body-with-nav">
+      <aside class="section-nav-sidebar">
+    <p class="section-nav-heading">On this page</p>
+    <nav class="section-nav" aria-label="Jump to section"><a class="section-nav-link" href="#training-oracle-d-a-l-d-fy-27-initiatives" data-section="training-oracle-d-a-l-d-fy-27-initiatives">Oracle D&amp;A L&amp;D FY'27 Initiatives</a><a class="section-nav-link" href="#training-partner-basecamp-recap-photos" data-section="training-partner-basecamp-recap-photos">Partner Basecamp Recap + Photos</a></nav>
+  </aside>
+      <div class="tab-body-main">
+        <div class="blocks-stack">
+  <article id="training-oracle-d-a-l-d-fy-27-initiatives" class="content-block training-block">
     <header class="block-header">
       <h2>Oracle D&amp;A L&amp;D FY'27 Initiatives</h2>
       <p class="block-subtitle">As of Jul ‘26</p>
@@ -994,14 +1251,16 @@ body { padding-bottom: 2rem; }
 
     <div class="highlight-banner">Don't get left behind—join the AI revolution and level up with Oracle AI Certifications!</div>
   </article>
-  <article class="content-block gallery-block">
+  <article id="training-partner-basecamp-recap-photos" class="content-block gallery-block">
     <header class="block-header">
       <h2>Partner Basecamp Recap + Photos</h2>
       <p class="lead-text">A two-day program built around the commercial framework, the technical foundations, and the applied work, split into phases mixing self-paced modules with live sessions</p>
       <p class="block-link">Link to Anthropic's Basecamp Training - Date Selection form</p>
     </header>
     <div class="image-grid"><figure class="slide-figure"><img src="assets/slide-19-image33.jpeg" alt="image33.jpeg" loading="lazy" /></figure><figure class="slide-figure"><img src="assets/slide-19-image34.jpeg" alt="image34.jpeg" loading="lazy" /></figure></div>
-  </article></div></div><div class="tab-panel" id="panel-qa" role="tabpanel">
+  </article></div>
+      </div>
+    </div></div><div class="tab-panel" id="panel-qa" role="tabpanel">
     <section class="page-header">
       <h1>Q&amp;A</h1>
       <p class="subtitle">We're all ears — ask away!</p>
@@ -1018,7 +1277,7 @@ body { padding-bottom: 2rem; }
       </div>
     </section></div></main>
   <footer class="site-footer">© 2026 PwC. All rights reserved. PwC refers to the PwC network and/or one or more of its member firms, each of which is a separate legal entity. Please see www.pwc.com/structure for further details.</footer>
-  <div class="preview-build-banner" aria-hidden="true">Preview · built 2026-07-30T15:40:07.740Z</div>
+  <div class="preview-build-banner" aria-hidden="true">Preview · built 2026-07-30T16:43:12.003Z</div>
   <script>
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -1028,13 +1287,67 @@ body { padding-bottom: 2rem; }
         btn.classList.add('active');
         document.getElementById('panel-' + id).classList.add('active');
         history.replaceState(null, '', '#' + id);
+        window.scrollTo({ top: 0, behavior: 'auto' });
       });
     });
-    const hash = location.hash.slice(1);
-    if (hash) {
-      const btn = document.querySelector('[data-tab="' + hash + '"]');
-      if (btn) btn.click();
+    function scrollToSection(id, smooth) {
+      const el = document.getElementById(id);
+      if (!el) return false;
+      el.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+      history.replaceState(null, '', '#' + id);
+      return true;
     }
+    function activateSectionNav(id) {
+      const section = document.getElementById(id);
+      const panel = section && section.closest('.tab-panel');
+      const scope = panel || document;
+      scope.querySelectorAll('.section-nav-link').forEach(link => {
+        link.classList.toggle('active', link.dataset.section === id);
+      });
+    }
+    document.querySelectorAll('.section-nav-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const id = link.dataset.section;
+        scrollToSection(id, true);
+        activateSectionNav(id);
+      });
+    });
+    if ('IntersectionObserver' in window) {
+      const sectionObserver = new IntersectionObserver((entries) => {
+        const visible = entries
+          .filter(e => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible && visible.target.id) activateSectionNav(visible.target.id);
+      }, { rootMargin: '-96px 0px -55% 0px', threshold: [0, 0.15, 0.4] });
+      document.querySelectorAll('.content-block[id]').forEach(block => sectionObserver.observe(block));
+    }
+    function handleLocationHash() {
+      const hash = location.hash.slice(1);
+      if (!hash) return;
+      const tabBtn = document.querySelector('[data-tab="' + hash + '"]');
+      if (tabBtn) {
+        tabBtn.click();
+        return;
+      }
+      const section = document.getElementById(hash);
+      if (section) {
+        const panel = section.closest('.tab-panel');
+        if (panel) {
+          const tabId = panel.id.replace('panel-', '');
+          const btn = document.querySelector('[data-tab="' + tabId + '"]');
+          if (btn && !btn.classList.contains('active')) btn.click();
+          requestAnimationFrame(() => {
+            setTimeout(() => {
+              scrollToSection(hash, false);
+              activateSectionNav(hash);
+            }, 50);
+          });
+        }
+      }
+    }
+    handleLocationHash();
+    window.addEventListener('hashchange', handleLocationHash);
     function goToTab(id) {
       const btn = document.querySelector('[data-tab="' + id + '"]');
       if (btn) { btn.click(); window.scrollTo({ top: 0, behavior: 'smooth' }); }

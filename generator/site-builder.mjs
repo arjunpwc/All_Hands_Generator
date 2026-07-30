@@ -161,6 +161,46 @@ const INDUSTRY_SECTOR_NAMES = [
   "Energy, Utilities & Resources",
 ];
 
+const FY26_FINANCIAL_INDUSTRY_SPLIT = [
+  { label: "Financial Services", value: "34%", color: "#1B2A4A" },
+  { label: "Technology, Media & Telecom", value: "21%", color: "#0F6E56" },
+  { label: "Industrials & Services", value: "18%", color: "#C56A00" },
+  { label: "Health Industries", value: "11%", color: "#993556" },
+  { label: "Consumer Markets", value: "11%", color: "#534AB7" },
+  { label: "Energy, Utilities & Resources", value: "5%", color: "#A32D2D" },
+];
+
+const FY26_FINANCIAL_CLIENT_ROWS = [
+  [
+    { name: "Munich Reinsurance America", color: "#1B2A4A" },
+    { name: "Lennar Homes LLC", color: "#C56A00" },
+  ],
+  [
+    { name: "Principal Financial Services", color: "#1B2A4A" },
+    { name: "Abbvie Inc", color: "#993556" },
+  ],
+  [
+    { name: "TD Bank National Association", color: "#1B2A4A" },
+    { name: "HealthPartners", color: "#993556" },
+  ],
+  [
+    { name: "Microsoft Corporation", color: "#0F6E56" },
+    { name: "QXO Inc", color: "#534AB7" },
+  ],
+  [
+    { name: "Hewlett Packard Enterprise", color: "#0F6E56" },
+    { name: "United Parcel Service, Inc.", color: "#534AB7" },
+  ],
+  [
+    { name: "Palo Alto Networks, Inc.", color: "#0F6E56" },
+    { name: "Fermi Inc.", color: "#A32D2D" },
+  ],
+  [
+    { name: "GE Vernova International", color: "#C56A00" },
+    { name: "Arizona Public Service Co.", color: "#A32D2D" },
+  ],
+];
+
 const FY27_PIPELINE_INDUSTRY_SPLIT = [
   { label: "Financial Services", value: "34%", color: "#1B2A4A" },
   { label: "Technology, Media & Telecom", value: "17%", color: "#0F6E56" },
@@ -171,15 +211,42 @@ const FY27_PIPELINE_INDUSTRY_SPLIT = [
 ];
 
 const FY27_PIPELINE_CLIENT_ROWS = [
-  ["Citigroup Inc.", "Pfizer Inc."],
-  ["Visa Inc.", "Boston Scientific Corporation"],
-  ["The Charles Schwab Corporation", "Community Health Systems Inc."],
-  ["Comcast Corporation", "Honeywell"],
-  ["OpenAI Foundation", "DENSO International America, Inc."],
-  ["Palo Alto Networks, Inc.", "Acuity Brands INC."],
-  ["Chipotle Mexican Grill", "Arizona Public Service Company"],
-  ["United Parcel Service, Inc.", "Vulcan Materials Company"],
-  ["Dollar General Corporation", "Weatherford International Public Li Company"],
+  [
+    { name: "Citigroup Inc.", color: "#1B2A4A" },
+    { name: "Pfizer Inc.", color: "#993556" },
+  ],
+  [
+    { name: "Visa Inc.", color: "#1B2A4A" },
+    { name: "Boston Scientific Corporation", color: "#993556" },
+  ],
+  [
+    { name: "The Charles Schwab Corporation", color: "#1B2A4A" },
+    { name: "Community Health Systems Inc.", color: "#993556" },
+  ],
+  [
+    { name: "Comcast Corporation", color: "#0F6E56" },
+    { name: "Honeywell", color: "#C56A00" },
+  ],
+  [
+    { name: "OpenAI Foundation", color: "#0F6E56" },
+    { name: "DENSO International America, Inc.", color: "#C56A00" },
+  ],
+  [
+    { name: "Palo Alto Networks, Inc.", color: "#0F6E56" },
+    { name: "Acuity Brands INC.", color: "#C56A00" },
+  ],
+  [
+    { name: "Chipotle Mexican Grill", color: "#534AB7" },
+    { name: "Arizona Public Service Company", color: "#A32D2D" },
+  ],
+  [
+    { name: "United Parcel Service, Inc.", color: "#534AB7" },
+    { name: "Vulcan Materials Company", color: "#A32D2D" },
+  ],
+  [
+    { name: "Dollar General Corporation", color: "#534AB7" },
+    { name: "Weatherford International Public Li Company", color: "#A32D2D" },
+  ],
 ];
 
 function parseIndustrySplit(bulletsList) {
@@ -247,17 +314,37 @@ function parseFinancialSlide(slide) {
   const title = slide.title;
   const subtitle = b.find((x) => /delivery, people/i.test(x)) || "";
   const keyMetrics = parsePrimaryMetrics(b);
-  if (slide.index === 4) {
-    applyMetricOverrides(keyMetrics, [[/^Growth\s*%$/i, "53.6%"]]);
-  }
   const industrySplit = parseIndustrySplit(b);
-  const clients = parseClientList(b, { layout: slide.index === 4 ? "table" : "grid" });
   const notes = b.filter((x) => /pending partner|delivery \$/i.test(x));
   const slideImages = images(slide);
   const industryChart =
     slideImages.find((img) => img.chart && img.chartRole === "industry") ||
     slideImages.find((img) => img.chart) ||
     null;
+
+  if (slide.index === 4) {
+    applyMetricOverrides(keyMetrics, [[/^Growth\s*%$/i, "53.6%"]]);
+    return {
+      type: "financial",
+      title,
+      subtitle,
+      keyMetrics,
+      industrySplit: FY26_FINANCIAL_INDUSTRY_SPLIT,
+      industryChart: null,
+      clients: {
+        summary:
+          b.find((x) => /—\s*\d+\s*unique accounts/i.test(x)) ||
+          "— 39 unique accounts, US & AC",
+        layout: "table",
+        rows: FY26_FINANCIAL_CLIENT_ROWS,
+        clients: [],
+      },
+      notes,
+      images: slideImages.filter((img) => !img.chart),
+    };
+  }
+
+  const clients = parseClientList(b, { layout: "grid" });
 
   if (slide.index === 15) {
     return {
@@ -389,9 +476,27 @@ function parseDashboardSlide(slide) {
     teamSizeGrowth: {
       stat: teamItems.find((x) => /headcount/i.test(x)) || teamItems[0] || "",
       chart: chartByRole(slide, "team-size"),
+      chartData: {
+        type: "bar",
+        bars: [
+          { label: "Start", value: 61 },
+          { label: "End", value: 79 },
+        ],
+        color: "#EB8C00",
+      },
     },
     utilizationTrend: {
       chart: chartByRole(slide, "utilization"),
+      chartData: {
+        type: "line",
+        points: [
+          { label: "Q1", value: 86 },
+          { label: "Q2", value: 60 },
+          { label: "Q3", value: 70 },
+          { label: "Q4", value: 79 },
+        ],
+        color: "#EB8C00",
+      },
     },
     aiCapability: {
       metrics: aiMetrics.filter((m) => !/\/10/.test(m.value)),
@@ -402,7 +507,7 @@ function parseDashboardSlide(slide) {
     },
     aiAdaptability: {
       metric: parseSectionMetrics(aiAdaptItems)[0] || { value: "100%", label: "AI Adaptability" },
-      chart: chartByRole(slide, "ai-adaptability"),
+      chart: null,
     },
     ourClients: {
       images: imagesByRange(slide, 13, 30),
