@@ -33,3 +33,6 @@ deploy/terraform/.terraform.lock.hcl
 # OS
 .DS_Store
 Thumbs.db
+
+# Local preview server runtime (generated on start)
+data/sessions/**/.preview-url
