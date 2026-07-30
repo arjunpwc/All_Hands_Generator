@@ -209,68 +209,152 @@ function renderDashboardChart(chart, assetPrefix, className = "dashboard-chart")
   return `<img class="${className}" src="${escapeHtml(url)}" alt="${escapeHtml(chart.alt || "Chart")}" loading="lazy" />`;
 }
 
-function renderInlineBarChart(chartData, alt = "Bar chart") {
+function renderInlineBarChart(chartData, alt = "Bar chart", chartId = "bar") {
   if (!chartData?.bars?.length) return "";
   const color = chartData.color || "#EB8C00";
+  const colorDark = "#C44D00";
   const bars = chartData.bars;
-  const maxVal = Math.max(...bars.map((b) => b.value), 1) * 1.15;
-  const chartH = 100;
-  const slot = 140 / bars.length;
-  const barW = slot * 0.55;
+  const dataMin = Math.min(...bars.map((b) => b.value));
+  const dataMax = Math.max(...bars.map((b) => b.value));
+  const minVal = Math.max(0, Math.floor(dataMin / 10) * 10 - 10);
+  const maxVal = Math.ceil(dataMax / 10) * 10 + 10;
+  const padL = 42;
+  const padR = 28;
+  const padT = 32;
+  const padB = 38;
+  const chartW = 360;
+  const chartH = 220;
+  const plotW = chartW - padL - padR;
+  const plotH = chartH - padT - padB;
+  const baseY = padT + plotH;
+  const slot = plotW / bars.length;
+  const barW = slot * 0.48;
+  const gradId = `bar-grad-${chartId}`;
 
-  const barEls = bars
-    .map((bar, i) => {
-      const h = (bar.value / maxVal) * chartH;
-      const x = 20 + i * slot + (slot - barW) / 2;
-      const y = 24 + chartH - h;
+  const yTicks = [];
+  for (let v = minVal; v <= maxVal; v += 10) yTicks.push(v);
+
+  const gridLines = yTicks
+    .map((v) => {
+      const y = baseY - ((v - minVal) / (maxVal - minVal)) * plotH;
       return `
-      <rect x="${x}" y="${y}" width="${barW}" height="${h}" fill="${color}" rx="3"/>
-      <text x="${x + barW / 2}" y="${y - 5}" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#2D2D2D">${bar.value}</text>
-      <text x="${x + barW / 2}" y="${24 + chartH + 16}" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#6B7280">${escapeHtml(bar.label)}</text>`;
+      <line x1="${padL}" y1="${y}" x2="${chartW - padR}" y2="${y}" stroke="#E8EAED" stroke-width="1" stroke-dasharray="${v === minVal ? "0" : "4 3"}"/>
+      <text x="${padL - 8}" y="${y + 4}" text-anchor="end" font-family="Arial, sans-serif" font-size="11" fill="#9CA3AF">${v}</text>`;
     })
     .join("");
 
+  const barEls = bars
+    .map((bar, i) => {
+      const h = ((bar.value - minVal) / (maxVal - minVal)) * plotH;
+      const x = padL + i * slot + (slot - barW) / 2;
+      const y = baseY - h;
+      const isEnd = i === bars.length - 1;
+      return `
+      <rect x="${x}" y="${y}" width="${barW}" height="${h}" fill="url(#${gradId})" rx="5"/>
+      <rect x="${x}" y="${y}" width="${barW}" height="${Math.min(4, h)}" fill="${colorDark}" opacity="0.35" rx="5"/>
+      <rect x="${x + barW / 2 - 18}" y="${y - 22}" width="36" height="18" rx="4" fill="#FFFFFF" stroke="#E8EAED" stroke-width="1"/>
+      <text x="${x + barW / 2}" y="${y - 9}" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="${isEnd ? colorDark : "#2D2D2D"}">${bar.value}</text>
+      <text x="${x + barW / 2}" y="${baseY + 22}" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#4B5563">${escapeHtml(bar.label)}</text>`;
+    })
+    .join("");
+
+  const delta =
+    bars.length >= 2
+      ? bars[bars.length - 1].value - bars[0].value
+      : 0;
+  const deltaEl =
+    delta > 0
+      ? `<text x="${chartW / 2}" y="${padT - 8}" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="${colorDark}">+${delta} people</text>`
+      : "";
+
   return `
   <div class="dashboard-chart-area" role="img" aria-label="${escapeHtml(alt)}">
-    <svg class="dashboard-inline-chart" viewBox="0 0 180 150" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
-      <line x1="16" y1="${24 + chartH}" x2="164" y2="${24 + chartH}" stroke="#D9DCE3" stroke-width="1.5"/>
+    <svg class="dashboard-inline-chart" viewBox="0 0 ${chartW} ${chartH}" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      <defs>
+        <linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="${color}"/>
+          <stop offset="100%" stop-color="${colorDark}"/>
+        </linearGradient>
+      </defs>
+      ${gridLines}
+      <line x1="${padL}" y1="${baseY}" x2="${chartW - padR}" y2="${baseY}" stroke="#C5CAD3" stroke-width="1.5"/>
+      ${deltaEl}
       ${barEls}
     </svg>
   </div>`;
 }
 
-function renderInlineLineChart(chartData, alt = "Line chart") {
+function renderInlineLineChart(chartData, alt = "Line chart", chartId = "line") {
   if (!chartData?.points?.length) return "";
   const color = chartData.color || "#EB8C00";
+  const colorDark = "#C44D00";
   const points = chartData.points;
-  const minVal = 55;
-  const maxVal = 100;
-  const chartH = 100;
-  const chartW = 148;
-  const slot = points.length > 1 ? chartW / (points.length - 1) : chartW;
+  const values = points.map((p) => p.value);
+  const minVal = Math.floor(Math.min(...values) / 10) * 10 - 5;
+  const maxVal = Math.ceil(Math.max(...values) / 10) * 10 + 5;
+  const padL = 42;
+  const padR = 28;
+  const padT = 32;
+  const padB = 38;
+  const chartW = 360;
+  const chartH = 220;
+  const plotW = chartW - padL - padR;
+  const plotH = chartH - padT - padB;
+  const baseY = padT + plotH;
+  const slot = points.length > 1 ? plotW / (points.length - 1) : plotW;
+  const areaGradId = `area-grad-${chartId}`;
+  const lineGradId = `line-grad-${chartId}`;
+
+  const yTicks = [];
+  for (let v = Math.ceil(minVal / 10) * 10; v <= maxVal; v += 10) yTicks.push(v);
+
+  const gridLines = yTicks
+    .map((v) => {
+      const y = baseY - ((v - minVal) / (maxVal - minVal)) * plotH;
+      return `
+      <line x1="${padL}" y1="${y}" x2="${chartW - padR}" y2="${y}" stroke="#E8EAED" stroke-width="1" stroke-dasharray="${v === minVal ? "0" : "4 3"}"/>
+      <text x="${padL - 8}" y="${y + 4}" text-anchor="end" font-family="Arial, sans-serif" font-size="11" fill="#9CA3AF">${v}%</text>`;
+    })
+    .join("");
 
   const coords = points.map((p, i) => ({
-    x: 16 + i * slot,
-    y: 24 + chartH - ((p.value - minVal) / (maxVal - minVal)) * chartH,
+    x: padL + i * slot,
+    y: baseY - ((p.value - minVal) / (maxVal - minVal)) * plotH,
     label: p.label,
     value: p.value,
   }));
 
   const linePath = coords.map((c, i) => `${i === 0 ? "M" : "L"} ${c.x} ${c.y}`).join(" ");
+  const areaPath = `${linePath} L ${coords[coords.length - 1].x} ${baseY} L ${coords[0].x} ${baseY} Z`;
+
   const dots = coords
-    .map(
-      (c) => `
-      <circle cx="${c.x}" cy="${c.y}" r="4" fill="${color}" stroke="#FFFFFF" stroke-width="1.5"/>
-      <text x="${c.x}" y="${c.y - 8}" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#2D2D2D">${Math.round(c.value)}%</text>
-      <text x="${c.x}" y="${24 + chartH + 16}" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#6B7280">${escapeHtml(c.label)}</text>`
-    )
+    .map((c, i) => {
+      const labelY = c.y < padT + 24 ? c.y + 20 : c.y - 12;
+      return `
+      <circle cx="${c.x}" cy="${c.y}" r="6" fill="${color}" stroke="#FFFFFF" stroke-width="2.5"/>
+      <rect x="${c.x - 17}" y="${labelY - 11}" width="34" height="18" rx="4" fill="#FFFFFF" stroke="#E8EAED" stroke-width="1"/>
+      <text x="${c.x}" y="${labelY + 2}" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="${i === coords.length - 1 ? colorDark : "#2D2D2D"}">${Math.round(c.value)}%</text>
+      <text x="${c.x}" y="${baseY + 22}" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#4B5563">${escapeHtml(c.label)}</text>`;
+    })
     .join("");
 
   return `
   <div class="dashboard-chart-area" role="img" aria-label="${escapeHtml(alt)}">
-    <svg class="dashboard-inline-chart" viewBox="0 0 180 150" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
-      <line x1="16" y1="${24 + chartH}" x2="164" y2="${24 + chartH}" stroke="#D9DCE3" stroke-width="1.5"/>
-      <path d="${linePath}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <svg class="dashboard-inline-chart" viewBox="0 0 ${chartW} ${chartH}" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      <defs>
+        <linearGradient id="${areaGradId}" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="${color}" stop-opacity="0.28"/>
+          <stop offset="100%" stop-color="${color}" stop-opacity="0.03"/>
+        </linearGradient>
+        <linearGradient id="${lineGradId}" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="${color}"/>
+          <stop offset="100%" stop-color="${colorDark}"/>
+        </linearGradient>
+      </defs>
+      ${gridLines}
+      <line x1="${padL}" y1="${baseY}" x2="${chartW - padR}" y2="${baseY}" stroke="#C5CAD3" stroke-width="1.5"/>
+      <path d="${areaPath}" fill="url(#${areaGradId})"/>
+      <path d="${linePath}" fill="none" stroke="url(#${lineGradId})" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
       ${dots}
     </svg>
   </div>`;
@@ -278,10 +362,10 @@ function renderInlineLineChart(chartData, alt = "Line chart") {
 
 function renderDashboardTrendChart(section, assetPrefix) {
   if (section.chartData?.type === "bar") {
-    return renderInlineBarChart(section.chartData, section.chart?.alt || "Team Size Growth");
+    return renderInlineBarChart(section.chartData, section.chart?.alt || "Team Size Growth", "team-size");
   }
   if (section.chartData?.type === "line") {
-    return renderInlineLineChart(section.chartData, section.chart?.alt || "Utilization Trend");
+    return renderInlineLineChart(section.chartData, section.chart?.alt || "Utilization Trend", "utilization");
   }
   return renderDashboardChart(section.chart, assetPrefix, "dashboard-inline-chart");
 }
@@ -895,52 +979,63 @@ function renderCertRegion(region) {
 
 function renderTraining(block, assetPrefix) {
   const iconHtml = block.icon
-    ? `<div class="training-icon">${imgTag(block.icon.src, "Learning", assetPrefix)}</div>`
+    ? `<div class="training-slide-icon">${imgTag(block.icon.src, "Learning", assetPrefix)}</div>`
     : "";
 
   return `
-  <article class="content-block training-block">
-    <header class="block-header">
-      <h2>${escapeHtml(block.title)}</h2>
-      ${block.subtitle ? `<p class="block-subtitle">${escapeHtml(block.subtitle)}</p>` : ""}
-    </header>
+  <article class="content-block training-block training-slide-layout">
+    <div class="training-slide-frame">
+      <div class="training-slide-title-bar">
+        <h2>${escapeHtml(block.title)}</h2>
+        ${block.subtitle ? `<span class="training-slide-as-of">${escapeHtml(block.subtitle)}</span>` : ""}
+      </div>
 
-    ${block.intro ? `<p class="training-intro">${escapeHtml(block.intro)}</p>` : ""}
+      ${block.intro ? `<p class="training-slide-intro">${escapeHtml(block.intro)}</p>` : ""}
 
-    <div class="training-initiatives-row">
-      <div class="training-column">
-        <p class="training-col-desc">${escapeHtml(block.trainingSessions?.subheading || "")}</p>
-        <ul>${(block.trainingSessions?.items || []).map((i) => `<li>${escapeHtml(i)}</li>`).join("")}</ul>
-        <h3>${escapeHtml(block.trainingSessions?.heading || "Training Sessions")}</h3>
+      <div class="training-slide-initiatives">
+        <div class="training-slide-col training-slide-col-sessions">
+          <div class="training-slide-col-head">${escapeHtml(block.trainingSessions?.heading || "Training Sessions")}</div>
+          <div class="training-slide-col-body">
+            <p class="training-col-desc">${escapeHtml(block.trainingSessions?.subheading || "")}</p>
+            <ul>${(block.trainingSessions?.items || []).map((i) => `<li>${escapeHtml(i)}</li>`).join("")}</ul>
+          </div>
+        </div>
+        <div class="training-slide-col-stack">
+          <div class="training-slide-col">
+            <div class="training-slide-col-head">${escapeHtml(block.selfLearningInternal?.heading || "Self Learning (internal)")}</div>
+            <div class="training-slide-col-body">
+              <p class="training-col-lead">${escapeHtml(block.selfLearningInternal?.description || "")}</p>
+            </div>
+          </div>
+          <div class="training-slide-col">
+            <div class="training-slide-col-head">${escapeHtml(block.selfLearningExternal?.heading || "Self Learning (external)")}</div>
+            <div class="training-slide-col-body">
+              <p class="training-col-lead">${escapeHtml(block.selfLearningExternal?.description || "")}</p>
+            </div>
+          </div>
+        </div>
+        <aside class="training-slide-aside">
+          ${iconHtml}
+          ${block.catalogNote ? `<p class="training-slide-catalog-note">${escapeHtml(block.catalogNote)}</p>` : ""}
+        </aside>
       </div>
-      <div class="training-column">
-        <p class="training-col-lead">${escapeHtml(block.selfLearningInternal?.description || "")}</p>
-        <h3>${escapeHtml(block.selfLearningInternal?.heading || "Self Learning (internal)")}</h3>
+
+      <div class="training-slide-requirements">
+        <h3>${escapeHtml(block.firmRequirements?.heading || "Recap: Firm L&D Requirements")}</h3>
+        <ul>${(block.firmRequirements?.items || []).map((i) => `<li>${escapeHtml(i)}</li>`).join("")}</ul>
       </div>
-      <div class="training-column">
-        <p class="training-col-lead">${escapeHtml(block.selfLearningExternal?.description || "")}</p>
-        <h3>${escapeHtml(block.selfLearningExternal?.heading || "Self Learning (external)")}</h3>
+
+      <div class="training-cert-section">
+        <h3>${escapeHtml(block.certProgress?.heading || "Active Certifications — Team Progress")}</h3>
+        <div class="cert-progress-grid">
+          ${renderCertRegion(block.certProgress?.us)}
+          ${renderCertRegion(block.certProgress?.ac)}
+        </div>
+        ${block.certProgress?.footnote ? `<p class="cert-footnote">${escapeHtml(block.certProgress.footnote)}</p>` : ""}
       </div>
-      ${iconHtml}
+
+      ${block.callout ? `<div class="highlight-banner">${escapeHtml(block.callout)}</div>` : ""}
     </div>
-
-    ${block.catalogNote ? `<p class="training-catalog-note">${escapeHtml(block.catalogNote)}</p>` : ""}
-
-    <div class="training-requirements">
-      <h3>${escapeHtml(block.firmRequirements?.heading || "Recap: Firm L&D Requirements")}</h3>
-      <ul>${(block.firmRequirements?.items || []).map((i) => `<li>${escapeHtml(i)}</li>`).join("")}</ul>
-    </div>
-
-    <div class="training-cert-section">
-      <h3>${escapeHtml(block.certProgress?.heading || "Active Certifications — Team Progress")}</h3>
-      <div class="cert-progress-grid">
-        ${renderCertRegion(block.certProgress?.us)}
-        ${renderCertRegion(block.certProgress?.ac)}
-      </div>
-      ${block.certProgress?.footnote ? `<p class="cert-footnote">${escapeHtml(block.certProgress.footnote)}</p>` : ""}
-    </div>
-
-    ${block.callout ? `<div class="highlight-banner">${escapeHtml(block.callout)}</div>` : ""}
   </article>`;
 }
 
@@ -1254,7 +1349,7 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 .content-block .people-map-table,
 .content-block .financial-visual-row,
 .content-block .dashboard-mosaic,
-.content-block .training-initiatives-row,
+.content-block .training-slide-initiatives,
 .content-block .cert-progress-grid,
 .content-block .profile-layout,
 .content-block .org-section,
@@ -1655,8 +1750,8 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 .apollo-roadmap-section { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--pwc-grey-200); text-align: center; }
 .apollo-roadmap-section > h3,
 .training-cert-section > h3,
-.training-intro,
-.training-catalog-note,
+.training-slide-intro,
+.training-slide-catalog-note,
 .highlight-banner { text-align: center; }
 .apollo-roadmap-callout { margin: 1.25rem auto 0; padding: 1.25rem 1.35rem; background: var(--pwc-grey-100); border: 1px solid var(--pwc-grey-200); border-radius: var(--radius); border-left: 4px solid var(--pwc-orange); max-width: var(--content-max); text-align: center; }
 .apollo-roadmap { display: grid; grid-template-columns: repeat(6, 1fr); gap: clamp(0.65rem, 1.5vw, 1rem); margin-bottom: 1rem; width: 100%; }
@@ -1704,21 +1799,162 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 .initiative-card h3 { font-size: 0.9rem; margin: 0 0 0.65rem; font-family: var(--font-sans); font-weight: 700; }
 .initiative-card ul { margin: 0; padding-left: 1.1rem; font-size: 0.85rem; }
 
-.training-intro { font-size: 0.95rem; color: var(--pwc-grey-700); margin: 0 0 1.25rem; line-height: 1.5; }
-.training-initiatives-row { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: clamp(1rem, 2vw, 1.5rem); align-items: start; margin-bottom: 1rem; width: 100%; }
-.training-column { background: var(--pwc-grey-100); border: 1px solid var(--pwc-grey-200); border-radius: var(--radius); padding: 1.15rem; min-height: 180px; }
-.training-column h3 { font-size: 0.78rem; margin: 0.75rem 0 0; color: var(--pwc-orange-dark); text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--font-sans); font-weight: 700; margin-top: auto; padding-top: 0.75rem; }
-.training-column { display: flex; flex-direction: column; }
-.training-col-desc { font-size: 0.82rem; font-weight: 700; color: var(--pwc-black); margin: 0 0 0.65rem; line-height: 1.35; }
-.training-col-lead { font-size: 0.82rem; color: var(--pwc-grey-700); margin: 0 0 0.5rem; line-height: 1.4; }
-.training-column ul { margin: 0; padding-left: 1.1rem; font-size: 0.82rem; color: var(--pwc-grey-700); }
-.training-column li { margin-bottom: 0.35rem; }
-.training-icon { display: flex; align-items: center; justify-content: center; padding: 0.5rem; }
-.training-icon img { width: 72px; height: 72px; object-fit: contain; opacity: 0.85; }
-.training-catalog-note { font-size: 0.85rem; color: var(--pwc-grey-500); font-style: italic; margin: 0 0 1.5rem; }
-.training-requirements { background: var(--pwc-white); border: 1px solid var(--pwc-grey-200); border-left: 4px solid var(--pwc-orange); border-radius: var(--radius); padding: 1.15rem 1.25rem; margin-bottom: 1.5rem; }
-.training-requirements h3 { font-size: 0.85rem; margin: 0 0 0.65rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--pwc-grey-700); }
-.training-requirements ul { margin: 0; padding-left: 1.1rem; font-size: 0.85rem; color: var(--pwc-grey-700); }
+.training-slide-layout { text-align: left; align-items: stretch; }
+.training-slide-frame { max-width: 960px; margin: 0 auto; width: 100%; }
+.training-slide-title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: var(--pwc-black);
+  border-bottom: 4px solid var(--pwc-orange);
+  padding: 0.65rem 1rem;
+  margin-bottom: 0.75rem;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.training-slide-title-bar h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(1.15rem, 2.2vw, 1.45rem);
+  font-weight: 700;
+  color: var(--pwc-white);
+  line-height: 1.2;
+}
+.training-slide-as-of {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.72);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.training-slide-intro {
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  color: var(--pwc-grey-700);
+  margin: 0 0 1rem;
+  line-height: 1.45;
+}
+.training-slide-initiatives {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.15fr) minmax(88px, 0.45fr);
+  gap: 0.85rem;
+  align-items: stretch;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+.training-slide-col,
+.training-slide-col-sessions { display: flex; flex-direction: column; min-width: 0; }
+.training-slide-col-stack { display: flex; flex-direction: column; gap: 0.85rem; min-width: 0; }
+.training-slide-col-sessions .training-slide-col-body { flex: 1; }
+.training-slide-col-head {
+  align-self: center;
+  margin-bottom: -0.55rem;
+  position: relative;
+  z-index: 1;
+  background: var(--pwc-orange);
+  border: none;
+  border-radius: 999px;
+  padding: 0.35rem 1.1rem;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--pwc-white);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: center;
+  line-height: 1.25;
+  white-space: nowrap;
+  box-shadow: var(--shadow);
+}
+.training-slide-col-body {
+  background: var(--pwc-orange-tint);
+  border: 1px solid var(--pwc-grey-200);
+  border-top: 3px solid var(--pwc-orange);
+  border-radius: var(--radius);
+  padding: 1.15rem 1rem 0.95rem;
+  flex: 1;
+}
+.training-col-desc {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--pwc-orange-dark);
+  margin: 0 0 0.65rem;
+  line-height: 1.35;
+}
+.training-col-lead {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: var(--pwc-grey-700);
+  margin: 0;
+  line-height: 1.45;
+}
+.training-slide-col-body ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: var(--pwc-grey-700);
+}
+.training-slide-col-body li { margin-bottom: 0.35rem; }
+.training-slide-col-body li:last-child { margin-bottom: 0; }
+.training-slide-aside {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.75rem;
+  min-width: 0;
+  padding-top: 0.15rem;
+}
+.training-slide-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  background: var(--pwc-orange-tint);
+  border: 2px solid var(--pwc-orange);
+  border-radius: 50%;
+}
+.training-slide-icon img { width: 28px; height: 28px; object-fit: contain; }
+.training-slide-catalog-note {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  color: var(--pwc-grey-500);
+  font-style: italic;
+  margin: 0;
+  line-height: 1.4;
+  text-align: center;
+}
+.training-slide-requirements {
+  background: var(--pwc-grey-100);
+  border: 1px solid var(--pwc-grey-200);
+  border-left: 4px solid var(--pwc-orange);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+  margin-bottom: 1.25rem;
+}
+.training-slide-requirements h3 {
+  margin: 0 0 0.45rem;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--pwc-orange-dark);
+}
+.training-slide-requirements ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: var(--pwc-grey-700);
+  line-height: 1.45;
+}
+.training-slide-requirements li { margin-bottom: 0.25rem; }
+.training-slide-requirements li:last-child { margin-bottom: 0; }
 .training-cert-section { margin-top: 1rem; }
 .training-cert-section > h3 { font-size: 0.9rem; margin: 0 0 1rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--pwc-grey-700); font-family: var(--font-sans); font-weight: 700; }
 .cert-progress-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
@@ -1762,7 +1998,7 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 }
 .dashboard-cell-delivery,
 .dashboard-cell-ai { grid-column: span 3; }
-.dashboard-cell-chart { grid-column: span 2; }
+.dashboard-cell-chart { grid-column: span 2; padding-bottom: 0.85rem; }
 .dashboard-cell-clients { grid-column: 1 / -1; }
 .dashboard-cell h3 {
   font-size: 0.78rem;
@@ -1820,8 +2056,8 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 .tag-row-compact { margin: 0; gap: 0.35rem; justify-content: center; }
 .tag-compact { padding: 0.2rem 0.5rem; font-size: 0.68rem; background: var(--pwc-white); }
 .dashboard-stat { font-size: 0.82rem; font-weight: 700; color: var(--pwc-orange-dark); margin: 0 0 0.25rem; text-align: center; flex-shrink: 0; }
-.dashboard-chart-area { flex: 1; display: flex; align-items: flex-end; justify-content: center; min-height: 130px; width: 100%; }
-.dashboard-inline-chart { display: block; width: 100%; height: auto; max-height: 150px; }
+.dashboard-chart-area { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 170px; width: 100%; padding: 0.15rem 0.25rem 0; }
+.dashboard-inline-chart { display: block; width: 100%; height: auto; max-height: 200px; }
 .dashboard-cell-adapt { align-items: stretch; }
 .dashboard-cell-adapt .adapt-gauge-wrap { width: min(100%, 220px); margin: auto auto 0; flex: 1; display: flex; flex-direction: column; justify-content: flex-end; }
 .adapt-gauge-wrap { position: relative; width: min(100%, 220px); margin: 0 auto; }
@@ -1893,7 +2129,9 @@ body { padding-bottom: 2rem; }
   .dashboard-cell-clients .client-logo-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .client-logo-item:nth-child(7n) { border-right: 1px solid var(--pwc-grey-200); }
   .client-logo-item:nth-child(4n) { border-right: none; }
-  .training-initiatives-row { grid-template-columns: 1fr; }
+  .training-slide-initiatives { grid-template-columns: 1fr; }
+  .training-slide-aside { flex-direction: row; justify-content: center; padding-top: 0; }
+  .training-slide-catalog-note { max-width: 16rem; }
   .cert-progress-grid { grid-template-columns: 1fr; }
   .apollo-value-grid { grid-template-columns: 1fr; }
   .apollo-roadmap { grid-template-columns: repeat(2, 1fr); }

@@ -147,7 +147,7 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 .content-block .people-map-table,
 .content-block .financial-visual-row,
 .content-block .dashboard-mosaic,
-.content-block .training-initiatives-row,
+.content-block .training-slide-initiatives,
 .content-block .cert-progress-grid,
 .content-block .profile-layout,
 .content-block .org-section,
@@ -548,8 +548,8 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 .apollo-roadmap-section { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--pwc-grey-200); text-align: center; }
 .apollo-roadmap-section > h3,
 .training-cert-section > h3,
-.training-intro,
-.training-catalog-note,
+.training-slide-intro,
+.training-slide-catalog-note,
 .highlight-banner { text-align: center; }
 .apollo-roadmap-callout { margin: 1.25rem auto 0; padding: 1.25rem 1.35rem; background: var(--pwc-grey-100); border: 1px solid var(--pwc-grey-200); border-radius: var(--radius); border-left: 4px solid var(--pwc-orange); max-width: var(--content-max); text-align: center; }
 .apollo-roadmap { display: grid; grid-template-columns: repeat(6, 1fr); gap: clamp(0.65rem, 1.5vw, 1rem); margin-bottom: 1rem; width: 100%; }
@@ -597,21 +597,162 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 .initiative-card h3 { font-size: 0.9rem; margin: 0 0 0.65rem; font-family: var(--font-sans); font-weight: 700; }
 .initiative-card ul { margin: 0; padding-left: 1.1rem; font-size: 0.85rem; }
 
-.training-intro { font-size: 0.95rem; color: var(--pwc-grey-700); margin: 0 0 1.25rem; line-height: 1.5; }
-.training-initiatives-row { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: clamp(1rem, 2vw, 1.5rem); align-items: start; margin-bottom: 1rem; width: 100%; }
-.training-column { background: var(--pwc-grey-100); border: 1px solid var(--pwc-grey-200); border-radius: var(--radius); padding: 1.15rem; min-height: 180px; }
-.training-column h3 { font-size: 0.78rem; margin: 0.75rem 0 0; color: var(--pwc-orange-dark); text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--font-sans); font-weight: 700; margin-top: auto; padding-top: 0.75rem; }
-.training-column { display: flex; flex-direction: column; }
-.training-col-desc { font-size: 0.82rem; font-weight: 700; color: var(--pwc-black); margin: 0 0 0.65rem; line-height: 1.35; }
-.training-col-lead { font-size: 0.82rem; color: var(--pwc-grey-700); margin: 0 0 0.5rem; line-height: 1.4; }
-.training-column ul { margin: 0; padding-left: 1.1rem; font-size: 0.82rem; color: var(--pwc-grey-700); }
-.training-column li { margin-bottom: 0.35rem; }
-.training-icon { display: flex; align-items: center; justify-content: center; padding: 0.5rem; }
-.training-icon img { width: 72px; height: 72px; object-fit: contain; opacity: 0.85; }
-.training-catalog-note { font-size: 0.85rem; color: var(--pwc-grey-500); font-style: italic; margin: 0 0 1.5rem; }
-.training-requirements { background: var(--pwc-white); border: 1px solid var(--pwc-grey-200); border-left: 4px solid var(--pwc-orange); border-radius: var(--radius); padding: 1.15rem 1.25rem; margin-bottom: 1.5rem; }
-.training-requirements h3 { font-size: 0.85rem; margin: 0 0 0.65rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--pwc-grey-700); }
-.training-requirements ul { margin: 0; padding-left: 1.1rem; font-size: 0.85rem; color: var(--pwc-grey-700); }
+.training-slide-layout { text-align: left; align-items: stretch; }
+.training-slide-frame { max-width: 960px; margin: 0 auto; width: 100%; }
+.training-slide-title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: var(--pwc-black);
+  border-bottom: 4px solid var(--pwc-orange);
+  padding: 0.65rem 1rem;
+  margin-bottom: 0.75rem;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.training-slide-title-bar h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(1.15rem, 2.2vw, 1.45rem);
+  font-weight: 700;
+  color: var(--pwc-white);
+  line-height: 1.2;
+}
+.training-slide-as-of {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.72);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.training-slide-intro {
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  color: var(--pwc-grey-700);
+  margin: 0 0 1rem;
+  line-height: 1.45;
+}
+.training-slide-initiatives {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.15fr) minmax(88px, 0.45fr);
+  gap: 0.85rem;
+  align-items: stretch;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+.training-slide-col,
+.training-slide-col-sessions { display: flex; flex-direction: column; min-width: 0; }
+.training-slide-col-stack { display: flex; flex-direction: column; gap: 0.85rem; min-width: 0; }
+.training-slide-col-sessions .training-slide-col-body { flex: 1; }
+.training-slide-col-head {
+  align-self: center;
+  margin-bottom: -0.55rem;
+  position: relative;
+  z-index: 1;
+  background: var(--pwc-orange);
+  border: none;
+  border-radius: 999px;
+  padding: 0.35rem 1.1rem;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--pwc-white);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: center;
+  line-height: 1.25;
+  white-space: nowrap;
+  box-shadow: var(--shadow);
+}
+.training-slide-col-body {
+  background: var(--pwc-orange-tint);
+  border: 1px solid var(--pwc-grey-200);
+  border-top: 3px solid var(--pwc-orange);
+  border-radius: var(--radius);
+  padding: 1.15rem 1rem 0.95rem;
+  flex: 1;
+}
+.training-col-desc {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--pwc-orange-dark);
+  margin: 0 0 0.65rem;
+  line-height: 1.35;
+}
+.training-col-lead {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: var(--pwc-grey-700);
+  margin: 0;
+  line-height: 1.45;
+}
+.training-slide-col-body ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: var(--pwc-grey-700);
+}
+.training-slide-col-body li { margin-bottom: 0.35rem; }
+.training-slide-col-body li:last-child { margin-bottom: 0; }
+.training-slide-aside {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.75rem;
+  min-width: 0;
+  padding-top: 0.15rem;
+}
+.training-slide-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  background: var(--pwc-orange-tint);
+  border: 2px solid var(--pwc-orange);
+  border-radius: 50%;
+}
+.training-slide-icon img { width: 28px; height: 28px; object-fit: contain; }
+.training-slide-catalog-note {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  color: var(--pwc-grey-500);
+  font-style: italic;
+  margin: 0;
+  line-height: 1.4;
+  text-align: center;
+}
+.training-slide-requirements {
+  background: var(--pwc-grey-100);
+  border: 1px solid var(--pwc-grey-200);
+  border-left: 4px solid var(--pwc-orange);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+  margin-bottom: 1.25rem;
+}
+.training-slide-requirements h3 {
+  margin: 0 0 0.45rem;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--pwc-orange-dark);
+}
+.training-slide-requirements ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: var(--pwc-grey-700);
+  line-height: 1.45;
+}
+.training-slide-requirements li { margin-bottom: 0.25rem; }
+.training-slide-requirements li:last-child { margin-bottom: 0; }
 .training-cert-section { margin-top: 1rem; }
 .training-cert-section > h3 { font-size: 0.9rem; margin: 0 0 1rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--pwc-grey-700); font-family: var(--font-sans); font-weight: 700; }
 .cert-progress-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
@@ -655,7 +796,7 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 }
 .dashboard-cell-delivery,
 .dashboard-cell-ai { grid-column: span 3; }
-.dashboard-cell-chart { grid-column: span 2; }
+.dashboard-cell-chart { grid-column: span 2; padding-bottom: 0.85rem; }
 .dashboard-cell-clients { grid-column: 1 / -1; }
 .dashboard-cell h3 {
   font-size: 0.78rem;
@@ -713,8 +854,8 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 .tag-row-compact { margin: 0; gap: 0.35rem; justify-content: center; }
 .tag-compact { padding: 0.2rem 0.5rem; font-size: 0.68rem; background: var(--pwc-white); }
 .dashboard-stat { font-size: 0.82rem; font-weight: 700; color: var(--pwc-orange-dark); margin: 0 0 0.25rem; text-align: center; flex-shrink: 0; }
-.dashboard-chart-area { flex: 1; display: flex; align-items: flex-end; justify-content: center; min-height: 130px; width: 100%; }
-.dashboard-inline-chart { display: block; width: 100%; height: auto; max-height: 150px; }
+.dashboard-chart-area { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 170px; width: 100%; padding: 0.15rem 0.25rem 0; }
+.dashboard-inline-chart { display: block; width: 100%; height: auto; max-height: 200px; }
 .dashboard-cell-adapt { align-items: stretch; }
 .dashboard-cell-adapt .adapt-gauge-wrap { width: min(100%, 220px); margin: auto auto 0; flex: 1; display: flex; flex-direction: column; justify-content: flex-end; }
 .adapt-gauge-wrap { position: relative; width: min(100%, 220px); margin: 0 auto; }
@@ -786,7 +927,9 @@ body { padding-bottom: 2rem; }
   .dashboard-cell-clients .client-logo-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .client-logo-item:nth-child(7n) { border-right: 1px solid var(--pwc-grey-200); }
   .client-logo-item:nth-child(4n) { border-right: none; }
-  .training-initiatives-row { grid-template-columns: 1fr; }
+  .training-slide-initiatives { grid-template-columns: 1fr; }
+  .training-slide-aside { flex-direction: row; justify-content: center; padding-top: 0; }
+  .training-slide-catalog-note { max-width: 16rem; }
   .cert-progress-grid { grid-template-columns: 1fr; }
   .apollo-value-grid { grid-template-columns: 1fr; }
   .apollo-roadmap { grid-template-columns: repeat(2, 1fr); }
@@ -819,8 +962,8 @@ body { padding-bottom: 2rem; }
 }
 </style>
 </head>
-<body data-built-at="2026-07-30T17:52:50.849Z">
-  <!-- preview build: 2026-07-30T17:52:50.849Z -->
+<body data-built-at="2026-07-30T18:12:39.886Z">
+  <!-- preview build: 2026-07-30T18:12:39.886Z -->
   <header class="site-header">
     <div class="header-accent"></div>
     <div class="header-inner">
@@ -996,15 +1139,37 @@ body { padding-bottom: 2rem; }
         <p class="dashboard-stat">+31.1% headcount</p>
         
   <div class="dashboard-chart-area" role="img" aria-label="Team Size Growth">
-    <svg class="dashboard-inline-chart" viewBox="0 0 180 150" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
-      <line x1="16" y1="124" x2="164" y2="124" stroke="#D9DCE3" stroke-width="1.5"/>
+    <svg class="dashboard-inline-chart" viewBox="0 0 360 220" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      <defs>
+        <linearGradient id="bar-grad-team-size" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EB8C00"/>
+          <stop offset="100%" stop-color="#C44D00"/>
+        </linearGradient>
+      </defs>
       
-      <rect x="35.75" y="56.85635663181067" width="38.5" height="67.14364336818933" fill="#EB8C00" rx="3"/>
-      <text x="55" y="51.85635663181067" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#2D2D2D">61</text>
-      <text x="55" y="140" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#6B7280">Start</text>
-      <rect x="105.75" y="37.04347826086956" width="38.5" height="86.95652173913044" fill="#EB8C00" rx="3"/>
-      <text x="125" y="32.04347826086956" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#2D2D2D">79</text>
-      <text x="125" y="140" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#6B7280">End</text>
+      <line x1="42" y1="182" x2="332" y2="182" stroke="#E8EAED" stroke-width="1" stroke-dasharray="0"/>
+      <text x="34" y="186" text-anchor="end" font-family="Arial, sans-serif" font-size="11" fill="#9CA3AF">50</text>
+      <line x1="42" y1="144.5" x2="332" y2="144.5" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4 3"/>
+      <text x="34" y="148.5" text-anchor="end" font-family="Arial, sans-serif" font-size="11" fill="#9CA3AF">60</text>
+      <line x1="42" y1="107" x2="332" y2="107" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4 3"/>
+      <text x="34" y="111" text-anchor="end" font-family="Arial, sans-serif" font-size="11" fill="#9CA3AF">70</text>
+      <line x1="42" y1="69.5" x2="332" y2="69.5" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4 3"/>
+      <text x="34" y="73.5" text-anchor="end" font-family="Arial, sans-serif" font-size="11" fill="#9CA3AF">80</text>
+      <line x1="42" y1="32" x2="332" y2="32" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4 3"/>
+      <text x="34" y="36" text-anchor="end" font-family="Arial, sans-serif" font-size="11" fill="#9CA3AF">90</text>
+      <line x1="42" y1="182" x2="332" y2="182" stroke="#C5CAD3" stroke-width="1.5"/>
+      <text x="180" y="24" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#C44D00">+18 people</text>
+      
+      <rect x="79.7" y="140.75" width="69.6" height="41.25" fill="url(#bar-grad-team-size)" rx="5"/>
+      <rect x="79.7" y="140.75" width="69.6" height="4" fill="#C44D00" opacity="0.35" rx="5"/>
+      <rect x="96.5" y="118.75" width="36" height="18" rx="4" fill="#FFFFFF" stroke="#E8EAED" stroke-width="1"/>
+      <text x="114.5" y="131.75" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#2D2D2D">61</text>
+      <text x="114.5" y="204" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#4B5563">Start</text>
+      <rect x="224.7" y="73.25" width="69.6" height="108.75" fill="url(#bar-grad-team-size)" rx="5"/>
+      <rect x="224.7" y="73.25" width="69.6" height="4" fill="#C44D00" opacity="0.35" rx="5"/>
+      <rect x="241.5" y="51.25" width="36" height="18" rx="4" fill="#FFFFFF" stroke="#E8EAED" stroke-width="1"/>
+      <text x="259.5" y="64.25" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#C44D00">79</text>
+      <text x="259.5" y="204" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#4B5563">End</text>
     </svg>
   </div>
       </section>
@@ -1012,22 +1177,46 @@ body { padding-bottom: 2rem; }
         <h3>Utilization Trend</h3>
         
   <div class="dashboard-chart-area" role="img" aria-label="Utilization Trend">
-    <svg class="dashboard-inline-chart" viewBox="0 0 180 150" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
-      <line x1="16" y1="124" x2="164" y2="124" stroke="#D9DCE3" stroke-width="1.5"/>
-      <path d="M 16 55.111111111111114 L 65.33333333333334 112.88888888888889 L 114.66666666666667 90.66666666666667 L 164 70.66666666666666" fill="none" stroke="#EB8C00" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <svg class="dashboard-inline-chart" viewBox="0 0 360 220" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      <defs>
+        <linearGradient id="area-grad-utilization" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EB8C00" stop-opacity="0.28"/>
+          <stop offset="100%" stop-color="#EB8C00" stop-opacity="0.03"/>
+        </linearGradient>
+        <linearGradient id="line-grad-utilization" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#EB8C00"/>
+          <stop offset="100%" stop-color="#C44D00"/>
+        </linearGradient>
+      </defs>
       
-      <circle cx="16" cy="55.111111111111114" r="4" fill="#EB8C00" stroke="#FFFFFF" stroke-width="1.5"/>
-      <text x="16" y="47.111111111111114" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#2D2D2D">86%</text>
-      <text x="16" y="140" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#6B7280">Q1</text>
-      <circle cx="65.33333333333334" cy="112.88888888888889" r="4" fill="#EB8C00" stroke="#FFFFFF" stroke-width="1.5"/>
-      <text x="65.33333333333334" y="104.88888888888889" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#2D2D2D">60%</text>
-      <text x="65.33333333333334" y="140" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#6B7280">Q2</text>
-      <circle cx="114.66666666666667" cy="90.66666666666667" r="4" fill="#EB8C00" stroke="#FFFFFF" stroke-width="1.5"/>
-      <text x="114.66666666666667" y="82.66666666666667" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#2D2D2D">70%</text>
-      <text x="114.66666666666667" y="140" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#6B7280">Q3</text>
-      <circle cx="164" cy="70.66666666666666" r="4" fill="#EB8C00" stroke="#FFFFFF" stroke-width="1.5"/>
-      <text x="164" y="62.66666666666666" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#2D2D2D">79%</text>
-      <text x="164" y="140" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#6B7280">Q4</text>
+      <line x1="42" y1="163.25" x2="332" y2="163.25" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4 3"/>
+      <text x="34" y="167.25" text-anchor="end" font-family="Arial, sans-serif" font-size="11" fill="#9CA3AF">60%</text>
+      <line x1="42" y1="125.75" x2="332" y2="125.75" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4 3"/>
+      <text x="34" y="129.75" text-anchor="end" font-family="Arial, sans-serif" font-size="11" fill="#9CA3AF">70%</text>
+      <line x1="42" y1="88.25" x2="332" y2="88.25" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4 3"/>
+      <text x="34" y="92.25" text-anchor="end" font-family="Arial, sans-serif" font-size="11" fill="#9CA3AF">80%</text>
+      <line x1="42" y1="50.75" x2="332" y2="50.75" stroke="#E8EAED" stroke-width="1" stroke-dasharray="4 3"/>
+      <text x="34" y="54.75" text-anchor="end" font-family="Arial, sans-serif" font-size="11" fill="#9CA3AF">90%</text>
+      <line x1="42" y1="182" x2="332" y2="182" stroke="#C5CAD3" stroke-width="1.5"/>
+      <path d="M 42 65.75 L 138.66666666666669 163.25 L 235.33333333333334 125.75 L 332 92 L 332 182 L 42 182 Z" fill="url(#area-grad-utilization)"/>
+      <path d="M 42 65.75 L 138.66666666666669 163.25 L 235.33333333333334 125.75 L 332 92" fill="none" stroke="url(#line-grad-utilization)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      
+      <circle cx="42" cy="65.75" r="6" fill="#EB8C00" stroke="#FFFFFF" stroke-width="2.5"/>
+      <rect x="25" y="42.75" width="34" height="18" rx="4" fill="#FFFFFF" stroke="#E8EAED" stroke-width="1"/>
+      <text x="42" y="55.75" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#2D2D2D">86%</text>
+      <text x="42" y="204" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#4B5563">Q1</text>
+      <circle cx="138.66666666666669" cy="163.25" r="6" fill="#EB8C00" stroke="#FFFFFF" stroke-width="2.5"/>
+      <rect x="121.66666666666669" y="140.25" width="34" height="18" rx="4" fill="#FFFFFF" stroke="#E8EAED" stroke-width="1"/>
+      <text x="138.66666666666669" y="153.25" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#2D2D2D">60%</text>
+      <text x="138.66666666666669" y="204" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#4B5563">Q2</text>
+      <circle cx="235.33333333333334" cy="125.75" r="6" fill="#EB8C00" stroke="#FFFFFF" stroke-width="2.5"/>
+      <rect x="218.33333333333334" y="102.75" width="34" height="18" rx="4" fill="#FFFFFF" stroke="#E8EAED" stroke-width="1"/>
+      <text x="235.33333333333334" y="115.75" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#2D2D2D">70%</text>
+      <text x="235.33333333333334" y="204" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#4B5563">Q3</text>
+      <circle cx="332" cy="92" r="6" fill="#EB8C00" stroke="#FFFFFF" stroke-width="2.5"/>
+      <rect x="315" y="69" width="34" height="18" rx="4" fill="#FFFFFF" stroke="#E8EAED" stroke-width="1"/>
+      <text x="332" y="82" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#C44D00">79%</text>
+      <text x="332" y="204" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#4B5563">Q4</text>
     </svg>
   </div>
       </section>
@@ -1506,42 +1695,52 @@ body { padding-bottom: 2rem; }
   </aside>
       <div class="tab-body-main">
         <div class="blocks-stack">
-  <article id="training-oracle-d-a-l-d-fy-27-initiatives" class="content-block training-block">
-    <header class="block-header">
-      <h2>Oracle D&amp;A L&amp;D FY'27 Initiatives</h2>
-      <p class="block-subtitle">As of Jul ‘26</p>
-    </header>
-
-    <p class="training-intro">The L&amp;D team continues to focus on upskilling our team on key areas of growth identified for FY ’27.</p>
-
-    <div class="training-initiatives-row">
-      <div class="training-column">
-        <p class="training-col-desc">Training sessions to be organized by level for the following areas:</p>
-        <ul><li>Engagement economics</li><li>AI focus (prompt engineering, GenAI)</li><li>Soft skills (presentation, client communication, time management)</li></ul>
-        <h3>Training Sessions</h3>
+  <article id="training-oracle-d-a-l-d-fy-27-initiatives" class="content-block training-block training-slide-layout">
+    <div class="training-slide-frame">
+      <div class="training-slide-title-bar">
+        <h2>Oracle D&amp;A L&amp;D FY'27 Initiatives</h2>
+        <span class="training-slide-as-of">As of Jul ‘26</span>
       </div>
-      <div class="training-column">
-        <p class="training-col-lead">Curated catalog of learning resources geared towards upskilling on internal tools and technologies</p>
-        <h3>Self Learning (internal)</h3>
+
+      <p class="training-slide-intro">The L&amp;D team continues to focus on upskilling our team on key areas of growth identified for FY ’27.</p>
+
+      <div class="training-slide-initiatives">
+        <div class="training-slide-col training-slide-col-sessions">
+          <div class="training-slide-col-head">Training Sessions</div>
+          <div class="training-slide-col-body">
+            <p class="training-col-desc">Training sessions to be organized by level for the following areas:</p>
+            <ul><li>Engagement economics</li><li>AI focus (prompt engineering, GenAI)</li><li>Soft skills (presentation, client communication, time management)</li></ul>
+          </div>
+        </div>
+        <div class="training-slide-col-stack">
+          <div class="training-slide-col">
+            <div class="training-slide-col-head">Self Learning (internal)</div>
+            <div class="training-slide-col-body">
+              <p class="training-col-lead">Curated catalog of learning resources geared towards upskilling on internal tools and technologies</p>
+            </div>
+          </div>
+          <div class="training-slide-col">
+            <div class="training-slide-col-head">Self Learning (external)</div>
+            <div class="training-slide-col-body">
+              <p class="training-col-lead">Oracle led learning curriculum and certification resources geared towards upskilling on relevant Data and Technology skills</p>
+            </div>
+          </div>
+        </div>
+        <aside class="training-slide-aside">
+          <div class="training-slide-icon"><img src="assets/slide-18-image32.svg" alt="Learning" loading="lazy" /></div>
+          <p class="training-slide-catalog-note">Links to the updated catalog(s) will be published to the D&amp;A group in the next few weeks</p>
+        </aside>
       </div>
-      <div class="training-column">
-        <p class="training-col-lead">Oracle led learning curriculum and certification resources geared towards upskilling on relevant Data and Technology skills</p>
-        <h3>Self Learning (external)</h3>
+
+      <div class="training-slide-requirements">
+        <h3>Recap: Firm L&amp;D Requirements</h3>
+        <ul><li>At least 1 active Oracle certification if you are SM and below</li><li>Note: Certifications continue to be a strong consideration for Career Roundtables</li></ul>
       </div>
-      <div class="training-icon"><img src="assets/slide-18-image32.svg" alt="Learning" loading="lazy" /></div>
-    </div>
 
-    <p class="training-catalog-note">Links to the updated catalog(s) will be published to the D&amp;A group in the next few weeks</p>
-
-    <div class="training-requirements">
-      <h3>Recap: Firm L&amp;D Requirements</h3>
-      <ul><li>At least 1 active Oracle certification if you are SM and below</li><li>Note: Certifications continue to be a strong consideration for Career Roundtables</li></ul>
-    </div>
-
-    <div class="training-cert-section">
-      <h3>Active Certifications — Our Team's Progress</h3>
-      <div class="cert-progress-grid">
-        
+      <div class="training-cert-section">
+        <h3>Active Certifications — Our Team's Progress</h3>
+        <div class="cert-progress-grid">
+          
   <div class="cert-region">
     <h4>US (33% to go!)</h4>
     <div class="cert-progress-wrap">
@@ -1555,7 +1754,7 @@ body { padding-bottom: 2rem; }
     <div class="cert-dist-legend"><div class="cert-dist-legend-item"><span class="cert-dist-swatch" style="background:#1B2A4A"></span><span>FDI</span><strong>9</strong></div><div class="cert-dist-legend-item"><span class="cert-dist-swatch" style="background:#EB8C00"></span><span>AI</span><strong>82</strong></div><div class="cert-dist-legend-item"><span class="cert-dist-swatch" style="background:#0F6E56"></span><span>OCI</span><strong>7</strong></div><div class="cert-dist-legend-item"><span class="cert-dist-swatch" style="background:#6B7280"></span><span>Other</span><strong>10</strong></div></div>
   </div>
   </div>
-        
+          
   <div class="cert-region">
     <h4>AC (34% to go!)</h4>
     <div class="cert-progress-wrap">
@@ -1569,11 +1768,12 @@ body { padding-bottom: 2rem; }
     <div class="cert-dist-legend"><div class="cert-dist-legend-item"><span class="cert-dist-swatch" style="background:#0F6E56"></span><span>OCI</span><strong>31</strong></div><div class="cert-dist-legend-item"><span class="cert-dist-swatch" style="background:#1B2A4A"></span><span>FDI</span><strong>28</strong></div><div class="cert-dist-legend-item"><span class="cert-dist-swatch" style="background:#EB8C00"></span><span>AI</span><strong>86</strong></div><div class="cert-dist-legend-item"><span class="cert-dist-swatch" style="background:#6B7280"></span><span>Other</span><strong>51</strong></div></div>
   </div>
   </div>
+        </div>
+        <p class="cert-footnote"># of resources with an active certification</p>
       </div>
-      <p class="cert-footnote"># of resources with an active certification</p>
-    </div>
 
-    <div class="highlight-banner">Don't get left behind—join the AI revolution and level up with Oracle AI Certifications!</div>
+      <div class="highlight-banner">Don't get left behind—join the AI revolution and level up with Oracle AI Certifications!</div>
+    </div>
   </article>
   <article id="training-partner-basecamp-recap-photos" class="content-block gallery-block">
     <header class="block-header">
@@ -1601,7 +1801,7 @@ body { padding-bottom: 2rem; }
       </div>
     </section></div></main>
   <footer class="site-footer">© 2026 PwC. All rights reserved. PwC refers to the PwC network and/or one or more of its member firms, each of which is a separate legal entity. Please see www.pwc.com/structure for further details.</footer>
-  <div class="preview-build-banner" aria-hidden="true">Preview · built 2026-07-30T17:52:50.849Z</div>
+  <div class="preview-build-banner" aria-hidden="true">Preview · built 2026-07-30T18:12:39.886Z</div>
   <script>
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
