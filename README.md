@@ -42,7 +42,11 @@ node generator/generate.mjs "path/to/deck.pptx" my-session-id
 node generator/write-preview.mjs my-session-id
 ```
 
-Open `data/sessions/my-session-id/preview.html` in a browser.
+**Oracle FY27 preview (recommended):** double-click `preview-oracle-fy27.bat` or run `preview-oracle-fy27.ps1`.  
+Opens **http://127.0.0.1:8825** (always restarts fresh — do not use older ports like 8765/8790).
+
+After code changes: `node generator/write-preview.mjs oracle-fy27` then refresh the browser (F5).  
+Check the black **Preview · built …** bar at the bottom of the page to confirm you have the latest build.
 
 ### Full stack (Python + Node)
 

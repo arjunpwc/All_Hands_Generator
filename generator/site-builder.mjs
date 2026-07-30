@@ -580,23 +580,10 @@ function parseApolloSlide(slide) {
 }
 
 function parseSectorSlide(slide) {
-  const b = bullets(slide);
-  const title = "Sector Breakout / Assignments";
-  const assignments = [];
-
-  for (const line of b) {
-    if (/sector breakout|shierly to add/i.test(line)) continue;
-    const match = line.match(/^(.+?)\s+(FS|TMT\+?|IPS|CM|TTL|TMT)(?:\s|$)/);
-    if (match) {
-      assignments.push({ name: match[1].trim(), sector: match[2] });
-      continue;
-    }
-    if (line.length > 8 && line.length < 100) {
-      assignments.push({ name: line, sector: "" });
-    }
-  }
-
-  return { type: "sector-list", title, assignments };
+  return {
+    type: "sector-org-chart",
+    title: "Sector Breakout / Assignments",
+  };
 }
 
 function parseCertDistribution(bullets, progressPattern, endPattern) {

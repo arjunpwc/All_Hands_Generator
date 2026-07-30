@@ -470,6 +470,101 @@ function renderPlaceholder(block) {
   </article>`;
 }
 
+/** FY27 sector assignments — edit names here without changing layout code. */
+const FY27_SECTOR_ASSIGNMENTS = [
+  {
+    id: "fs",
+    name: "FS",
+    color: "#1B2A4A",
+    app: "Tapan Nagori",
+    team: ["Fania Georgiades", "Nick Edmonds", "Rikin Parekh", "Samir Parkar", "Shierly Mondianti"],
+  },
+  {
+    id: "tmt",
+    name: "TMT",
+    color: "#534AB7",
+    app: "Ernesto Solera",
+    team: ["Srikanth Vemula", "Judy Kim", "Ruchir Patel"],
+  },
+  {
+    id: "ips",
+    name: "IPS",
+    color: "#C56A00",
+    app: "Russell Pearson",
+    team: ["Jeff Silverman"],
+  },
+  {
+    id: "cm",
+    name: "CM",
+    color: "#0F6E56",
+    app: "Dmitry Danilenko",
+    team: ["Divya Thathu"],
+    subgroups: [{ name: "TTL", members: ["Vish Gaitonde"] }],
+  },
+];
+
+const FY27_SECTOR_PENDING_NOTE =
+  "Sujith Kumar — sector TBD, not yet officially moved (pending transfer to US firm).";
+
+function renderSectorOrgMember(name, accentColor) {
+  return `<div class="sector-org-member" style="--sector-accent:${accentColor}">${escapeHtml(name)}</div>`;
+}
+
+function renderSectorOrgSubgroup(subgroup, accentColor) {
+  const members = (subgroup.members || [])
+    .map((name) => renderSectorOrgMember(name, accentColor))
+    .join('<div class="sector-org-connector" aria-hidden="true"></div>');
+  return `
+  <div class="sector-org-subgroup">
+    <div class="sector-org-subgroup-label" style="--sector-accent:${accentColor}">${escapeHtml(subgroup.name)}</div>
+    <div class="sector-org-connector" aria-hidden="true"></div>
+    ${members}
+  </div>`;
+}
+
+function renderSectorOrgColumn(sector) {
+  const teamMembers = (sector.team || [])
+    .map((name) => renderSectorOrgMember(name, sector.color))
+    .join('<div class="sector-org-connector" aria-hidden="true"></div>');
+
+  const subgroups = (sector.subgroups || [])
+    .map((sg) => {
+      const connector = teamMembers || sector.app ? '<div class="sector-org-connector" aria-hidden="true"></div>' : "";
+      return `${connector}${renderSectorOrgSubgroup(sg, sector.color)}`;
+    })
+    .join("");
+
+  return `
+  <div class="sector-org-column" style="--sector-accent:${sector.color}">
+    <div class="sector-org-sector">${escapeHtml(sector.name)}</div>
+    <div class="sector-org-connector" aria-hidden="true"></div>
+    <div class="sector-org-app">
+      <span class="sector-org-app-label">APP</span>
+      <span class="sector-org-app-name">${escapeHtml(sector.app)}</span>
+    </div>
+    <div class="sector-org-connector" aria-hidden="true"></div>
+    <div class="sector-org-team">
+      ${teamMembers}
+      ${subgroups}
+    </div>
+  </div>`;
+}
+
+function renderSectorOrgChart(block) {
+  const columns = FY27_SECTOR_ASSIGNMENTS.map(renderSectorOrgColumn).join("");
+
+  return `
+  <article class="content-block sector-org-block">
+    <header class="block-header">
+      <h2>${escapeHtml(block.title)}</h2>
+    </header>
+    <div class="sector-org-scroll">
+      <div class="sector-org-chart">${columns}</div>
+    </div>
+    <p class="sector-org-note">${escapeHtml(FY27_SECTOR_PENDING_NOTE)}</p>
+  </article>`;
+}
+
 function renderSectorList(block) {
   return `
   <article class="content-block sector-block">
@@ -610,6 +705,8 @@ function renderBlock(block, assetPrefix) {
       return renderApolloProgram(block);
     case "placeholder":
       return renderPlaceholder(block);
+    case "sector-org-chart":
+      return renderSectorOrgChart(block);
     case "sector-list":
       return renderSectorList(block);
     case "training":
@@ -880,6 +977,21 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 .sector-name { font-weight: 600; font-size: 0.9rem; }
 .sector-tag { font-size: 0.78rem; color: var(--pwc-orange-dark); margin-top: 0.25rem; font-weight: 600; }
 
+.sector-org-block { overflow: hidden; }
+.sector-org-scroll { overflow-x: auto; margin-top: 1rem; padding-bottom: 0.5rem; }
+.sector-org-chart { display: flex; gap: 1.25rem; align-items: flex-start; min-width: min-content; padding: 0.25rem 0.15rem; }
+.sector-org-column { display: flex; flex-direction: column; align-items: center; min-width: 168px; max-width: 200px; flex: 1 0 168px; }
+.sector-org-sector { width: 100%; text-align: center; background: var(--sector-accent); color: var(--pwc-white); font-family: var(--font-sans); font-size: 0.95rem; font-weight: 700; letter-spacing: 0.06em; padding: 0.65rem 0.75rem; border-radius: var(--radius); box-shadow: var(--shadow); }
+.sector-org-connector { width: 2px; height: 1.1rem; background: var(--pwc-grey-300, #D1D5DB); flex-shrink: 0; }
+.sector-org-app { width: 100%; text-align: center; background: var(--pwc-grey-100); border: 1px solid var(--pwc-grey-200); border-radius: var(--radius); padding: 0.55rem 0.65rem; }
+.sector-org-app-label { display: block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--pwc-grey-500); margin-bottom: 0.2rem; }
+.sector-org-app-name { display: block; font-size: 0.82rem; font-weight: 600; color: var(--pwc-grey-700); line-height: 1.3; }
+.sector-org-team { width: 100%; display: flex; flex-direction: column; align-items: center; }
+.sector-org-member { width: 100%; text-align: center; background: color-mix(in srgb, var(--sector-accent) 12%, var(--pwc-white)); border: 1px solid color-mix(in srgb, var(--sector-accent) 35%, var(--pwc-grey-200)); border-left: 3px solid var(--sector-accent); border-radius: var(--radius); padding: 0.5rem 0.6rem; font-size: 0.8rem; font-weight: 600; color: var(--pwc-grey-700); line-height: 1.3; }
+.sector-org-subgroup { width: 100%; display: flex; flex-direction: column; align-items: center; margin-top: 0; }
+.sector-org-subgroup-label { width: 100%; text-align: center; background: color-mix(in srgb, var(--sector-accent) 18%, var(--pwc-white)); border: 1px dashed color-mix(in srgb, var(--sector-accent) 45%, var(--pwc-grey-200)); border-radius: var(--radius); padding: 0.35rem 0.55rem; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--sector-accent); }
+.sector-org-note { margin: 1.25rem 0 0; padding: 0.85rem 1rem; border: 2px dashed var(--pwc-grey-200); border-radius: var(--radius); background: var(--pwc-grey-100); font-size: 0.82rem; color: var(--pwc-grey-500); font-style: italic; line-height: 1.45; }
+
 .initiative-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin-top: 1rem; }
 .initiative-card { background: var(--pwc-grey-100); padding: 1.25rem; border-radius: var(--radius); }
 .initiative-card h3 { font-size: 0.9rem; margin: 0 0 0.65rem; font-family: var(--font-sans); font-weight: 700; }
@@ -965,6 +1077,15 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 
 .site-footer { border-top: 3px solid var(--pwc-orange); background: var(--pwc-black); color: rgba(255,255,255,0.6); padding: 1.5rem; text-align: center; font-size: 0.75rem; }
 
+.preview-build-banner {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+  background: var(--pwc-black); color: rgba(255,255,255,0.85);
+  font-size: 0.72rem; font-family: var(--font-sans); text-align: center;
+  padding: 0.4rem 0.75rem; border-top: 2px solid var(--pwc-orange);
+  pointer-events: none;
+}
+body { padding-bottom: 2rem; }
+
 @media (max-width: 800px) {
   .hero { grid-template-columns: 1fr; }
   .hero h1 { font-size: 1.5rem; }
@@ -1031,6 +1152,7 @@ export function buildWebsiteHtml(session, sessionId, options = {}) {
   </header>
   <main class="site-main">${panels}</main>
   <footer class="site-footer">${escapeHtml(model.footer)}</footer>
+  <div class="preview-build-banner" aria-hidden="true">Preview · built ${builtAt}</div>
   <script>
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
