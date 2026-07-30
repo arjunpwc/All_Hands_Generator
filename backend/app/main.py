@@ -1,10 +1,11 @@
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from app.api.qa import router as qa_router
 from app.api.sessions import router as sessions_router
 from app.api.websocket import router as websocket_router
 from app.config import settings
@@ -20,6 +21,7 @@ app.add_middleware(
 )
 
 app.include_router(sessions_router)
+app.include_router(qa_router)
 app.include_router(websocket_router)
 
 
@@ -31,6 +33,24 @@ def health():
 sessions_path = Path(settings.sessions_dir)
 if sessions_path.exists():
     app.mount("/static/sessions", StaticFiles(directory=str(sessions_path)), name="session-assets")
+
+
+@app.get("/live/{session_id}")
+@app.get("/live/{session_id}/")
+def serve_live_session(session_id: str):
+    index = sessions_path / session_id / "index.html"
+    if not index.is_file():
+        raise HTTPException(status_code=404, detail="Session site not found")
+    return FileResponse(index)
+
+
+@app.get("/live/{session_id}/assets/{asset_path:path}")
+def serve_live_session_assets(session_id: str, asset_path: str):
+    asset = (sessions_path / session_id / "assets" / asset_path).resolve()
+    assets_root = (sessions_path / session_id / "assets").resolve()
+    if not str(asset).startswith(str(assets_root)) or not asset.is_file():
+        raise HTTPException(status_code=404, detail="Asset not found")
+    return FileResponse(asset)
 
 frontend_dist = Path(__file__).resolve().parents[2] / "static"
 if frontend_dist.exists():

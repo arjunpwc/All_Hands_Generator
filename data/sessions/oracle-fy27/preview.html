@@ -883,7 +883,16 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; }
 .qa-panel input, .qa-panel textarea { font: inherit; padding: 0.65rem 0.85rem; border: 1px solid var(--pwc-grey-200); border-radius: var(--radius); }
 .btn-primary { background: var(--pwc-orange); color: var(--pwc-white); border: none; border-radius: var(--radius); padding: 0.65rem 1.5rem; font: inherit; font-weight: 600; cursor: pointer; }
 .btn-primary:hover { background: var(--pwc-orange-dark); }
+.btn-primary:disabled { opacity: 0.65; cursor: not-allowed; }
+.qa-status { margin: 0; min-height: 1.25rem; font-size: 0.85rem; }
+.qa-status.is-error { color: #A32020; font-style: normal; font-weight: 600; }
+.qa-status.is-success { color: var(--pwc-orange-dark); font-style: normal; font-weight: 600; }
+.qa-list { text-align: left; max-width: 720px; margin: 0 auto; width: 100%; }
 .qa-item { border: 1px solid var(--pwc-grey-200); padding: 1rem; margin-bottom: 0.75rem; background: var(--pwc-grey-100); border-radius: var(--radius); }
+.qa-item-header { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.35rem; }
+.qa-item-header strong { color: var(--pwc-black); }
+.qa-item-time { font-size: 0.72rem; color: var(--pwc-grey-500); white-space: nowrap; }
+.qa-item p { margin: 0; color: var(--pwc-grey-700); line-height: 1.45; }
 .muted { color: var(--pwc-grey-500); }
 
 .site-footer { border-top: 3px solid var(--pwc-orange); background: var(--pwc-black); color: rgba(255,255,255,0.6); padding: 1.5rem; text-align: center; font-size: 0.75rem; }
@@ -962,8 +971,8 @@ body { padding-bottom: 2rem; }
 }
 </style>
 </head>
-<body data-built-at="2026-07-30T18:12:39.886Z">
-  <!-- preview build: 2026-07-30T18:12:39.886Z -->
+<body data-built-at="2026-07-30T18:20:00.184Z" data-session-id="oracle-fy27">
+  <!-- preview build: 2026-07-30T18:20:00.184Z -->
   <header class="site-header">
     <div class="header-accent"></div>
     <div class="header-inner">
@@ -1792,16 +1801,17 @@ body { padding-bottom: 2rem; }
     </section>
     <section class="content-section qa-panel">
       <form id="qa-form" class="qa-form" onsubmit="return false;">
-        <label>Your name <input type="text" id="qa-name" placeholder="Optional" /></label>
-        <label>Your question <textarea id="qa-text" rows="4" placeholder="Type your question…"></textarea></label>
+        <label>Your name <input type="text" id="qa-name" placeholder="Optional" autocomplete="name" /></label>
+        <label>Your question <textarea id="qa-text" rows="4" placeholder="Type your question…" required></textarea></label>
         <button type="button" id="qa-submit" class="btn-primary">Submit question</button>
+        <p id="qa-status" class="qa-status muted" role="status" aria-live="polite"></p>
       </form>
       <div id="qa-list" class="qa-list">
-        <p class="muted">Questions submitted during the call will appear here.</p>
+        <p class="muted">Loading questions…</p>
       </div>
     </section></div></main>
   <footer class="site-footer">© 2026 PwC. All rights reserved. PwC refers to the PwC network and/or one or more of its member firms, each of which is a separate legal entity. Please see www.pwc.com/structure for further details.</footer>
-  <div class="preview-build-banner" aria-hidden="true">Preview · built 2026-07-30T18:12:39.886Z</div>
+  <div class="preview-build-banner" aria-hidden="true">Preview · built 2026-07-30T18:20:00.184Z</div>
   <script>
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -1898,22 +1908,110 @@ body { padding-bottom: 2rem; }
     const qaSubmit = document.getElementById('qa-submit');
     if (qaSubmit) {
       const list = document.getElementById('qa-list');
-      const questions = JSON.parse(localStorage.getItem('qa-questions-oracle-fy27') || '[]');
+      const status = document.getElementById('qa-status');
+      const qaApi = '/api/sessions/oracle-fy27/questions';
+      let questions = [];
+      let pollTimer = null;
+
+      function escapeHtml(text) {
+        return String(text)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function formatTime(iso) {
+        if (!iso) return '';
+        try {
+          return new Date(iso).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        } catch {
+          return '';
+        }
+      }
+
+      function setStatus(message, type) {
+        if (!status) return;
+        status.textContent = message || '';
+        status.classList.remove('is-error', 'is-success');
+        if (type) status.classList.add('is-' + type);
+      }
+
       function renderQuestions() {
-        if (!questions.length) return;
-        list.innerHTML = questions.map(q =>
-          '<article class="qa-item"><strong>' + q.name.replace(/</g,'&lt;') + '</strong><p>' + q.text.replace(/</g,'&lt;') + '</p></article>'
+        if (!list) return;
+        if (!questions.length) {
+          list.innerHTML = '<p class="muted">No questions yet. Be the first to ask!</p>';
+          return;
+        }
+        list.innerHTML = questions.map((q) =>
+          '<article class="qa-item">' +
+            '<div class="qa-item-header">' +
+              '<strong>' + escapeHtml(q.name || q.author || 'Anonymous') + '</strong>' +
+              (q.time ? '<span class="qa-item-time">' + escapeHtml(formatTime(q.time)) + '</span>' : '') +
+            '</div>' +
+            '<p>' + escapeHtml(q.text) + '</p>' +
+          '</article>'
         ).join('');
       }
-      renderQuestions();
-      qaSubmit.addEventListener('click', () => {
-        const name = document.getElementById('qa-name').value.trim() || 'Anonymous';
-        const text = document.getElementById('qa-text').value.trim();
-        if (!text) return;
-        questions.unshift({ name, text, time: new Date().toISOString() });
-        localStorage.setItem('qa-questions-oracle-fy27', JSON.stringify(questions));
-        document.getElementById('qa-text').value = '';
-        renderQuestions();
+
+      async function loadQuestions() {
+        try {
+          const res = await fetch(qaApi, { cache: 'no-store' });
+          if (!res.ok) throw new Error('Could not load questions');
+          questions = await res.json();
+          renderQuestions();
+        } catch (err) {
+          if (!questions.length && list) {
+            list.innerHTML = '<p class="muted">Unable to load questions. Make sure the site is running with the Q&amp;A server enabled.</p>';
+          }
+        }
+      }
+
+      async function submitQuestion() {
+        const nameInput = document.getElementById('qa-name');
+        const textInput = document.getElementById('qa-text');
+        const name = nameInput.value.trim() || 'Anonymous';
+        const text = textInput.value.trim();
+        if (!text) {
+          setStatus('Please enter a question before submitting.', 'error');
+          return;
+        }
+
+        qaSubmit.disabled = true;
+        setStatus('Submitting…', '');
+
+        try {
+          const res = await fetch(qaApi, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, text }),
+          });
+          if (!res.ok) {
+            const errBody = await res.json().catch(() => ({}));
+            throw new Error(errBody.detail || 'Could not submit question');
+          }
+          textInput.value = '';
+          setStatus('Question submitted — it will appear for everyone shortly.', 'success');
+          await loadQuestions();
+        } catch (err) {
+          setStatus(err.message || 'Could not submit question. Try again.', 'error');
+        } finally {
+          qaSubmit.disabled = false;
+        }
+      }
+
+      qaSubmit.addEventListener('click', submitQuestion);
+      document.getElementById('qa-form')?.addEventListener('keydown', (event) => {
+        if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+          event.preventDefault();
+          submitQuestion();
+        }
+      });
+
+      loadQuestions();
+      pollTimer = window.setInterval(loadQuestions, 4000);
+      window.addEventListener('beforeunload', () => {
+        if (pollTimer) window.clearInterval(pollTimer);
       });
     }
   </script>
