@@ -325,7 +325,10 @@ function parseFinancialSlide(slide) {
     null;
 
   if (slide.index === 4) {
-    applyMetricOverrides(keyMetrics, [[/^Growth\s*%$/i, "53.6%"]]);
+    applyMetricOverrides(keyMetrics, [
+      [/^Growth\s*%$/i, "36%"],
+      [/^Revenue\s*\(Won Oppts\)$/i, "$53M"],
+    ]);
     return {
       type: "financial",
       title,
